@@ -44,7 +44,7 @@ void WRCFG(BMEdata& _BME)
 
 
 /*------------------------------------------------------------------------------
- * void  ADCV_bme(byte addr, byte _CH)
+ * void  ADCV(byte addr, byte _CH)
  * Start Cell Voltage ADC Conversions and Poll Status for a BME and a given cell
  * if addr=0 then it applies to all BMEs
  *----------------------------------------------------------------------------*/
@@ -58,7 +58,7 @@ void  ADCV(byte addr, byte _CH)
 }
 
 /*------------------------------------------------------------------------------
- * void  ADAX(void)
+ * void  ADAX(byte addr, byte _CHG)
  * Start Cell Voltage ADC Conversions and Poll Status for all cells
  *----------------------------------------------------------------------------*/
 void  ADAX(byte addr, byte _CHG)
@@ -70,7 +70,7 @@ void  ADAX(byte addr, byte _CHG)
 }
 
 /*------------------------------------------------------------------------------
- * void  ADSTAT(void)
+ * void  ADSTAT(byte addr, byte _CHST)
  * Start Cell Voltage ADC Conversions and Poll Status for all cells
  *----------------------------------------------------------------------------*/
 void  ADSTAT(byte addr, byte _CHST)
@@ -82,7 +82,7 @@ void  ADSTAT(byte addr, byte _CHST)
 }
 
 /*------------------------------------------------------------------------------
- * void  RDCFG(byte addr)
+ * void  RDCFG(BMEdata& _BME, byte& CFGRR)
  *  Read Configuration Register Group
  *----------------------------------------------------------------------------*/
 void RDCFG(BMEdata& _BME, byte& CFGRR)
@@ -94,7 +94,7 @@ void RDCFG(BMEdata& _BME, byte& CFGRR)
 }
 
 /*------------------------------------------------------------------------------
- * void  RDCVA(byte addr, int* voltage)
+ * void  RDCVA(BMEdata& _BME)
  *  Read Cell Voltages 1-3
  *----------------------------------------------------------------------------*/
 void RDCVA(BMEdata& _BME)
@@ -115,7 +115,7 @@ void RDCVA(BMEdata& _BME)
 
 
 /*------------------------------------------------------------------------------
- * void  RDAUXA(byte addr, int* voltage)
+ * void  RDAUXA(BMEdata& _BME)
  *  Read Cell Voltages of GPIO 1-3
  *----------------------------------------------------------------------------*/
 void RDAUXA(BMEdata& _BME)
@@ -136,7 +136,7 @@ void RDAUXA(BMEdata& _BME)
 }
 
 /*------------------------------------------------------------------------------
- * void  RDAUXB(byte addr, int* voltage)
+ * void   RDAUXB(BMEdata& _BME)
  *  Read Cell Voltages of GPIO 4-5 and ref2
  *----------------------------------------------------------------------------*/
 void RDAUXB(BMEdata& _BME)
@@ -174,7 +174,7 @@ void RDSTATA(BMEdata& _BME)
 }
 
 /*------------------------------------------------------------------------------
- * void  RDSTATA(byte addr)
+ * void  RDSTATB(BMEdata& _BME)
  *  Read Cell over/under voltages flags 
  *----------------------------------------------------------------------------*/
 void RDSTATB(BMEdata& _BME)
@@ -278,7 +278,7 @@ void STATST(byte addr)
 }
 
 /*------------------------------------------------------------------------------
- * void  RDCVST(byte addr)
+ * void  RDCVST(BMEdata& _BME)
  *  read self-test on digital filter and memory of voltage readings
  *----------------------------------------------------------------------------*/
 void RDCVST(BMEdata& _BME)
@@ -302,7 +302,7 @@ void RDCVST(BMEdata& _BME)
 }
 
 /*------------------------------------------------------------------------------
- * void  RDAXSTA(byte addr, int* voltage)
+ * void  RDAXSTA(BMEdata& _BME)
  *  read self-test on digital filter and memory of GPIO 1-3
  *----------------------------------------------------------------------------*/
 void RDAXSTA(BMEdata& _BME)
@@ -326,7 +326,7 @@ void RDAXSTA(BMEdata& _BME)
 }
 
 /*------------------------------------------------------------------------------
- * void  RDAXSTB(byte addr, int* voltage)
+ * void  RDAXSTB(BMEdata& _BME)
  *  read self-test on digital filter and memory of GPIO 4-5 and Vref2
  *----------------------------------------------------------------------------*/
 void RDAXSTB(BMEdata& _BME)
@@ -350,7 +350,7 @@ void RDAXSTB(BMEdata& _BME)
 }
 
 /*------------------------------------------------------------------------------
- * void  RDSTATSTA(byte addr)
+ * void  RDSTATSTA(BMEdata& _BME)
  *  read self-test on digital filter and memory of over and under flags
  *----------------------------------------------------------------------------*/
 void RDSTATSTA(BMEdata& _BME)
@@ -374,7 +374,7 @@ void RDSTATSTA(BMEdata& _BME)
 }
 
 /*------------------------------------------------------------------------------
- * void  RDSTATSTB(byte addr)
+ * void  RDSTATSTB(BMEdata& _BME)
  *  read self-test on digital filter and memory of battery modual and LTC temperature
  *----------------------------------------------------------------------------*/
 void RDSTATSTB(BMEdata& _BME)
@@ -427,7 +427,7 @@ void printHexData(byte *dataPrint, byte n)
 } 
 
 /*------------------------------------------------------------------------------
- * void readData(byte* inData, byte n)
+ * boolean readData(byte* inData, byte n)
  *  Reads that data with length n
  *----------------------------------------------------------------------------*/
 boolean readData(byte* inData, byte n)
@@ -506,7 +506,7 @@ void sendData(byte *dataOut, byte n)
 }
 
 /*------------------------------------------------------------------------------
- * byte getPEC(byte dataIn, byte PEC)
+ * unsigned int PEC15(byte *dataIn, byte len)
  * updates the PEC with the given dataIn
  *----------------------------------------------------------------------------*/
 unsigned int PEC15(byte *dataIn, byte len)

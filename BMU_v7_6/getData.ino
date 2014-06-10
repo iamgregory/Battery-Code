@@ -25,7 +25,7 @@
  void BMESelfTest(){
   int i;
   
-  for(i=0;i<BMENum;i++){ 
+  for(i=0;i<BMENum;i++){           //sets flags to false
     BME[i].dataCheck=false;
     BME[i].muxCheck=false;
     BME[i].volSelfCheck=false;
