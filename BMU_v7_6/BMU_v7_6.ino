@@ -23,8 +23,8 @@ created 10/3/2013
   
   void loop() 
   {
-    timeStamp=micros();                // microseconds since board initialized, overflow/rollover after XX minutes
-                                       // returned in XX microsend resolution, values always multiples of 4?8?
+    timeStamp=micros();                // microseconds since board initialized, overflow/rollover after ~11.9 hours (2^32-1 uS)
+                                       // returned in 1 microsecond resolution
     loopCount=loopCount%countLimit+1;  // counts the number of loops up to countLimit
     
     if(loopCount%bmeSelfTestTime==0)  BMESelfTest();    // run self check on all BMEs runs once every 5 min
@@ -39,13 +39,13 @@ created 10/3/2013
     getBMUData();               //gets data for the half-string
     calStateBMU();              // calculates the state of the half-string
     
-    checkFlags();    //checks and sets flags
+    checkFlags();               //checks and sets flags
     
     if(loopCount%bmcComTime==0)  BMCcomm();         //send and receive information through ethernet to BMC  every 1 sec
 
-    priorityMode();          //sets contactors according to the mode and flags
+    priorityMode();             //sets contactors according to the mode and flags
     
 //    if (BMCcommdt< micros()-timeStamp) BMCcommdt= micros()-timeStamp;
-    timeCheck();    //sets the loop time
+    timeCheck();                //tries to keep loop time roughly constant
   }
   

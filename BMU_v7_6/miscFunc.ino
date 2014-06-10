@@ -4,13 +4,18 @@
  *----------------------------------------------------------------------------*/
  
  void timeCheck(void){
+   unsigned long currentTimeStamp;
    do{
-    dloopTime= micros()-timeStamp;          // microseconds since "void Loop" began
-    if (dloopTime>(controlTime+50)){ 
+     currentTimeStamp=micros();
+    dloopTime= currentTimeStamp-timeStamp;          // microseconds since "void Loop" began
+    if(timeStamp> currentTimeStamp){                // check if a rollover has occured
+      dloopTime= dloopTime - maxULong;              // correct for rollover
+    }
+    if (dloopTime>(controlTime+50)){                // for debugging purposes??
       Serial.println(dloopTime);
     }
    
-   }while(dloopTime < controlTime);
+   }while(dloopTime < controlTime);                 // kill time till next "void Loop" should execute
    BMCcommdt=BMCcommdt+dloopTime;
  }
  
