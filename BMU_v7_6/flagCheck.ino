@@ -1,0 +1,286 @@
+/*------------------------------------------------------------------------------
+ * void flagCheck(void)
+ * Checks and sets all BMU flags
+ *----------------------------------------------------------------------------*/
+void checkFlags(void){
+  if(fwLeak || bwLeak) leakFlag=true;  //hecks the leak sensors
+  bmeCommCheck();   //checks the communication of all BME's
+  bmeFlagCheck();   //checks the BME's self-checks flags
+  volCheck();      //checks the voltage for over and under voltage
+  tempCheck();     //checks the temperature for over temperature
+  currentCheck();  //checks the current 
+  pressurCheck();      //checks additional sensors
+  timeoutCheck();
+  setFlag();       // sets the flag to be sent out 
+  if(flagBMU!=0) setPriority();  // sets the flag priority 
+}
+
+/*------------------------------------------------------------------------------
+ * void currentCheck(void)
+ * checks the current sensor reading
+ *----------------------------------------------------------------------------*/
+ void timeoutCheck(){
+   timeoutFlag=false;      //Charging or balance time > 10 hours
+   
+   if(chargeOn || balanceOn){
+     timeoutCount++;
+     if(timeoutCount >= timeoutLimit) timeoutFlag= true;  // set Timeout flag
+   }
+ }
+
+/*------------------------------------------------------------------------------
+ * void currentCheck(void)
+ * checks the current sensor reading
+ *----------------------------------------------------------------------------*/
+ void currentCheck(){
+   driveCurflag=false;          //Current >20 durring Drive
+   chargeCurFlag=false;      //Current > 92A or current <2A during Charge
+   stopCurFlag=false;     //abs(Current)>1A
+
+   if(driveOn && current >= inCurLimit) driveCurflag= true;
+   if(chargeOn && current >= highInCur && current >= highOutCur) chargeCurFlag= true;
+   if((stopOn || balanceOn) && timeoutCount >= inOutCur) stopCurFlag= true;
+ }
+
+/*------------------------------------------------------------------------------
+ * void pressurCheck(void)
+ * checks the pressure sensor and the calculated pressure rate
+ *----------------------------------------------------------------------------*/
+ void pressurCheck(){
+   presRateFlag= false;    //Pressure rate > 1 PSI/sec
+   presFlag =false;      // Pressure < 1.5 PSI or Pressure  > 2.5 PSI
+   
+   if(presRate>=presRateHigh) presRateFlag= true;
+   if(!ignorePres && (pressure>=presLowLimit || pressure>=presLowLimit)) presFlag= true;
+ }
+
+/*------------------------------------------------------------------------------
+ * void bmeCommCheck(void)
+ * checks the communication of all BME's
+ *----------------------------------------------------------------------------*/
+ void bmeCommCheck(){
+   bmeComFlag=false;  // Communication failure occurs between BMU and BME
+   
+   for(int j=0;j<BMENum;j++){                         // goes through all BMEs
+     if(BME[j].dataCheck) bmeComFlag=true;          // set communication error flag
+   }     
+ }
+
+/*------------------------------------------------------------------------------
+ * void bmeFlagCheck(void)
+ * checks the BME's self-checks flags
+ *----------------------------------------------------------------------------*/
+ void bmeFlagCheck(){
+   bmeAlarmFlag=false; // If any cell over/under voltage failures or self-check failures are sent from BME 
+   bmeComFlag=false;  // Communication failure occurs between BMU and BME
+   
+   for(int j=0;j<BMENum;j++){                         // goes through all BMEs
+     if(!BME[j].dataCheck){                           // check if BME is communicating
+       for (int i=0;i<cellNum;i++){                   // goes through all vartual cells in a BME
+         if(BME[j].uFlag[i] || BME[j].oFlag[i]) bmeAlarmFlag=true;
+       }
+       if(BME[j].muxCheck || BME[j].volSelfCheck || 
+           BME[j].AuxSelfCheck || BME[j].StatSelfCheck) bmeAlarmFlag=true;
+     }
+     else bmeComFlag=true;          // set communication error flag
+   }     
+ }
+
+/*------------------------------------------------------------------------------
+ * void tempCheck(void)
+ * temperature check on all cells, heat sinks, and chip temperatures for 
+ * themperatur warnnings and themperature errors
+ *----------------------------------------------------------------------------*/
+void tempCheck(){
+ // set flags to false before starting the temperature check
+ tempAlarmFlag=false;
+ tempWarnFlag=false;
+ tempFailFlag=false;
+ 
+ //
+ for(int j=0;j<BMENum;j++){                         // goes through all BMEs
+   if(!BME[j].dataCheck){                           // check if BME is communicating
+     for (int i=0;i<cellNum;i++){                   // goes through all vartual cells in a BME
+       if(!BME[j].ignoreT[i]){
+         if(BME[j].fTemp[i] <=-42 || BME[j].fTemp[i]== 'nan'){  //check and set temperature sensor failure flag
+           tempFailFlag= true;  
+         }
+         else if(BME[j].fTemp[i] >= tempVCWarn){           // check vertual cell temperature for temperature warning
+           if(BME[j].fTemp[i] >= tempVCAlarm){        // check vertual cell temperature for temperature error
+             tempAlarmFlag=true;                          // set temperature alarm flag
+           }
+           else {
+             tempWarnFlag=true;                             // set temperature warnning flag
+           }
+         }
+       }
+     }
+     if(!BME[j].ignoreT[3]){
+       if( BME[j].fiTemp <=-42 || BME[j].fTemp[3]== 'nan' ){ //check and set temperature sensor failure flag
+         tempFailFlag= true; 
+       } 
+       else if( BME[j].fTemp[3] >= tempHSWarn){        // check heat sink and chip temperature for temperature warning
+         if(BME[j].fTemp[3] >= tempHSAlarm){    // check heat sink and chip temperature for temperature warning
+             tempAlarmFlag=true;                          // set temperature alarm flag
+         }
+         else{
+           tempWarnFlag=true;                             // set temperature warnning flag
+         }
+       }
+     }
+     if(!BME[j].ignoreiT){
+       if(BME[j].fiTemp >= tempTiWarn){
+         if(BME[j].fiTemp >= tempTiAlarm){
+            tempAlarmFlag=true;                          // set temperature alarm flag
+         }
+         else{
+           tempWarnFlag=true;                             // set temperature warnning flag
+         }
+       }
+     }
+   }
+ } 
+}
+
+/*------------------------------------------------------------------------------
+ * void volCheck(void)
+ * Checks the Voltage for all the batteries and sets a flag if it is outside 
+ * the required range also checks balance recommendation
+ *----------------------------------------------------------------------------*/
+void volCheck(){
+  // set flags to false before starting the voltage check
+  volHighAlarmFlag =false;      //Any VC voltage > 4.25 V 
+  balRecFlag=false;             //Any VC voltage < 3.9 V
+  volLowBalAlarmFlag=false;    //Any VC voltage < 3.7 V
+  volLowWarnFlag =false;     //Any VC voltage < 3.2 V
+  volLowAlarmFlag =false;    //Any VC voltage < 3.0 V
+  deadBatAlarmFlag=false;    //Any VC voltage < 2.5 V
+  volFailFlag =false;      //Any VC voltage < .1 V or >6.5 or Vref2<2.978 or>3.020
+  volMisFlag =false;      /*5V difference between overall half-string voltage and sum of half-string VC voltages or
+                                     50mV difference between battery module voltage and sum of its VC voltages*/
+  balRecFlag =false;
+  
+  for(int j=0;j<BMENum;j++){                // goes through all BMEs
+   if(!BME[j].dataCheck){                   // check if BME is communicating
+     if ( !BME[j].ignoreVref && (BME[j].fVref2 > 3.020 || BME[j].fVref2 < 2.978)){
+       volFailFlag = true;             // set voltage failure flag
+     } 
+     if(!BME[j].ignoreVSum && abs(BME[j].modSum-BME[j].fVSum)>=volModMismatch) volMisFlag =true; 
+   }
+  }
+  if(!ignoreVall && abs(totalVoltage-volSum)>=volMismatch) volMisFlag =true;
+  if(maxVol >= 6.5 ){     // check vertual cell voltage sensor for failure 
+       volFailFlag = true;             // set voltage failure flag
+  } 
+  else if(maxVol >= volHighAlarm){  // check vertual cell voltage for high voltage flag
+    volHighAlarmFlag  = true;          // set high voltage error flag
+  }  
+ 
+  if(minVol <= 0.0){     // check vertual cell voltage sensor for failure 
+       volFailFlag = true;             // set voltage failure flag
+  } 
+  else if(minVol <= deadBatAlarm && !driveOn) deadBatAlarmFlag=true;  // check vertual cell voltage for dead batteries
+  else if(minVol <= volLowBalAlarm && !chargeOn){     // check vertual cell voltage for low voltage balancing alarm flag and not in charge mode
+    if(minVol <= volLowWarn){                      // check vertual cell voltage for low voltage warnning flag
+      if(minVol <= volLowAlarm){                    // check vertual cell voltage for low voltage error flag
+        volLowAlarmFlag = true;    // set dead battery flag
+      }
+      else volLowWarnFlag = true;     // set low voltage error flag
+    }
+    else if(balanceOn) volLowBalAlarmFlag = true;        //set low voltage balancing alarm flag if in balance mode
+  }
+  if((maxVol-minVol)>=balRecVol && !balanceOn && minVol>=balRecLimit ) balRecFlag=true;    // set balance recomanded flag
+}
+
+/*------------------------------------------------------------------------------
+ * void setFlag(void)
+ * Sets the flag
+ *----------------------------------------------------------------------------*/
+ void setFlag(){
+//   if(leakFlag) flagBMU=flagBMU | 1;
+//   if(tempWarnFlag) flagBMU=flagBMU | (1<<1);
+//   if(tempAlarmFlag) flagBMU=flagBMU | (1<<2);
+//   if(tempFailFlag) flagBMU=flagBMU | (1<<3);
+//   if(presRateFlag) flagBMU=flagBMU | (1<<4);
+//   if(presFlag) flagBMU=flagBMU | (1<<5); 
+   if(volHighAlarmFlag) flagBMU=flagBMU | (1<<6);
+//   if(volLowBalAlarmFlag) flagBMU=flagBMU | (1<<7);
+   if(volLowWarnFlag) flagBMU=flagBMU | (1<<8);
+   if(volLowAlarmFlag) flagBMU=flagBMU | (1<<9);
+//   if(deadBatAlarmFlag) flagBMU=flagBMU | (1<<10);
+//   if(volFailFlag) flagBMU=flagBMU | (1<<11);
+//   if(volMisFlag) flagBMU=flagBMU | (1<<12);
+//   if(bmeAlarmFlag) flagBMU=flagBMU | (1<<13);
+//   if(bmeComFlag) flagBMU=flagBMU | (1<<14);
+//   if(bmcComFlag) flagBMU=flagBMU | (1<<15);
+//   if(driveCurflag) flagBMU=flagBMU | (1<<16);
+//   if(chargeCurFlag) flagBMU=flagBMU | (1<<17);
+//   if(stopCurFlag) flagBMU=flagBMU | (1<<18);
+//   if(timeoutFlag) flagBMU=flagBMU | (1<<19);
+//   if(chargeDoneFalg) flagBMU=flagBMU | (1<<20);      
+//   if(balDoneFlag) flagBMU=flagBMU | (1<<21);
+//   if(balRecFlag) flagBMU=flagBMU | (1<<22);
+   
+   flagBMU= flagBMU & ~flagOverride;
+//   if(uartPrint){
+//     Serial.print(minVol,4);
+//     Serial.print('\t');
+//     Serial.println(maxVol,4);
+//   }
+//   if(uartPrint && flagBMU !=0) Serial.println(flagBMU,HEX);
+ }
+ 
+ /*------------------------------------------------------------------------------
+ * void setPriority(void)
+ * Sets the flag
+ *----------------------------------------------------------------------------*/
+ void setPriority(){
+   
+   flagPriority=0;
+   
+   if(driveOn){
+     if((flagBMU & 0x400000) !=0) flagPriority=5;   //  B10000000000000000000000
+     if((flagBMU & 0x00910A) !=0) flagPriority=4;  //  
+     if((flagBMU & 0x016A75) !=0) flagPriority=3;  //  
+   }
+   if(stopOn){
+     if((flagBMU & 0x400000) !=0) flagPriority=5;   //  B10000000000000000000000
+     if((flagBMU & 0x04FFEF) !=0) flagPriority=4;  //  
+   }  
+   if(balanceOn){
+     if((flagBMU & 0x200000) !=0) flagPriority=5;   //  B10100000000000000000000
+     if((flagBMU & 0x00102A) !=0) flagPriority=2;  //  B00000000000000000101010
+     if((flagBMU & 0x0CEF75) !=0) flagPriority=1;  //  B00010101111100011010101
+   }
+   if(chargeOn){
+     if((flagBMU & 0x500000) !=0) flagPriority=5;   //  B01000000000000000000000
+     if((flagBMU & 0x00002A) !=0) flagPriority=2;   // 
+     if((flagBMU & 0x0AFC55) !=0) flagPriority=1;  //  
+   }  
+ }
+ 
+ /*------------------------------------------------------------------------------
+ * void clearFlags(void)
+ * clears all flags
+ *----------------------------------------------------------------------------*/
+ void clearFlags(void){
+   if(uartPrint)Serial.println("Clear");
+   flagBMU=0;
+   flagPriority=0;
+   stopUntil=false; 
+   flagOverride=0;
+   overrideCount=0;
+   ignoreVall=false;
+   ignorePres=false;
+   for(int j;j<BMENum;j++){                // goes through all BMEs
+     BME[j].ignoreVSum=false;
+     BME[j].ignoreVref=false;
+     BME[j].ignoreiT=false;
+     for (int i=0;i<cellNum;i++){
+       BME[j].ignoreVol[i]=false;
+     }
+     for (int i=0;i<4;i++){
+       BME[j].ignoreT[i]=false;
+     }
+   }
+ }
