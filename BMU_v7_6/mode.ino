@@ -145,7 +145,7 @@ void relayOn(void){
  
  
  /*------------------------------------------------------------------------------
- * void balance(void)
+ * void balanceCal(void)
  * balances the virtual cells of a battery with in a +/- 5mv 
  * conversion BNME.vol*1.5mV
  *----------------------------------------------------------------------------*/

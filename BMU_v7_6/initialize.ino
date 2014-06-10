@@ -86,7 +86,7 @@ void pinInital(void){
 /*------------------------------------------------------------------------------
  * void intit_PEC15_table(void)
  * Make a PEC table for checking data
- * needed to run during initilization
+ * needed to run during initialization
  *-----------------------------------------------------------------------------*/
 
 void intit_PEC15_table()

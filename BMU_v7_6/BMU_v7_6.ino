@@ -23,25 +23,27 @@ created 10/3/2013
   
   void loop() 
   {
-    timeStamp=micros();
+    timeStamp=micros();                // microseconds since board initialized, overflow/rollover after XX minutes
+                                       // returned in XX microsend resolution, values always multiples of 4?8?
     loopCount=loopCount%countLimit+1;  // counts the number of loops up to countLimit
     
-    if(loopCount%bmeSelfTestTime==0) BMESelfTest();    // run self check on all BMEs runs once every 5 min
+    if(loopCount%bmeSelfTestTime==0)  BMESelfTest();    // run self check on all BMEs runs once every 5 min
     
-    if(Rtest)dischargeTest();   // for thisting discharge
+    if(Rtest)  dischargeTest();   // for testing discharge
     
-    if(balanceOn) balanceCal(); // if balancing is on then calculate which cells need to be balanced
-    getBMEData();               // gets the data from all BMEs 
-    calStateBME();              // calculates the state of BME's
+    if(balanceOn) balanceCal(); // if balancing mode is on, then calculate which cells need to be balanced
+    
+    getBMEData();               // gets data from all BMEs 
+    calStateBME();              // calculates state of BME's
  
-    getBMUData();              //gets/ calculates data for the half string
-    calStateBMU();          // calculates the state of half-string
+    getBMUData();               //gets data for the half-string
+    calStateBMU();              // calculates the state of the half-string
     
     checkFlags();    //checks and sets flags
     
-    if(loopCount%bmcComTime==0) BMCcomm();         //sends and receives information through ethernet to BMC runs every 1 sec
+    if(loopCount%bmcComTime==0)  BMCcomm();         //send and receive information through ethernet to BMC  every 1 sec
 
-    priorityMode();          //sets contactors acourding to the mode and flags
+    priorityMode();          //sets contactors according to the mode and flags
     
 //    if (BMCcommdt< micros()-timeStamp) BMCcommdt= micros()-timeStamp;
     timeCheck();    //sets the loop time

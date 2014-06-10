@@ -6,7 +6,7 @@
  *----------------------------------------------------------------------------*/
 
 // flag limits
-  #define tempVCAlarm 60    //vertual cell temperature limit for temperature error 
+  #define tempVCAlarm 60    //virtual cell temperature limit for temperature error 
   #define tempTiAlarm 75    // BME LTC chip temperature limit for temperature error 
   #define tempHSAlarm 120   //heat sink temperature limit for temperature error
   #define tempVCWarn 40    //vertual cell temperature limit for temperature warnning 

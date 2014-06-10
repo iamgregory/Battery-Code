@@ -19,8 +19,8 @@
  }
  /*------------------------------------------------------------------------------
  * void BMESelfTest(void)
- * clears the ADC registers and performs self test on each BME
- * checks the digatal filter of each BME
+ * clears the ADC registers and performs a self-test on each BME
+ * checks the digital filter of each BME
  *-----------------------------------------------------------------------------*/
  void BMESelfTest(){
   int i;

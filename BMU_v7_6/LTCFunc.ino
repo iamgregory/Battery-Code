@@ -4,7 +4,7 @@
 
 
 /*------------------------------------------------------------------------------
- * void WRCFG(byte addr, byte GPIO, byte DCCAB, byte DCCC)
+ * void  LTC_initial()
  *  Initializes all BME's
  *----------------------------------------------------------------------------*/
 void LTC_initial() {

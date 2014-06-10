@@ -5,7 +5,7 @@
  
  void timeCheck(void){
    do{
-    dloopTime= micros()-timeStamp;
+    dloopTime= micros()-timeStamp;          // microseconds since "void Loop" began
     if (dloopTime>(controlTime+50)){ 
       Serial.println(dloopTime);
     }
