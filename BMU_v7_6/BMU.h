@@ -133,13 +133,13 @@ typedef struct  {
   boolean ignoreVol[cellNum];
   boolean ignoreVSum;
   boolean ignoreVref;
-  boolean ignoreT[4];
+  boolean ignoreT[4]; 
   boolean ignoreiT;
   boolean uFlag[cellNum];
   boolean oFlag[cellNum];
   boolean balFlag[cellNum];
   boolean muxCheck;
-  boolean dataCheck;
+  boolean dataCheck;  // 1= corrupted data, 0 = uncorrupted data
   boolean volSelfCheck;
   boolean AuxSelfCheck;
   boolean StatSelfCheck;

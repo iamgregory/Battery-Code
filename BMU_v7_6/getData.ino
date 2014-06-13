@@ -3,7 +3,7 @@
  * void getBMUData(void)
  * Measures and calculates data on a half string level 
  *-----------------------------------------------------------------------------*/
- void getBMUData(){
+ void getBMUData(void){
   
   
   totalVoltage=analogRead(tVolInPin)*volConst;
@@ -22,7 +22,7 @@
  * clears the ADC registers and performs a self-test on each BME
  * checks the digital filter of each BME
  *-----------------------------------------------------------------------------*/
- void BMESelfTest(){
+ void BMESelfTest(void){
   int i;
   
   for(i=0;i<BMENum;i++){           //sets flags to false
@@ -66,7 +66,7 @@
  * Gets the measured data
  * Collects voltage, flag and temperature readings of the BME's.
  *-----------------------------------------------------------------------------*/
- void getBMEData(){
+ void getBMEData(void){
   int i;
    
   for(i=0;i<BMENum;i++){ 
