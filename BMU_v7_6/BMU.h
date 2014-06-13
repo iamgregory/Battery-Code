@@ -143,7 +143,7 @@ typedef struct  {
   boolean volSelfCheck;
   boolean AuxSelfCheck;
   boolean StatSelfCheck;
-  int DCC;                  // 3 bit registry for something
+  int DCC;                  // 3 bit registry, each bit is a flag for balancing a corresponding virtual layer
   byte GPIO;                //5 Auxiliary GPIO ports
 } BMEdata;                   //BME data struct 
 

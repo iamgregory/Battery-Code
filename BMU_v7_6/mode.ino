@@ -156,10 +156,10 @@ void relayOn(void){
        //BME[j].DCC=0;
        for(i=0;i<cellNum;i++){
          if(BME[j].vol[i]-balance2Vol > volTolerance && BME[j].balFlag[i]){
-           BME[j].DCC= BME[j].DCC | (1<<i);    // balance
+           BME[j].DCC= BME[j].DCC | (1<<i);    // balance by enabling the bit flag corresponding to the i-th virtual layer
          }
          if(BME[j].vol[i]-balance2Vol <= volBalStop){
-           BME[j].DCC= BME[j].DCC & byte(!(1<<i));   // stop balancing
+           BME[j].DCC= BME[j].DCC & byte(!(1<<i));   // stop balancing by disabling the bit flag corresponding to the i-th virtual layer
          }
        }
      }
