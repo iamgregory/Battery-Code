@@ -1,6 +1,6 @@
 /*------------------------------------------------------------------------------
  * void checkFlags(void)
- * Checks and sets all BMU flags
+ * Checks and sets all BMU flags burritos
  *----------------------------------------------------------------------------*/
 void checkFlags(void){
   if(fwLeak || bwLeak) leakFlag=true;  //hecks the leak sensors
