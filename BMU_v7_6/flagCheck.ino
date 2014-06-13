@@ -1,5 +1,5 @@
 /*------------------------------------------------------------------------------
- * void flagCheck(void)
+ * void checkFlags(void)
  * Checks and sets all BMU flags
  *----------------------------------------------------------------------------*/
 void checkFlags(void){
@@ -16,8 +16,8 @@ void checkFlags(void){
 }
 
 /*------------------------------------------------------------------------------
- * void currentCheck(void)
- * checks the current sensor reading
+ * void timeoutCheck()
+ * ??????????
  *----------------------------------------------------------------------------*/
  void timeoutCheck(){
    timeoutFlag=false;      //Charging or balance time > 10 hours
@@ -58,7 +58,7 @@ void checkFlags(void){
  * void bmeCommCheck(void)
  * checks the communication of all BME's
  *----------------------------------------------------------------------------*/
- void bmeCommCheck(){
+ void bmeCommCheck(void){
    bmeComFlag=false;  // Communication failure occurs between BMU and BME
    
    for(int j=0;j<BMENum;j++){                         // goes through all BMEs
@@ -70,7 +70,7 @@ void checkFlags(void){
  * void bmeFlagCheck(void)
  * checks the BME's self-checks flags
  *----------------------------------------------------------------------------*/
- void bmeFlagCheck(){
+ void bmeFlagCheck(void){
    bmeAlarmFlag=false; // If any cell over/under voltage failures or self-check failures are sent from BME 
    bmeComFlag=false;  // Communication failure occurs between BMU and BME
    
@@ -89,9 +89,9 @@ void checkFlags(void){
 /*------------------------------------------------------------------------------
  * void tempCheck(void)
  * temperature check on all cells, heat sinks, and chip temperatures for 
- * themperatur warnnings and themperature errors
+ * temperature warnings and temperature errors
  *----------------------------------------------------------------------------*/
-void tempCheck(){
+void tempCheck(void){
  // set flags to false before starting the temperature check
  tempAlarmFlag=false;
  tempWarnFlag=false;
@@ -147,7 +147,7 @@ void tempCheck(){
  * Checks the Voltage for all the batteries and sets a flag if it is outside 
  * the required range also checks balance recommendation
  *----------------------------------------------------------------------------*/
-void volCheck(){
+void volCheck(void){
   // set flags to false before starting the voltage check
   volHighAlarmFlag =false;      //Any VC voltage > 4.25 V 
   balRecFlag=false;             //Any VC voltage < 3.9 V
@@ -196,7 +196,7 @@ void volCheck(){
  * void setFlag(void)
  * Sets the flag
  *----------------------------------------------------------------------------*/
- void setFlag(){
+ void setFlag(void){
 //   if(leakFlag) flagBMU=flagBMU | 1;
 //   if(tempWarnFlag) flagBMU=flagBMU | (1<<1);
 //   if(tempAlarmFlag) flagBMU=flagBMU | (1<<2);
@@ -234,7 +234,7 @@ void volCheck(){
  * void setPriority(void)
  * Sets the flag
  *----------------------------------------------------------------------------*/
- void setPriority(){
+ void setPriority(void){
    
    flagPriority=0;
    

@@ -39,19 +39,19 @@
   CLRSTAT(0);          // clear all battery module status register
 
   
-  CVST(0);                // start testing voltage sensor's digatal filter
+  CVST(0);                // start testing voltage sensor's digital filter
   delayMicroseconds(BMEConDelay1);
   for(int i=0;i<BMENum;i++){ 
     RDCVST((BMEdata&) BME[i]); //check results of self test
   }
   
-  AXST(0);                // start testing auxiliary sensor's digatal filter
+  AXST(0);                // start testing auxiliary sensor's digital filter
   delayMicroseconds(BMEConDelay1);
   for(int i=0;i<BMENum;i++){ 
     RDAXSTA((BMEdata&) BME[i]);  //check results of self test
   }
   
-  STATST(0);              // start testing Status sensor's digatal filter
+  STATST(0);              // start testing Status sensor's digital filter
   delayMicroseconds(BMEConDelay2);
   DIAGN(0);
   delayMicroseconds(BMEConDelay2);
@@ -105,7 +105,7 @@
   }
 
   for(int i=0;i<BMENum;i++){
-    int2float((BMEdata&) BME[i]);
+    int2float((BMEdata&) BME[i]); // passes pointer to BME[i]
   }
   
 }

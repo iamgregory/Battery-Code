@@ -1,5 +1,5 @@
 /*------------------------------------------------------------------------------
- * void calState(void)
+ * void calStateBMU(void)
  * uses the measured data
  * to calculate the state of the battery and check errors
  *-----------------------------------------------------------------------------*/
@@ -12,7 +12,7 @@
  }
  
  /*------------------------------------------------------------------------------
- * void calState(void)
+ * void calStateBME(void)
  * uses the measured data
  * to calculate the state of the battery and check errors
  *-----------------------------------------------------------------------------*/
@@ -26,7 +26,7 @@
  }
  
  /*------------------------------------------------------------------------------
- * void rateCal(void)
+ *  float rateCal(float value, float valueLast)
  * takes in the current and last data point
  * returns the rate
  *-----------------------------------------------------------------------------*/
@@ -97,7 +97,7 @@
  
  /*------------------------------------------------------------------------------
  * void volSumCal(void)
- * returns the sums all the vertual cell voltages
+ * returns the sums all the virtual cell voltages
  *----------------------------------------------------------------------------*/
  void volSumCal(void){
    int i,j;

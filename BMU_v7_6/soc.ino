@@ -26,7 +26,7 @@ void initalizeSoc(){
 //  Serial.println(SOC);
 }
 /*------------------------------------------------------------------------------
- * void findVol(void)
+ * int findIntSoc(int lVol
  * Finds the SOC given inital voltage
  *----------------------------------------------------------------------------*/
 int findIntSoc(int lVol){

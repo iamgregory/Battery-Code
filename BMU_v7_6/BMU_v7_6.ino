@@ -9,9 +9,9 @@ created 10/3/2013
  */
 
 //included libraries:
-  #include <SPI.h>           //use SPI to communicate to BMEs
+  #include <SPI.h>           //use Serial Peripheral Interface (SPI) to communicate to BMEs, included in arduino environment
   //#include <SD.h>
-  #include <Ethernet.h>      //use Ethernet to communicate to BMC
+  #include <Ethernet.h>      //use Ethernet to communicate to BMC, included in arduino environment
   #include "BMU.h"           //all BMU variables
   
   

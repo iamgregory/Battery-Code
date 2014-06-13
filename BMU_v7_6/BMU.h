@@ -9,15 +9,15 @@
   #define tempVCAlarm 60    //virtual cell temperature limit for temperature error 
   #define tempTiAlarm 75    // BME LTC chip temperature limit for temperature error 
   #define tempHSAlarm 120   //heat sink temperature limit for temperature error
-  #define tempVCWarn 40    //vertual cell temperature limit for temperature warnning 
-  #define tempTiWarn 65    //BME LTC chip temperature limit for temperature warnning
-  #define tempHSWarn 110   //heat sink temperature limit for temperature warnning
+  #define tempVCWarn 40    //virtual cell temperature limit for temperature warning 
+  #define tempTiWarn 65    //BME LTC chip temperature limit for temperature warning
+  #define tempHSWarn 110   //heat sink temperature limit for temperature warning
   
-  #define volHighAlarm 4.205//4.25   //high vertual cell voltage limit for voltage error 
+  #define volHighAlarm 4.205//4.25   //high virtual cell voltage limit for voltage error 
   #define volLowBalAlarm 3.7   // the voltage at whitch the system will not go in to balancing mode
-  #define balRecLimit 3.9
-  #define volLowWarn 3.2       //low vertual cell voltage limit for voltage warning
-  #define volLowAlarm 3.0      //low vertual cell voltage limit for voltage error 
+  #define balRecLimit 3.9      // minimum voltage limit for recommending balancing
+  #define volLowWarn 3.2       //low virtual cell voltage limit for voltage warning
+  #define volLowAlarm 3.0      //low virtual cell voltage limit for voltage error 
   #define deadBatAlarm 2.5   // the voltage at whitch the system will not go in to charge mode
   #define volMismatch 5.0       //voltage mismatch limit between calculated and measured total voltage 
   #define volModMismatch 0.05   //voltage mismatch limit between calculated and measured total voltage 
@@ -61,8 +61,8 @@
 // debugging variables
   boolean uartPrint=true;    // print for debugging
   String inputString="";
-  boolean Rtest=false;
-  int disNum=0;
+  boolean Rtest=false;      // flag for enabling discharge test
+  int disNum=0;             // counter used step through the BMEnum BMEs during discharge test
 
 
  // loop timing variables
@@ -100,17 +100,17 @@ boolean fwLeak =0;         // front leak sensor
 boolean bwLeak =0;         // back leak sensor
 
 // BMU calculated Variables
-float cap=435;
-const float capMax=435;
-float volSum=0.0;
-float SOC=50;
-float maxTemp=0;
-float minVol=7.0;
-float maxVol=0.0;
-float balance2Vol=7.0;
-int conOnTime=0;
+float cap=435;            // battery capacity in Amp hours
+const float capMax=435;  
+float volSum=0.0;          // calculated sum of all virtual cells
+float SOC=50;             // percent 0-100 state of charge
+float maxTemp=0;          //  max temperature of all virtual cells
+float minVol=7.0;        //  minimum voltage of virtual cells?
+float maxVol=0.0;          // maximum voltage of virtual cells?
+float balance2Vol=7.0;    // voltage to balance to
+int conOnTime=0;          // counter to enable contactor
 
-// BME communication PAC check table
+// BME communication PEC (packet error code) check table
 int pec15Table[256];
 int CRC15poly=0x4599;
 int selfCheckVal1=0x9555;
@@ -119,13 +119,13 @@ int selfCheckVal2=0x6AAA;
 // BME varibles
 typedef struct  {
   byte addr;             //BME address
-  int vol[cellNum];      // 
-  int vSum;
-  int vref2;
-  int temp[4];
-  int iTemp;
-  float modSum;
-  float fVol[cellNum]; 
+  int vol[cellNum];      // array of virtual cell voltages
+  int vSum;              //measured  BME voltage
+  int vref2;              
+  int temp[4];           // temperature of: 0-2 = virtual cells, 3 =heatsink
+  int iTemp;              // internal temperature of BME LTC84 chip
+  float modSum;            //calculated BME voltage (sum of layers)
+  float fVol[cellNum];    //float versions of everything
   float fVSum;
   float fVref2; 
   float fTemp[4];
@@ -143,12 +143,12 @@ typedef struct  {
   boolean volSelfCheck;
   boolean AuxSelfCheck;
   boolean StatSelfCheck;
-  int DCC;                  //
+  int DCC;                  // 3 bit registry for something
   byte GPIO;                //5 Auxiliary GPIO ports
 } BMEdata;                   //BME data struct 
 
 BMEdata BME[BMENum];
-boolean DCP=false;     //Dischrge premitted
+boolean DCP=false;     //Discharge premitted
 
 //BMU modes flags
 boolean stopOn=true;

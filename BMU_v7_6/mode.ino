@@ -89,8 +89,8 @@
  }
  
 /*------------------------------------------------------------------------------
- * void chargeMode(void)
- * puts system into Charge mode
+ * void relayOn(void))
+ * puts the relay on?
  *----------------------------------------------------------------------------*/
 void relayOn(void){
   digitalWrite(relay1, HIGH);
@@ -170,18 +170,22 @@ void relayOn(void){
  }
  
  /*------------------------------------------------------------------------------
- * void dicharge(void)
- * dicharges all the virtual cells of a battery
+ *  void dischargeTest(void)
+ * discharges all the virtual cells of a battery
  *----------------------------------------------------------------------------*/
  
  void dischargeTest(void){
    int j=0;
    int ronTime=2;
 //      int ronTime=loopCount%2;
-   for(j=0;j<BMENum;j++){
-      BME[j].DCC= 0;
+   for(j=0;j<BMENum;j++){           // for all BMEs
+      BME[j].DCC= 0;                // set the 3 bit DCC registry to "000" 
    }
-   if ((disNum/ronTime)<(14*ronTime)) BME[(disNum/ronTime)].DCC= 7;
-   disNum++;
+   if ((disNum/ronTime)<BMENum){ // if disNum/ronTime is a valid index
+     BME[(disNum/ronTime)].DCC= 7;  // set 3 bit DCC registry to "111" 
+                                   //BME[i].DCC is set twice because integer division is floored
+     disNum++;
+   }
+   
  }
  
