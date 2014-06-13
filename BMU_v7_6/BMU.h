@@ -133,13 +133,13 @@ typedef struct  {
   boolean ignoreVol[cellNum];
   boolean ignoreVSum;
   boolean ignoreVref;
-  boolean ignoreT[4]; 
+  boolean ignoreT[4];
   boolean ignoreiT;
   boolean uFlag[cellNum];
   boolean oFlag[cellNum];
   boolean balFlag[cellNum];
   boolean muxCheck;
-  boolean dataCheck;  // 1= corrupted data, 0 = uncorrupted data
+  boolean dataCheck;
   boolean volSelfCheck;
   boolean AuxSelfCheck;
   boolean StatSelfCheck;
@@ -160,6 +160,8 @@ boolean stopUntil=false;
 //BMU flags
 unsigned int flagBMU=0;         //all the BMU flags up to 32 flags
 unsigned int flagOverride=0;         //the flags that the BMC wants to override
+boolean flagIgnoreVol=false;
+boolean flagIgnoreTemp=false;
 byte flagPriority=0;             //the Priority of the active flag under the current mode
 
 boolean leakFlag =false;         //Leak in front or back of battery bottle

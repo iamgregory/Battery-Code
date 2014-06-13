@@ -103,11 +103,13 @@ void tempCheck(void){
      for (int i=0;i<cellNum;i++){                   // goes through all vartual cells in a BME
        if(!BME[j].ignoreT[i]){
          if(BME[j].fTemp[i] <=-42 || BME[j].fTemp[i]== 'nan'){  //check and set temperature sensor failure flag
-           tempFailFlag= true;  
+           if(flagIgnoreTemp) BME[j].ignoreT[i]=true;
+           else tempFailFlag= true;
          }
          else if(BME[j].fTemp[i] >= tempVCWarn){           // check vertual cell temperature for temperature warning
            if(BME[j].fTemp[i] >= tempVCAlarm){        // check vertual cell temperature for temperature error
-             tempAlarmFlag=true;                          // set temperature alarm flag
+             if(flagIgnoreTemp) BME[j].ignoreT[i]=true;
+             else tempAlarmFlag=true;                          // set temperature alarm flag
            }
            else {
              tempWarnFlag=true;                             // set temperature warnning flag
@@ -117,11 +119,13 @@ void tempCheck(void){
      }
      if(!BME[j].ignoreT[3]){
        if( BME[j].fiTemp <=-42 || BME[j].fTemp[3]== 'nan' ){ //check and set temperature sensor failure flag
-         tempFailFlag= true; 
+         if(flagIgnoreTemp) BME[j].ignoreT[i]=true;
+         else tempFailFlag= true; 
        } 
        else if( BME[j].fTemp[3] >= tempHSWarn){        // check heat sink and chip temperature for temperature warning
          if(BME[j].fTemp[3] >= tempHSAlarm){    // check heat sink and chip temperature for temperature warning
-             tempAlarmFlag=true;                          // set temperature alarm flag
+             if(flagIgnoreTemp) BME[j].ignoreT[i]=true;
+             else tempAlarmFlag=true;                          // set temperature alarm flag
          }
          else{
            tempWarnFlag=true;                             // set temperature warnning flag
@@ -131,7 +135,8 @@ void tempCheck(void){
      if(!BME[j].ignoreiT){
        if(BME[j].fiTemp >= tempTiWarn){
          if(BME[j].fiTemp >= tempTiAlarm){
-            tempAlarmFlag=true;                          // set temperature alarm flag
+            if(flagIgnoreTemp) BME[j].ignoreT[i]=true;
+             else tempAlarmFlag=true;                          // set temperature alarm flag
          }
          else{
            tempWarnFlag=true;                             // set temperature warnning flag

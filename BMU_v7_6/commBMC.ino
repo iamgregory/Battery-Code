@@ -83,55 +83,25 @@ void getCommand(String input){
     int sVal=input.indexOf("_");
     int eVal=input.indexOf("_",sVal+1);
     String overrideString=input.substring(sVal+1,eVal);
-    flagOverride=overrideString.toInt();
-    if(uartPrint)Serial.println(flagOverride,HEX);
-    overrideCount=0;
+    int flagNum=overrideString.toInt();
+    if(flagNum>0 && flagNum<23){
+      unsigned long flagOverTempo = 1<<(flagNum-1);
+      flagOverride=flagOverride | flagOverTempo;
+      if(uartPrint)Serial.println(flagOverride,HEX);
+      overrideCount=0;
+    }
   }
   
   else if(input.indexOf("ign") >=0)//checks for hdata
   {
-    if(uartPrint)Serial.println("Ignore");
-    if(input.indexOf("pre") >=0){
-      flagBMU=~(~flagBMU | (1<<6));
-      ignorePres=true;
+    
+    if(input.indexOf("vol") >=0){
+      flagBMU=~(~flagBMU | (0x1FC0));
+      flagIgnoreVol=true;
     }
-    else if(input.indexOf("vmi") >=0){
-      flagBMU=~(~flagBMU | (1<<13));
-      ignoreVall=true;
-    }
-    else{
-      int sVal=input.indexOf("_");
-      int eVal=input.indexOf("_",sVal+1);
-      String ignoreBMEString=input.substring(sVal+1,eVal);
-      int j = ignoreBMEString.toInt();
-      if(input.indexOf("vol") >=0){
-        flagBMU=~(~flagBMU | (0x1FC0));
-        sVal=input.indexOf("_",eVal+1);
-        int eVal=input.indexOf("_",sVal+1);
-        String ignoreBMEString=input.substring(sVal+1,eVal);
-        int i = ignoreBMEString.toInt();
-        if (j>0 && j<BMUNum && i>0 && i<cellNum) BME[j-1].ignoreVol[i-1]=true;
-      }
-      else if(input.indexOf("tem") >=0){
-        flagBMU=~(~flagBMU | (0xE));
-        sVal=input.indexOf("_",eVal+1);
-        int eVal=input.indexOf("_",sVal+1);
-        String ignoreBMEString=input.substring(sVal+1,eVal);
-        int i = ignoreBMEString.toInt();
-        if (j>0 && j<BMUNum && i>0 && i<4) BME[j].ignoreT[i]=true;
-      }
-      else if(input.indexOf("ite") >=0){
-        flagBMU=~(~flagBMU | (0xE));
-        if (j>0 && j<BMUNum) BME[j].ignoreiT=true;
-      }
-      else if(input.indexOf("vre") >=0){
-        flagBMU=~(~flagBMU | (1<<12));
-        if (j>0 && j<BMUNum) BME[j].ignoreVref=true;
-      }
-      else if(input.indexOf("vsu") >=0){
-        flagBMU=~(~flagBMU | (1<<13));
-        if (j>0 && j<BMUNum) BME[j].ignoreVSum=true;
-      }
+    else if(input.indexOf("tem") >=0){
+      flagBMU=~(~flagBMU | (0xE));
+      flagIgnoreTemp=true;
     }
     overrideCount=0;
   }
