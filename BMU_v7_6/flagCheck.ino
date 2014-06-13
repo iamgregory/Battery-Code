@@ -168,7 +168,8 @@ void volCheck(void){
   for(int j=0;j<BMENum;j++){                // goes through all BMEs
    if(!BME[j].dataCheck){                   // check if BME is communicating
      if ( !BME[j].ignoreVref && (BME[j].fVref2 > 3.020 || BME[j].fVref2 < 2.978)){
-       volFailFlag = true;             // set voltage failure flag
+       if(flagIgnoreVol) BME[j].ignoreT[i]=true;
+       else volFailFlag = true;             // set voltage failure flag
      } 
      if(!BME[j].ignoreVSum && abs(BME[j].modSum-BME[j].fVSum)>=volModMismatch) volMisFlag =true; 
    }
