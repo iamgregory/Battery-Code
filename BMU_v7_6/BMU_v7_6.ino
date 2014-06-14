@@ -1,6 +1,10 @@
 /*
 created 10/3/2013
+<<<<<<< HEAD
  modified 4/8/2014333333333333355
+=======
+ modified 6/16/2014
+>>>>>>> Nima-Ghods
  by Nima Ghods
  
  BMU code made to communicate with the BME's 
