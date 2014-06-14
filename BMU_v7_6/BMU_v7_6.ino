@@ -29,8 +29,6 @@ created 10/3/2013
     
     if(loopCount%bmeSelfTestTime==0)  BMESelfTest();    // run self check on all BMEs runs once every 5 min
     
-    if(Rtest)  dischargeTest();   // for testing discharge
-    
     if(balanceOn) balanceCal(); // if balancing mode is on, then calculate which cells need to be balanced
     
     getBMEData();               // gets data from all BMEs 

@@ -18,7 +18,7 @@ void BMCcomm()
         BMCcommad += c; //store characters to string 
       }    
     }
-    if(BMCcommad.indexOf("cle") >=0 || BMCcommad.indexOf("res") >=0) {
+    if(BMCcommad.indexOf("cle") >=0) {
       clearFlags();            //clear flags
     }
     sendData((EthernetClient&) client);
@@ -36,16 +36,38 @@ void BMCcomm()
  *----------------------------------------------------------------------------*/
 void getCommand(String input){
   
-  
-  if(input.indexOf("sto") >=0 || input.indexOf("cle") >=0)//checks for Stop
+  if(input.indexOf("sto") >=0)//checks for stop
   {
     stopMode();
   }
   
-  else if(input.indexOf("dri") >=0)//checks for start
+  else if(input.indexOf("dri") >=0)//checks for drive
   {
     driveMode();
   }
+  
+  else if(input.indexOf("ove") >=0)//checks for override
+  {
+    if(uartPrint)Serial.println("Override");
+    int sVal=input.indexOf("_");
+    int eVal=input.indexOf("_",sVal+1);
+    String overrideString=input.substring(sVal+1,eVal);
+    int flagNum=overrideString.toInt();
+    if(flagNum>0 && flagNum<23){
+      unsigned long flagOverTempo = 1<<(flagNum-1);
+      flagOverride=flagOverride | flagOverTempo;
+      if(uartPrint)Serial.println(flagOverride,HEX);
+      overrideCount=0;
+    }
+  }
+  
+  else if(input.indexOf("ign") >=0)//checks for ignore
+  { 
+    flagBMU=~(~flagBMU | (0xE));
+    flagOverride=~(~flagOverride | (0xE));
+    flagIgnoreTemp=true;
+  }
+  
   
   else if(input.indexOf("cha") >=0)//checks for Charge
   {
@@ -73,87 +95,6 @@ void getCommand(String input){
         if(uartPrint)Serial.println("bad bal2vol!");
         volLowBalAlarmFlag = true;
       }
-    }
-  }
-  
-  else if(input.indexOf("ove") >=0)//checks for hdata
-  {
-    if(uartPrint)Serial.println("Override");
-    int sVal=input.indexOf("_");
-    int eVal=input.indexOf("_",sVal+1);
-    String overrideString=input.substring(sVal+1,eVal);
-    int flagNum=overrideString.toInt();
-    if(flagNum>0 && flagNum<23){
-      unsigned long flagOverTempo = 1<<(flagNum-1);
-      flagOverride=flagOverride | flagOverTempo;
-      if(uartPrint)Serial.println(flagOverride,HEX);
-      overrideCount=0;
-    }
-  }
-  else if(input.indexOf("ign") >=0)//checks for hdata
-  { 
-//    if(input.indexOf("vol") >=0){
-//      flagBMU=~(~flagBMU | (0x1FC0));
-//      flagIgnoreVol=true;
-//    }
-//    else if(input.indexOf("tem") >=0){
-    flagBMU=~(~flagBMU | (0xE));
-    flagOverride=~(~flagOverride | (0xE));
-    flagIgnoreTemp=true;
-  }
-  
-  else if(input.indexOf("pri") >=0){
-    int sVal=input.indexOf(" ");
-    if(sVal>0){
-      int eVal=input.indexOf(" ",sVal+1);
-      String ignoreBMEString=input.substring(sVal+1,eVal);
-      int i = ignoreBMEString.toInt();
-      if(i>0 && i<15)testBME((BMEdata&)BME[i-1]);
-      else testBMU();
-    }
-    else{
-      testBMU();
-      for(int i=0;i<14;i++){
-        testBME((BMEdata&)BME[i]);
-  //        printOutBME((BMEdata&)BME[i]);
-      }
-    }
-  }
-  
-  else if(input.indexOf("fon") >=0){
-        fanOn=true; 
-        if(uartPrint)Serial.println("Fan On ");
-
-  }
-  else if(input.indexOf("fof") >=0){
-        fanOn=false; 
-        if(uartPrint)Serial.println("Fan Off ");
-
-  }
-  else if(input.indexOf("don") >=0) {
-    Rtest=true;
-    disNum=0;
-    if(uartPrint)Serial.println("Resistors On ");
-  }
-  else if(input.indexOf("dof") >=0) {
-    stopBal();
-    Rtest=false;
-    if(uartPrint)Serial.println("Resistors Off ");
-  }
-  else if(input.indexOf("help") >=0) {
-    if(uartPrint){
-      Serial.println("stop");
-      Serial.println("drive");
-      Serial.println("charge");
-      Serial.println("balance_bal2int_");
-      Serial.println("override_overflagInt_");
-      Serial.println("ignore");
-      Serial.println("clear or reset");
-      Serial.println("print_x_ to read data from x bme");
-      Serial.println("fon to turn fan on");
-      Serial.println("fof to turn fan off");
-      Serial.println("don to turn resistors on");
-      Serial.println("dof to turn resistors off");
     }
   }
 }
