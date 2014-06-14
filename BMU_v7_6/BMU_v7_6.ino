@@ -27,13 +27,13 @@ created 10/3/2013
                                        // returned in 1 microsecond resolution
     loopCount=loopCount%countLimit+1;  // counts the number of loops up to countLimit
     
-    measCalAllstates();              // Measures and calculates all states of half string
+    measCalAllstates();                // Measures and calculates all states of half string
     
-    checkFlags();               //checks and sets flags and set priority
+    checkFlags();                     //checks and sets flags and set priority
     
     if(loopCount%bmcComTime==0)  BMCcomm();         //send and receive information through ethernet to BMC  every 1 sec
 
-    priorityMode();             //sets contactors according to the mode and flags
+    priorityMode();                   //sets contactors according to the mode and flags
     
 //    if (BMCcommdt< micros()-timeStamp) BMCcommdt= micros()-timeStamp;
     timeCheck();                //tries to keep loop time roughly constant

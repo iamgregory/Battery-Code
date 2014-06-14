@@ -25,7 +25,7 @@
      default:
        break;
    }
-   if(balanceOn) balanceCal(); // if balancing mode is on, then calculate which cells need to be balanced
+   if(balanceOn) balanceCal(); // if balancing mode is on, then calculate which cells need to be discarged
    
    // delete for final version ===> 
    if(minVol<2.760){

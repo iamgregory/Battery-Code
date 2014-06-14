@@ -69,15 +69,15 @@
  long dloopTime=0;         //actual loop time in usec
  long BMCcommdt=0;          // the time between bmc communications
  int loopCount=0;            // counts the number of loops up to the count Limit
- int countLimit=1500;          //1500 at 5Hz is 5min
- const int bmeSelfTestTime=1499;
- const int bmcComTime=5;
+ const int countLimit=1500;          //1500 at 5Hz is 5min
+ const int bmeSelfTestTime=1500;    // set the self test to be done every 5 min
+ const int bmcComTime=5;            // set the bmc communication to be done every 1 second (1Hz)
  
 // Arduino due pins in use 
   const int tVolInPin = A2;  // Analog input pin for the total voltage
   const int presIn1Pin = A1;  // Analog pressure sensor pin
-  const int curInPin = A4;  // Analog current sensor
-  const int cur0InPin=A7;
+  const int curInPin = A4;  // Analog current sensor pin
+  const int cur0InPin=A7;   // current sencor referance pin
   const int relay1 = 47;   // negative side relay or relay 1 pin
   const int relay2 = 49;   // positive side relay or realy 2 pin 
   const int frontWPin = 22;  //front water leak sensor
