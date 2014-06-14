@@ -63,7 +63,6 @@
   String inputString="";
   
  // loop timing variables
- const unsigned long maxULong =4294967295;
  const long controlTime=200000;  // loop time in uSec  .2 s loops ==> 5Hz
  const float dt=controlTime/1000000.0;  // control time in sec
  long timeStamp=0;          // used to keep track of the loop time

@@ -4,6 +4,7 @@
  *----------------------------------------------------------------------------*/
  
  void priorityMode(void){
+   
    switch(flagPriority){
      case 1:
        stopMode();
@@ -24,11 +25,15 @@
      default:
        break;
    }
+   if(balanceOn) balanceCal(); // if balancing mode is on, then calculate which cells need to be balanced
+   
+   // delete for final version ===> 
    if(minVol<2.760){
      stopMode();
      stopUntil=true;
-     Serial.println("voltage too low for testing ==> Stop!");
-   }
+     if(uartPrint) Serial.println("voltage too low for testing ==> Stop!");
+   } 
+   //<===
  }
  
  /*------------------------------------------------------------------------------
