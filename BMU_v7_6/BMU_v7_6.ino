@@ -27,13 +27,7 @@ created 10/3/2013
                                        // returned in 1 microsecond resolution
     loopCount=loopCount%countLimit+1;  // counts the number of loops up to countLimit
     
-    if(loopCount%bmeSelfTestTime==0)  BMESelfTest();    // run self check on all BMEs runs once every 5 min
-    
-    getBMEData();               // gets data from all BMEs 
-    calStateBME();              // calculates state of BME's
- 
-    getBMUData();               //gets data for the half-string
-    calStateBMU();              // calculates the state of the half-string
+    measCalAllstates();              // Measures and calculates all states of half string
     
     checkFlags();               //checks and sets flags and set priority
     
