@@ -6,13 +6,14 @@
  void timeCheck(void){
    unsigned long currentTimeStamp;
    do{
-     currentTimeStamp=micros();
-    dloopTime= currentTimeStamp-timeStamp;          // microseconds since "void Loop" began
-    if(timeStamp> currentTimeStamp){                // check if a rollover has occured
-      dloopTime= dloopTime - maxULong;              // correct for rollover
+    currentTimeStamp=micros();
+    if(timeStamp > currentTimeStamp){                // check if a rollover has occured
+      dloopTime= ~(timeStamp - currentTimeStamp)+1;              // correct for rollover
     }
-    if (dloopTime>(controlTime+50)){                // for debugging purposes??
-      Serial.println(dloopTime);
+    else dloopTime = currentTimeStamp-timeStamp;          // microseconds since "void Loop" began
+    
+    if (dloopTime>(controlTime+50)){                // for debugging purposes
+      if(uartPrint)Serial.println(dloopTime);
     }
    
    }while(dloopTime < controlTime);                 // kill time till next "void Loop" should execute

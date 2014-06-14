@@ -29,15 +29,13 @@ created 10/3/2013
     
     if(loopCount%bmeSelfTestTime==0)  BMESelfTest();    // run self check on all BMEs runs once every 5 min
     
-    if(balanceOn) balanceCal(); // if balancing mode is on, then calculate which cells need to be balanced
-    
     getBMEData();               // gets data from all BMEs 
     calStateBME();              // calculates state of BME's
  
     getBMUData();               //gets data for the half-string
     calStateBMU();              // calculates the state of the half-string
     
-    checkFlags();               //checks and sets flags
+    checkFlags();               //checks and sets flags and set priority
     
     if(loopCount%bmcComTime==0)  BMCcomm();         //send and receive information through ethernet to BMC  every 1 sec
 
