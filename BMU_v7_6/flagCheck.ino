@@ -51,7 +51,7 @@ void checkFlags(void){
    presFlag =false;      // Pressure < 1.5 PSI or Pressure  > 2.5 PSI
    
    if(presRate>=presRateHigh) presRateFlag= true;
-   if(!ignorePres && (pressure>=presLowLimit || pressure>=presLowLimit)) presFlag= true;
+   if((pressure>=presLowLimit) || (pressure>=presLowLimit)) presFlag= true;
  }
 
 /*------------------------------------------------------------------------------
@@ -112,30 +112,32 @@ void tempCheck(void){
              else tempAlarmFlag=true;                          // set temperature alarm flag
            }
            else {
-             tempWarnFlag=true;                             // set temperature warnning flag
+             if(flagIgnoreTemp) BME[j].ignoreT[i]=true;
+             else tempWarnFlag=true;                             // set temperature warnning flag
            }
          }
        }
      }
      if(!BME[j].ignoreT[3]){
        if( BME[j].fiTemp <=-42 || BME[j].fTemp[3]== 'nan' ){ //check and set temperature sensor failure flag
-         if(flagIgnoreTemp) BME[j].ignoreT[i]=true;
+         if(flagIgnoreTemp) BME[j].ignoreT[3]=true;
          else tempFailFlag= true; 
        } 
        else if( BME[j].fTemp[3] >= tempHSWarn){        // check heat sink and chip temperature for temperature warning
          if(BME[j].fTemp[3] >= tempHSAlarm){    // check heat sink and chip temperature for temperature warning
-             if(flagIgnoreTemp) BME[j].ignoreT[i]=true;
+             if(flagIgnoreTemp) BME[j].ignoreT[3]=true;
              else tempAlarmFlag=true;                          // set temperature alarm flag
          }
          else{
-           tempWarnFlag=true;                             // set temperature warnning flag
+           if(flagIgnoreTemp) BME[j].ignoreT[3]=true;
+           else tempWarnFlag=true;                             // set temperature warnning flag
          }
        }
      }
      if(!BME[j].ignoreiT){
        if(BME[j].fiTemp >= tempTiWarn){
          if(BME[j].fiTemp >= tempTiAlarm){
-            if(flagIgnoreTemp) BME[j].ignoreT[i]=true;
+            if(flagIgnoreTemp) BME[j].ignoreiT=true;
              else tempAlarmFlag=true;                          // set temperature alarm flag
          }
          else{
@@ -167,14 +169,13 @@ void volCheck(void){
   
   for(int j=0;j<BMENum;j++){                // goes through all BMEs
    if(!BME[j].dataCheck){                   // check if BME is communicating
-     if ( !BME[j].ignoreVref && (BME[j].fVref2 > 3.020 || BME[j].fVref2 < 2.978)){
-       if(flagIgnoreVol) BME[j].ignoreT[i]=true;
-       else volFailFlag = true;             // set voltage failure flag
+     if ( (BME[j].fVref2 > 3.020) || (BME[j].fVref2 < 2.978)){
+       volFailFlag = true;             // set voltage failure flag
      } 
-     if(!BME[j].ignoreVSum && abs(BME[j].modSum-BME[j].fVSum)>=volModMismatch) volMisFlag =true; 
+     if(abs(BME[j].modSum-BME[j].fVSum)>=volModMismatch) volMisFlag =true; 
    }
   }
-  if(!ignoreVall && abs(totalVoltage-volSum)>=volMismatch) volMisFlag =true;
+  if(abs(totalVoltage-volSum)>=volMismatch) volMisFlag =true;
   if(maxVol >= 6.5 ){     // check vertual cell voltage sensor for failure 
        volFailFlag = true;             // set voltage failure flag
   } 
@@ -276,15 +277,8 @@ void volCheck(void){
    stopUntil=false; 
    flagOverride=0;
    overrideCount=0;
-   ignoreVall=false;
-   ignorePres=false;
    for(int j;j<BMENum;j++){                // goes through all BMEs
-     BME[j].ignoreVSum=false;
-     BME[j].ignoreVref=false;
      BME[j].ignoreiT=false;
-     for (int i=0;i<cellNum;i++){
-       BME[j].ignoreVol[i]=false;
-     }
      for (int i=0;i<4;i++){
        BME[j].ignoreT[i]=false;
      }

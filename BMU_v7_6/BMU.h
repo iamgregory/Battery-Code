@@ -130,9 +130,6 @@ typedef struct  {
   float fVref2; 
   float fTemp[4];
   float fiTemp;
-  boolean ignoreVol[cellNum];
-  boolean ignoreVSum;
-  boolean ignoreVref;
   boolean ignoreT[4];
   boolean ignoreiT;
   boolean uFlag[cellNum];
@@ -160,7 +157,6 @@ boolean stopUntil=false;
 //BMU flags
 unsigned int flagBMU=0;         //all the BMU flags up to 32 flags
 unsigned int flagOverride=0;         //the flags that the BMC wants to override
-boolean flagIgnoreVol=false;
 boolean flagIgnoreTemp=false;
 byte flagPriority=0;             //the Priority of the active flag under the current mode
 
@@ -196,8 +192,6 @@ boolean balDoneFlag =false;      // balancing done flag
 boolean balRecFlag =false;       // balancing recommended flag
 
 boolean fanOn=false;
-boolean ignoreVall=false;
-boolean ignorePres=false;
 unsigned long overrideCount=0;
 unsigned long timeoutCount=0;
 

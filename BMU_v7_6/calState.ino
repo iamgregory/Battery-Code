@@ -48,7 +48,7 @@
    for(j=0;j<BMENum;j++){
      if(!BME[j].dataCheck){
        for(i=0;i<cellNum;i++){
-         if(BME[j].fVol[i] < _mVol && !BME[j].ignoreVol[i]){
+         if(BME[j].fVol[i] < _mVol){
            _mVol=BME[j].fVol[i];
          }
        }
@@ -67,7 +67,7 @@
    for(j=0;j<BMENum;j++){
      if(!BME[j].dataCheck){
        for(i=0;i<cellNum;i++){
-         if(BME[j].fVol[i] > _mVol && !BME[j].ignoreVol[i]){
+         if(BME[j].fVol[i] > _mVol){
            _mVol=BME[j].fVol[i];
          }
        }
