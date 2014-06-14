@@ -61,10 +61,7 @@
 // debugging variables
   boolean uartPrint=true;    // print for debugging
   String inputString="";
-  boolean Rtest=false;      // flag for enabling discharge test
-  int disNum=0;             // counter used step through the BMEnum BMEs during discharge test
-
-
+  
  // loop timing variables
  const unsigned long maxULong =4294967295;
  const long controlTime=200000;  // loop time in uSec  .2 s loops ==> 5Hz
