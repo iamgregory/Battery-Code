@@ -18,9 +18,8 @@ void BMCcomm()
         BMCcommad += c; //store characters to string 
       }    
     }
-    if(BMCcommad.indexOf("cle") >=0) {
+    if(BMCcommad.indexOf("cle") >=0 || BMCcommad.indexOf("res") >=0) {
       clearFlags();            //clear flags
-      BMCcommad="sto";
     }
     sendData((EthernetClient&) client);
 //    if(uartPrint)Serial.println(BMCcommad);
@@ -38,7 +37,7 @@ void BMCcomm()
 void getCommand(String input){
   
   
-  if(input.indexOf("sto") >=0)//checks for Stop
+  if(input.indexOf("sto") >=0 || input.indexOf("cle") >=0)//checks for Stop
   {
     stopMode();
   }
@@ -91,19 +90,16 @@ void getCommand(String input){
       overrideCount=0;
     }
   }
-  
   else if(input.indexOf("ign") >=0)//checks for hdata
-  {
-    
-    if(input.indexOf("vol") >=0){
-      flagBMU=~(~flagBMU | (0x1FC0));
-      flagIgnoreVol=true;
-    }
-    else if(input.indexOf("tem") >=0){
-      flagBMU=~(~flagBMU | (0xE));
-      flagIgnoreTemp=true;
-    }
-    overrideCount=0;
+  { 
+//    if(input.indexOf("vol") >=0){
+//      flagBMU=~(~flagBMU | (0x1FC0));
+//      flagIgnoreVol=true;
+//    }
+//    else if(input.indexOf("tem") >=0){
+    flagBMU=~(~flagBMU | (0xE));
+    flagOverride=~(~flagOverride | (0xE));
+    flagIgnoreTemp=true;
   }
   
   else if(input.indexOf("pri") >=0){
@@ -134,10 +130,6 @@ void getCommand(String input){
         if(uartPrint)Serial.println("Fan Off ");
 
   }
-  else if(input.indexOf("cle") >=0) {
-    clearFlags();            //clear flags
-    stopMode();
-  }
   else if(input.indexOf("don") >=0) {
     Rtest=true;
     disNum=0;
@@ -155,9 +147,9 @@ void getCommand(String input){
       Serial.println("charge");
       Serial.println("balance_bal2int_");
       Serial.println("override_overflagInt_");
-      Serial.println("ignoreSentype_bmeNum_cellnum_");
-      Serial.println("clear");
-      Serial.println("print to read data");
+      Serial.println("ignore");
+      Serial.println("clear or reset");
+      Serial.println("print_x_ to read data from x bme");
       Serial.println("fon to turn fan on");
       Serial.println("fof to turn fan off");
       Serial.println("don to turn resistors on");
@@ -230,47 +222,6 @@ void sendData(EthernetClient& _Client){
     _Client.print(',');
     _Client.print(BME[j].iTemp,HEX);
 //    _Client.print(22000,HEX);
-  }
-  _Client.print('\n');
-}
-
-/*------------------------------------------------------------------------------
- * void sendHeader(void)
- * sand flag, number of BMEs, and variables names out to a client
- *----------------------------------------------------------------------------*/
-void sendHeader(EthernetClient& _Client){
-  int i,j;
-  _Client.print("Flag,dt,BMUNum,SOC,Total_V,Current,minV,maxV,maxT,pressure,ratePressure");
-  for(j=1;j<=BMENum;j++){
-    for(i=1;i<=cellNum;i++){
-      _Client.print(",B");
-      _Client.print(j);
-      _Client.print("V");
-      _Client.print(i);
-    }
-  }
-  for(j=0;j<BMENum;j++){
-    _Client.print(",B");
-    _Client.print(j);
-    _Client.print("Vsum");
-  }
-  for(j=0;j<BMENum;j++){
-    _Client.print(",B");
-    _Client.print(j);
-    _Client.print("Vref2");
-  }
-  for(j=1;j<=BMENum;j++){
-    for(i=1;i<=4;i++){
-      _Client.print(",B");
-      _Client.print(j);
-      _Client.print("T");
-      _Client.print(i);
-    }
-  }
-  for(j=1;j<=BMENum;j++){
-    _Client.print(",B");
-    _Client.print(j);
-    _Client.print("TI");
   }
   _Client.print('\n');
 }
