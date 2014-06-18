@@ -34,7 +34,7 @@ created 10/3/2013
     if(loopCount%bmcComTime==0)  BMCcomm();         //send and receive information through ethernet to BMC  every 1 sec
 
     priorityMode();                   //sets contactors according to the mode and flags
-    
+    Serial.println(totalVoltage);
 //    if (BMCcommdt< micros()-timeStamp) BMCcommdt= micros()-timeStamp;
     timeCheck();                //tries to keep loop time roughly constant
   }
