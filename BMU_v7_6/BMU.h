@@ -40,7 +40,7 @@
 
 //BMU ADC conversion constants
   #define curConst 0.08587        //80/V*3.3V/4095*4.01ohm/3.01ohm  sensor resulution*adc resulution*voltage divider
-  #define volConst 0.043041      //(174ohm+3.32ohm)/3.32ohm*3.3V/4095
+  #define volConst 0.04852  //.0439    //(174Kohm+10Kohm)/10Kohm*(10kohm+5.1kohm)/5.1kohm*3.3V/4095
   #define presConst 0.0061034   //1 kpa/5V/0.018*4.7ohm/3.2ohm*3.3V/4095*0.14503 gpsi/kpa
   #define presOffset 0.0058016     //0.04 kpa 0.14503 gpsi/kpa
   #define capConst 0.0000555556    //0.2 sec==>.000055556 hours
@@ -74,7 +74,7 @@
  const int bmcComTime=5;            // set the bmc communication to be done every 1 second (1Hz)
  
 // Arduino due pins in use 
-  const int tVolInPin = A2;  // Analog input pin for the total voltage
+  const int tVolInPin = A3;  // Analog input pin for the total voltage
   const int presIn1Pin = A1;  // Analog pressure sensor pin
   const int curInPin = A4;  // Analog current sensor pin
   const int cur0InPin=A7;   // current sencor referance pin
