@@ -53,7 +53,7 @@ def setData(_sqlComm,bmuData):
 
 def getCommand(_sqlComm,n):
   """ gets BMU ii command from mysql database """
-  query="SELECT arduino_command.values FROM arduino_command where bmu=%d ORDER BY id DESC LIMIT 1" %(n+1)
+  query="SELECT arduino_command%d.values FROM arduino_command%d ORDER BY id DESC LIMIT 1" %((n+1),(n+1))
   try:
     _sqlComm[1].execute(query)
     result = _sqlComm[1].fetchone()
@@ -125,14 +125,14 @@ def getData(_s,ii):
     condition=1
     reply=""
     while condition:
-		try:
-			c= _s.recv(1000)
-			reply+=c
-			if '\n' in c or c=="":
-				condition=0
-		except:
-			comms[ii]=0
-			condition=0
+      try:
+	c= _s.recv(1000)
+	reply+=c
+	if '\n' in c or c=="":
+	  condition=0
+      except:
+	comms[ii]=0
+	condition=0
     return reply
     
 def parseData(v):
@@ -149,26 +149,25 @@ def parseData(v):
     value[1]=value[1]/1000000
     #convert cell voltage
     for i in range(startInx,startInx+BMEnum*3):
-        value[i]=value[i]*0.0001
+      value[i]=value[i]*0.0001
     #convert module voltage
     for i in range(startInx+BMEnum*3,startInx+BMEnum*4):
-        value[i]=value[i]*0.002
+      value[i]=value[i]*0.002
     #convert referenc 2 voltage
     for i in range(startInx+BMEnum*4,startInx+BMEnum*5):
-        value[i]=value[i]*0.0001
+      value[i]=value[i]*0.0001
     #convert auxiliary temperature
     Binv= .00023866  # 1/ B-value where B-value is 4190 K
     T0inv= 0.003354  # 1/T_0 where T_0 is 298.15 K
     for i in range(startInx+BMEnum*5,startInx+BMEnum*9):
-        value[i]=value[i]*0.0001
-        VINidx=((i-startInx-BMEnum*5)%4)+startInx+BMEnum*4
-        if value[i]<=0 or value[i]>=value[VINidx]:
-            value[i]=-42
-        else:
-            value[i]=value[i]/(value[VINidx]-value[i])
-            value[i]=T0inv + Binv*math.log(value[i])
-            value[i]=1.0/value[i]-273
-            
+      value[i]=value[i]*0.0001
+      VINidx=((i-startInx-BMEnum*5)%4)+startInx+BMEnum*4
+      if value[i]<=0 or value[i]>=value[VINidx]:
+	value[i]=-42
+      else:
+	value[i]=value[i]/(value[VINidx]-value[i])
+	value[i]=T0inv + Binv*math.log(value[i])
+	value[i]=1.0/value[i]-273
     #convert internal chip temperature
     for i in range(startInx+BMEnum*9,startInx+BMEnum*10):
         value[i]=value[i]/75-273

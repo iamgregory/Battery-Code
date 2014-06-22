@@ -21,50 +21,56 @@ def connect2Charger(ii):
     if debug: print "not connected to charger #%d" % (ii+1) 
 
 def setupCharger(ii):
-        #~ os.system("bash ChargerCon.sh|telnet")
-        #~ sendCommand(chargerComm[ii],"*CLS \n")
-        #~ time.sleep(waitTime)
-        sendCommand(chargerComm[ii],"*IDN? \n")
-        time.sleep(waitTime)
-        reply=getData(chargerComm[ii],ii+4)
-        #~ print comms[6]
-        #~ print "this is " + str(len(reply))
-        comms[ii+4]=sendCommand(chargerComm[ii],"outp:stat 1\n")
-        time.sleep(waitTime)
-        comms[ii+4]=sendCommand(chargerComm[ii],"sour:volt:prot 365\n")
-        time.sleep(waitTime)
-        comms[ii+4]=sendCommand(chargerComm[ii],"sour:volt " +str(maxVol)+'\n')
-        #~ time.sleep(waitTime)
-        #~ comms[ii+4]=sendCommand(chargerComm[0],"sour:curr 2\n")
-        #~ print comms[6]
-        if  len(reply)<3:comms[ii+4]=0
-        pidControl[ii].setPoint(volGoal)
-        pidControl[ii].setDerivator(volGoal-max(chargeVol[2*ii],chargeVol[2*ii+1]))
-        
+    #~ os.system("bash ChargerCon.sh|telnet")
+    #~ sendCommand(chargerComm[ii],"*CLS \n")
+    #~ time.sleep(waitTime)
+    sendCommand(chargerComm[ii],"*IDN? \n")
+    time.sleep(waitTime)
+    reply=getData(chargerComm[ii],ii+4)
+    #~ print comms[6]
+    #~ print "this is " + str(len(reply))
+    comms[ii+4]=sendCommand(chargerComm[ii],"outp:stat 1\n")
+    time.sleep(waitTime)
+    comms[ii+4]=sendCommand(chargerComm[ii],"sour:volt:prot 365\n")
+    time.sleep(waitTime)
+    comms[ii+4]=sendCommand(chargerComm[ii],"sour:volt " +str(maxVol)+'\n')
+    #~ time.sleep(waitTime)
+    #~ comms[ii+4]=sendCommand(chargerComm[0],"sour:curr 2\n")
+    #~ print comms[6]
+    if  len(reply)<3:comms[ii+4]=0
+    pidControl[ii].setPoint(volGoal)
+    pidControl[ii].setDerivator(volGoal-max(chargeVol[2*ii],chargeVol[2*ii+1]))
+    
 def setChargeCur(ii):
-        comms[ii+4]=sendCommand(chargerComm[ii],"meas:curr? \n")
-        time.sleep(waitTime)
-        #~ print comms[4]
-        reply=getData(chargerComm[ii],ii+4)
-        #~ print reply
-        topCell = max(chargeVol[2*ii],chargeVol[2*ii+1])
-        #~ if topCell>cvStart : cur=cMax+slop*(topCell-cvStart)
-        #~ else : cur=cMax
-        cur=2+pidControl[ii].update(topCell)
-        #~ print [cur, round(volGoal-topCell,4), float(reply.strip())] 
-        cur=round(max(min(cur,cMax),0),2)
-        #~ if (abs(volGoal-topCell)<0.01 and cur<2.25) or chargeDone[ii]:
-			#~ cur=0.0
-			#~ chargerComm[ii].close()
-			#~ comms[ii+4]=0
-			#~ chargeDone[ii]=1
-        #~ print [cur, round(volGoal-topCell,4), float(reply.strip()), round(pidControl[ii].getIntegrator(),3)] 
-        #~ print "sour:curr " +str(cur)+'\n'
-        comms[ii+4]=sendCommand(chargerComm[ii],"sour:curr " +str(cur)+'\n')
-        if  len(reply)<2: comms[ii+4]=0
-        print comms[4]
-        return cur
+    comms[ii+4]=sendCommand(chargerComm[ii],"meas:curr? \n")
+    time.sleep(waitTime)
+    #~ print comms[4]
+    reply=getData(chargerComm[ii],ii+4)
+    #~ print reply
+    topCell = max(chargeVol[2*ii],chargeVol[2*ii+1])
+    #~ if topCell>cvStart : cur=cMax+slop*(topCell-cvStart)
+    #~ else : cur=cMax
+    cur=2+pidControl[ii].update(topCell)
+    #~ print [cur, round(volGoal-topCell,4), float(reply.strip())] 
+    cur=round(max(min(cur,cMax),0),2)
+    #~ if (abs(volGoal-topCell)<0.01 and cur<2.25) or chargeDone[ii]:
+      #~ cur=0.0
+      #~ chargerComm[ii].close()
+      #~ comms[ii+4]=0
+      #~ chargeDone[ii]=1
+    #~ print [cur, round(volGoal-topCell,4), float(reply.strip()), round(pidControl[ii].getIntegrator(),3)] 
+    #~ print "sour:curr " +str(cur)+'\n'
+    comms[ii+4]=sendCommand(chargerComm[ii],"sour:curr " +str(cur)+'\n')
+    if  len(reply)<2: comms[ii+4]=0
+    print comms[4]
+    return cur
 
+def endCharge(ii):
+  comms[ii+4]=sendCommand(chargerComm[ii],"outp:stat 0\n")
+  time.sleep(waitTime)
+  comms[ii+4]=sendCommand(chargerComm[ii],"sour:volt 0\n")
+  time.sleep(waitTime)
+  comms[ii+4]=sendCommand(chargerComm[ii],"sour:curr 0\n")
 
 if __name__ == '__main__':  
   
@@ -89,26 +95,26 @@ if __name__ == '__main__':
           #~ if debug: print reply
           #~ if debug: print reply[2]
         else:
-			if debug: print "Lost communicaion to BMU %d" %(ii+1)
+	  if debug: print "Lost communicaion to BMU %d" %(ii+1)
       for ii in range(0,1):
         if 'cha' in BMUcommand[2*ii]:
-			#~ print comms[6]
-			#~ BMUcommand[ii]="charge_40000_"
-			if comms[ii+4]==0:
-					#~ print comms[6]
-					os.system("bash ChargerCon.sh|telnet")
-					#~ time.sleep(1)
-					connect2Charger(ii)
-					#~ setupCharger(ii)
-					#~ os.system("bash ChargerCon.sh|telnet")
-					#~ time.sleep(1)
-					#~ connect2Charger(ii)
-					if comms[ii+4]==1:setupCharger(ii)
-			else :
-				commandTemp=BMUcommand[2*ii].split('_')
-				#~ volGoal=3.9
-				if volGoal!=float(commandTemp[1])/10000:
-					volGoal=float(commandTemp[1])/10000
-					pidControl[ii].setPoint(volGoal)
-					if debug: print volGoal
-				setChargeCur(ii)
+	  #~ print comms[6]
+	  #~ BMUcommand[ii]="charge_40000_"
+	  if comms[ii+4]==0:
+	    #~ print comms[6]
+	    os.system("bash ChargerCon.sh|telnet")
+	    #~ time.sleep(1)
+	    connect2Charger(ii)
+	    #~ setupCharger(ii)
+	    #~ os.system("bash ChargerCon.sh|telnet")
+	    #~ time.sleep(1)
+	    #~ connect2Charger(ii)
+	    if comms[ii+4]==1:setupCharger(ii)
+	  else :
+	    commandTemp=BMUcommand[2*ii].split('_')
+	    #~ volGoal=3.9
+	    if volGoal!=float(commandTemp[1])/10000:
+	      volGoal=float(commandTemp[1])/10000
+	      pidControl[ii].setPoint(volGoal)
+	      if debug: print volGoal
+	    setChargeCur(ii)
