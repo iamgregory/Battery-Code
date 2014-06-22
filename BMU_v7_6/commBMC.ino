@@ -111,7 +111,7 @@ void sendData(EthernetClient& _Client){
   
   _Client.print(flagBMU,HEX);
   _Client.print(',');
-  _Client.print(BMCcommdt);
+  _Client.print(flagPriority);
   _Client.print(',');
   _Client.print(BMUNum+1);
   _Client.print(',');
