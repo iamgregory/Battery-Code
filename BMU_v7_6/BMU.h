@@ -13,7 +13,7 @@
   #define tempTiWarn 65    //BME LTC chip temperature limit for temperature warning
   #define tempHSWarn 110   //heat sink temperature limit for temperature warning
   
-  #define volHighAlarm 4.205//4.25   //high virtual cell voltage limit for voltage error 
+  #define volHighAlarm 4.205  //high virtual cell voltage limit for voltage error 
   #define volLowBalAlarm 3.7   // the voltage at whitch the system will not go in to balancing mode
   #define balRecLimit 3.9      // minimum voltage limit for recommending balancing
   #define volLowWarn 3.2       //low virtual cell voltage limit for voltage warning
@@ -30,6 +30,7 @@
   #define highInCur 92.0      //high current in limit during Charging 
   #define highOutCur -2.0      //current out limit during Charging
   #define inOutCur 1.0          // current in or out limit durring stop and balance
+  #define doneCur 4.45         //the current at which the charging is called done
   
   #define balRecVol 0.050       // voltage difference at which balancing will be recommended 
   #define volTolerance 0.01   // the max voltage difference that the vertual cells will have at the end of balancing 
@@ -104,6 +105,8 @@ float maxTemp=0;          //  max temperature of all virtual cells
 float minVol=7.0;        //  minimum voltage of virtual cells?
 float maxVol=0.0;          // maximum voltage of virtual cells?
 float balance2Vol=7.0;    // voltage to balance to
+float charge2Vol=3.0;      //voltage to charge to
+String BMCcommad="";      //The command from BMC
 int conOnTime=0;          // counter to enable contactor
 
 // BME communication PEC (packet error code) check table

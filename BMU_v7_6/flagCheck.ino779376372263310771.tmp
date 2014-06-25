@@ -181,7 +181,6 @@ void volCheck(void){
   } 
   else if((maxVol >= volHighAlarm) | (chargeOn && maxVol>=(charge2Vol+0.01))){  // check vertual cell voltage for high voltage flag
     volHighAlarmFlag  = true;          // set high voltage error flag
-    if(uartPrint) Serial.println(maxVol,4);
   }  
   
   

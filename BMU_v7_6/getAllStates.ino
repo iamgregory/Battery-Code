@@ -4,7 +4,7 @@
  * Measures and calculates all states of half string
  *-----------------------------------------------------------------------------*/
  void measCalAllstates(void){
-  if(loopCount%bmeSelfTestTime==0)  BMESelfTest();    // run self check on all BMEs runs once every 5 min
+//  if(loopCount%bmeSelfTestTime==0)  BMESelfTest();    // run self check on all BMEs runs once every 5 min
     
   getBMEData();               // gets data from all BMEs 
   calStateBME();              // calculates state of BME's

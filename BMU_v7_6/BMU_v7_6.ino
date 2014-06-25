@@ -17,7 +17,7 @@ created 10/3/2013
   
   void setup() {   
     pinInital();    // configure arduino due pins
-    Serial.println("\n \t\t BMU 7.4\n");    // print the code version
+    Serial.println("\n \t\t BMU 7.6\n");    // print the code version
     Serial.println("Enter Command (help for a list of commands)");
   }
   
@@ -32,9 +32,9 @@ created 10/3/2013
     checkFlags();                     //checks and sets flags and set priority
     
     if(loopCount%bmcComTime==0)  BMCcomm();         //send and receive information through ethernet to BMC  every 1 sec
-
-    priorityMode();                   //sets contactors according to the mode and flags
-    Serial.println(totalVoltage);
+    
+    checkMode(BMCcommad);
+    
 //    if (BMCcommdt< micros()-timeStamp) BMCcommdt= micros()-timeStamp;
     timeCheck();                //tries to keep loop time roughly constant
   }
