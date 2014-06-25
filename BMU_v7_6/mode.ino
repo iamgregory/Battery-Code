@@ -60,7 +60,6 @@ void checkMode(String input){
       int bal2int=bal2string.toInt();
       float temp = bal2int*0.0001;
       if(temp>=volLowBalAlarm){
-        if(uartPrint)Serial.println("Balance");
         balance2Vol=temp;
         balanceMode();
       }
@@ -159,8 +158,8 @@ void checkMode(String input){
  void chargeMode(void){
    if(!stopUntil){
     if(!chargeOn){
-      if(uartPrint) Serial.print("Charge to");
-      if(uartPrint) Serial.println(charge2Vol);
+      if(uartPrint) Serial.print("Charge to: ");
+      if(uartPrint) Serial.println(charge2Vol,4);
       stopBal();
       driveOn=false;
       stopOn=false;
@@ -197,7 +196,8 @@ void relayOn(void){
    digitalWrite(relay1, LOW);
    digitalWrite(relay2, LOW);
    if(!stopUntil){
-    if(uartPrint) Serial.println(balance2Vol);
+    if(uartPrint)Serial.println("Balance to: ");
+    if(uartPrint) Serial.println(balance2Vol,4);
     if (balance2Vol < minVol) balance2Vol=minVol;
     for(int j=0;j<BMENum;j++){
      if(!BME[j].dataCheck){
