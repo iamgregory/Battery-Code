@@ -51,7 +51,7 @@ void checkFlags(void){
    presFlag =false;      // Pressure < 1.5 PSI or Pressure  > 2.5 PSI
    
    if(presRate>=presRateHigh) presRateFlag= true;
-   if((pressure>=presLowLimit) || (pressure>=presLowLimit)) presFlag= true;
+   if((pressure>=presHighLimit) || (pressure<=presLowLimit)) presFlag= true;
  }
 
 /*------------------------------------------------------------------------------

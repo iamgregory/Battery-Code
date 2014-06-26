@@ -31,9 +31,11 @@ created 10/3/2013
     
     checkFlags();                     //checks and sets flags and set priority
     
-    if(loopCount%bmcComTime==0)  BMCcomm();         //send and receive information through ethernet to BMC  every 1 sec
+    BMCcomm();         //send and receive information through ethernet to BMC every 1 sec
     
     checkMode(BMCcommad);
+    
+    setContactors();
     
 //    if (BMCcommdt< micros()-timeStamp) BMCcommdt= micros()-timeStamp;
     timeCheck();                //tries to keep loop time roughly constant
