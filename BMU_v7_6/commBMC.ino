@@ -7,27 +7,28 @@
 
 void BMCcomm()
 {
-  BMCcommad="";//clearing string for next read
-  bmcComFlag=true;
- // listen for incoming clients
-  EthernetClient client = server.available();
-  if (client) {
-    while (client.available()) {
-      char c = client.read();
-      if (BMCcommad.length() < 50) {
-        BMCcommad += c; //store characters to string 
-      }    
+  if(loopCount%bmcComTime==0){      //execute once a sec
+    BMCcommad="";//clearing string for next read
+    bmcComFlag=true;
+   // listen for incoming clients
+    EthernetClient client = server.available();
+    if (client) {
+      while (client.available()) {
+        char c = client.read();
+        if (BMCcommad.length() < 50) {
+          BMCcommad += c; //store characters to string 
+        }    
+      }
+      if(BMCcommad.indexOf("cle") >=0) {
+        clearFlags();            //clear flags
+      }
+      sendData((EthernetClient&) client);
+      BMCcommdt=0;
+      bmcComFlag=false;
+      //  if(!bmcComFlag) Serial.println("Not Communicating to BMC");
     }
-    if(BMCcommad.indexOf("cle") >=0) {
-      clearFlags();            //clear flags
-    }
-    sendData((EthernetClient&) client);
-//    if(uartPrint)
-    Serial.println(BMCcommad);
-    BMCcommdt=0;
-    bmcComFlag=false;
   }
-//  if(!bmcComFlag) Serial.println("Not Communicating to BMC");
+
 }
 
 

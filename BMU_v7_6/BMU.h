@@ -83,6 +83,10 @@
   const int relay2 = 49;   // positive side relay or realy 2 pin 
   const int frontWPin = 22;  //front water leak sensor
   const int backWPin = 23;    // back water leak sensor
+// BMU varibles
+String BMCcommad="";      //The command from BMC
+int conOnTime=0;          // counter to enable contactor
+boolean contactorsOn=false;
 
 // BMU measurement Variables
 float totalVoltage =0;        // total half-string voltage read from ADC
@@ -106,8 +110,7 @@ float minVol=7.0;        //  minimum voltage of virtual cells?
 float maxVol=0.0;          // maximum voltage of virtual cells?
 float balance2Vol=7.0;    // voltage to balance to
 float charge2Vol=3.0;      //voltage to charge to
-String BMCcommad="";      //The command from BMC
-int conOnTime=0;          // counter to enable contactor
+
 
 // BME communication PEC (packet error code) check table
 int pec15Table[256];

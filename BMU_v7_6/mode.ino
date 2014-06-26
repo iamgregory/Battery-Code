@@ -49,11 +49,9 @@ void checkMode(String input){
   
   else if(input.indexOf("bal") >=0)//checks for Balance
   {
-    digitalWrite(relay1, LOW);
-    digitalWrite(relay2, LOW);
-    
+    contactorsOn=false;
     if (!balanceOn){
-      
+      Serial.print(BMCcommad);
       int sVal=input.indexOf("_");
       int eVal=input.indexOf("_",sVal+1);
       String bal2string=input.substring(sVal+1,eVal);
@@ -117,11 +115,9 @@ void checkMode(String input){
  * puts system into Stop mode
  *----------------------------------------------------------------------------*/
  void stopMode(void){
-   
-    digitalWrite(relay1, LOW);
-    digitalWrite(relay2, LOW);
-    
+    contactorsOn=false;
     if(!stopOn){
+      if(uartPrint) Serial.print(BMCcommad);
       if(uartPrint) Serial.println("Stop");
       stopBal();
       chargeOn=false;
@@ -147,7 +143,7 @@ void checkMode(String input){
       conOnTime=0;
       BMESelfTest();
     }
-    relayOn();
+    contactorsOn=true;
    }
  }
  
@@ -170,31 +166,20 @@ void checkMode(String input){
       chargeDoneFalg=false;
       BMESelfTest();
     }
-    relayOn();
-   }
-   if(abs(charge2Vol-maxVol)<.01 && current<=doneCur){
-     chargeDoneFalg=true;
+    contactorsOn=true;
+    if( charge2Vol <= maxVol && current<=doneCur){
+      chargeDoneFalg=true;
+    }
    }
  }
  
-/*------------------------------------------------------------------------------
- * void relayOn(void))
- * puts the relay on?
- *----------------------------------------------------------------------------*/
-void relayOn(void){
-  digitalWrite(relay1, HIGH);
-  if(conOnTime<1) conOnTime++;
-  else digitalWrite(relay2, HIGH);
 
-}
 
  /*------------------------------------------------------------------------------
  * void balanceMode(void)
  * puts system into Balance mode
  *----------------------------------------------------------------------------*/
  void balanceMode(void){
-   digitalWrite(relay1, LOW);
-   digitalWrite(relay2, LOW);
    if(!stopUntil){
     if(uartPrint)Serial.println("Balance to: ");
     if(uartPrint) Serial.println(balance2Vol,4);
