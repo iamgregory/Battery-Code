@@ -36,7 +36,7 @@
   #define volTolerance 0.01   // the max voltage difference that the vertual cells will have at the end of balancing 
   #define volBalStop -0.006   // voltage difference that the battery will stop balancing
   
-  #define timeoutLimit 180000     //a timeout limit of 5*36000 sec==>10 hours for charging and balanceing 
+  #define timeoutLimit 180000     //a timeout limit of 10 hours/looptime==>180000 for charging and balanceing 
   #define overrideTLimit 310        // a time limit for priority flag of 2 or 3 5*62==>62sec
 
 //BMU ADC conversion constants
@@ -154,7 +154,7 @@ boolean stopOn=true;
 boolean driveOn=false;
 boolean chargeOn=false;
 boolean balanceOn=false;
-boolean stopUntil=false;
+boolean stopUntil=false;      // true until the oprator has acknoladged the software stop
 
 //BMU flags
 unsigned int flagBMU=0;         //all the BMU flags up to 32 flags
