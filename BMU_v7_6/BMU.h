@@ -108,7 +108,9 @@ float SOC=50;             // percent 0-100 state of charge
 float maxTemp=0;          //  max temperature of all virtual cells
 float minVol=7.0;        //  minimum voltage of virtual cells?
 float maxVol=0.0;          // maximum voltage of virtual cells?
-float balance2Vol=7.0;    // voltage to balance to
+float balance2Vol=4.2;    // voltage to balance to
+float balanceMax=4.2;
+int balDoneCount=0;
 float charge2Vol=3.0;      //voltage to charge to
 
 
@@ -137,6 +139,7 @@ typedef struct  {
   boolean uFlag[cellNum];
   boolean oFlag[cellNum];
   boolean balFlag[cellNum];
+  boolean balTempCon;
   boolean muxCheck;
   boolean dataCheck;
   boolean volSelfCheck;
