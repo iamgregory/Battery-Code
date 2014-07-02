@@ -33,7 +33,7 @@
   #define doneCur 4.45         //the current at which the charging is called done
   
   #define balRecVol 0.050       // voltage difference at which balancing will be recommended 
-  #define volTolerance 0.01   // the max voltage difference that the vertual cells will have at the end of balancing 
+  #define volTolerance 0.005   // the max voltage difference that the vertual cells will have at the end of balancing 
   #define volBalStop -0.006   // voltage difference that the battery will stop balancing
   
   #define timeoutLimit 180000     //a timeout limit of 10 hours/looptime==>180000 for charging and balanceing 
