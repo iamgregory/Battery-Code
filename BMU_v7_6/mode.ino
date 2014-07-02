@@ -49,24 +49,26 @@ void checkMode(String input){
   
   else if(input.indexOf("bal") >=0)//checks for Balance
   {
-    contactorsOn=false;
-    if (!balanceOn){
-      Serial.print(BMCcommad);
-      int sVal=input.indexOf("_");
-      int eVal=input.indexOf("_",sVal+1);
-      String bal2string=input.substring(sVal+1,eVal);
-      int bal2int=bal2string.toInt();
-      float temp = bal2int*0.0001;
-      if(temp>=volLowBalAlarm){
-        balance2Vol=temp;
-        balanceMode();
+    if(!stopUntil){
+      contactorsOn=false;
+      if (!balanceOn){
+        Serial.print(BMCcommad);
+        int sVal=input.indexOf("_");
+        int eVal=input.indexOf("_",sVal+1);
+        String bal2string=input.substring(sVal+1,eVal);
+        int bal2int=bal2string.toInt();
+        float tempo = bal2int*0.0001;
+        if(tempo>=volLowBalAlarm){
+          balance2Vol=tempo;
+          balanceMode();
+        }
+        else{
+          if(uartPrint)Serial.println("bad bal2vol!");
+          volLowBalAlarmFlag = true;
+        }
       }
-      else{
-        if(uartPrint)Serial.println("bad bal2vol!");
-        volLowBalAlarmFlag = true;
-      }
+      balanceCal(); // if balancing mode is on, then calculate which cells need to be discarged
     }
-    balanceCal(); // if balancing mode is on, then calculate which cells need to be discarged
   }
   
   priorityMode();                   //sets contactors according to the mode and flags
@@ -180,10 +182,11 @@ void checkMode(String input){
  * puts system into Balance mode
  *----------------------------------------------------------------------------*/
  void balanceMode(void){
-   if(!stopUntil){
-    if(uartPrint)Serial.println("Balance to: ");
-    if(uartPrint) Serial.println(balance2Vol,4);
-//    if (balance2Vol < minVol) balance2Vol=minVol;
+    if(uartPrint){
+      Serial.println("Balance to: ");
+      Serial.println(balance2Vol,4);
+    }
+    balanceMax=maxVol;
     for(int j=0;j<BMENum;j++){
      if(!BME[j].dataCheck){
        for(int i=0;i<cellNum;i++){
@@ -196,16 +199,14 @@ void checkMode(String input){
        }
      }
     }
-    if(!balanceOn){
-      driveOn=false;
-      stopOn=false;
-      chargeOn=false;
-      balanceOn=true;
-      overrideCount=0;
-      timeoutCount=0;
-      BMESelfTest();
-    }
-   }
+    BMESelfTest();
+    driveOn=false;
+    stopOn=false;
+    chargeOn=false;
+    balanceOn=true;
+    overrideCount=0;
+    timeoutCount=0;
+    balDoneFlag=false;
  }
  
  /*------------------------------------------------------------------------------
@@ -232,14 +233,17 @@ void checkMode(String input){
  *----------------------------------------------------------------------------*/
  void balanceCal(void){
    int i,j;
+   boolean balOn=false;
+   balTempControl();
    for(j=0;j<BMENum;j++){
      if(!BME[j].dataCheck){
        //BME[j].DCC=0;
        for(i=0;i<cellNum;i++){
          if(BME[j].fVol[i]-balance2Vol > volTolerance && BME[j].balFlag[i]){
            BME[j].DCC= BME[j].DCC | (1<<(2-i));    // balance by enabling the bit flag corresponding to the i-th virtual layer
+           balOn=true;
          }
-         if(BME[j].fVol[i]-balance2Vol <= volBalStop){
+         if(BME[j].fVol[i]-balance2Vol <= volBalStop || BME[j].balTempCon){
            BME[j].DCC= BME[j].DCC & byte(!(1<<(2-i)));   // stop balancing by disabling the bit flag corresponding to the i-th virtual layer
          }
        }
@@ -248,4 +252,36 @@ void checkMode(String input){
        BME[j].DCC=0;
      }
    }
+   if(balOn) balDoneCount=0;
+   else{
+     balDoneCount++;
+     if(balDoneCount>=25) balDoneFlag=true;
+   }
  }
+ 
+ /*------------------------------------------------------------------------------
+ * void balTempControl(void)
+ * temperature check on all cells, heat sinks, and chip temperatures for 
+ * temperature warnings and temperature errors
+ *----------------------------------------------------------------------------*/
+void balTempControl(void){
+ 
+ for(int j=0;j<BMENum;j++){                         // goes through all BMEs
+   if(!BME[j].dataCheck){       // check if BME is communicating
+     BME[j].balTempCon=false;
+     for (int i=0;i<cellNum;i++){                   // goes through all vartual cells in a BME
+       if(!BME[j].ignoreT[i] && BME[j].fTemp[i] >= tempVCWarn-5){
+         BME[j].balTempCon=true;
+       }
+     }
+     if(!BME[j].ignoreT[3] && BME[j].fTemp[3] >= tempHSWarn-5){ 
+       BME[j].balTempCon=true;
+     }
+     if(!BME[j].ignoreiT && BME[j].fiTemp >= tempTiWarn-5){
+       BME[j].balTempCon=true;
+     }
+   }
+ } 
+}
+
+

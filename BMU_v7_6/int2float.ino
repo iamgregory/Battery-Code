@@ -7,6 +7,7 @@
    _BME.fVSum=_BME.vSum*0.002;
    _BME.fVref2=_BME.vref2*0.0001;
    tint2float((BMEdata&) _BME);
+   if(balanceOn) maxOutVol((BMEdata&) _BME);
  }
 
 /*------------------------------------------------------------------------------
@@ -38,3 +39,14 @@ void vint2float(int* vint, float* vfloat, int n)
     vfloat[i]=vint[i]*0.0001;
   }
 }
+
+/*------------------------------------------------------------------------------
+ * void maxOutVol((BMEdata&) _BME)
+ * takes voltage from int to float
+ *----------------------------------------------------------------------------*/
+void maxOutVol(BMEdata& _BME){
+  for (int i=0;i<cellNum;i++){                   // goes through all vartual cells in a BME
+    if(_BME.fVol[i]>balanceMax) _BME.fVol[i]=balanceMax;
+  }
+}
+
