@@ -17,7 +17,7 @@ void checkFlags(void){
 
 /*------------------------------------------------------------------------------
  * void timeoutCheck()
- * ??????????
+ * time out after 10 hours of chargeing or balancing
  *----------------------------------------------------------------------------*/
  void timeoutCheck(){
    timeoutFlag=false;      //Charging or balance time > 10 hours
