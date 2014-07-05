@@ -17,7 +17,7 @@ created 10/3/2013
   
   void setup() {   
     pinInital();    // configure arduino due pins
-    Serial.println("\n \t\t BMU 7.4\n");    // print the code version
+    Serial.println("\n \t\t BMU 7.6\n");    // print the code version
     Serial.println("Enter Command (help for a list of commands)");
   }
   
@@ -27,23 +27,15 @@ created 10/3/2013
                                        // returned in 1 microsecond resolution
     loopCount=loopCount%countLimit+1;  // counts the number of loops up to countLimit
     
-    if(loopCount%bmeSelfTestTime==0)  BMESelfTest();    // run self check on all BMEs runs once every 5 min
+    measCalAllstates();                // Measures and calculates all states of half string
     
-    if(Rtest)  dischargeTest();   // for testing discharge
+    checkFlags();                     //checks and sets flags and set priority
     
-    if(balanceOn) balanceCal(); // if balancing mode is on, then calculate which cells need to be balanced
+    BMCcomm();         //send and receive information through ethernet to BMC every 1 sec
     
-    getBMEData();               // gets data from all BMEs 
-    calStateBME();              // calculates state of BME's
- 
-    getBMUData();               //gets data for the half-string
-    calStateBMU();              // calculates the state of the half-string
+    checkMode(BMCcommad);
     
-    checkFlags();               //checks and sets flags
-    
-    if(loopCount%bmcComTime==0)  BMCcomm();         //send and receive information through ethernet to BMC  every 1 sec
-
-    priorityMode();             //sets contactors according to the mode and flags
+    setContactors();
     
 //    if (BMCcommdt< micros()-timeStamp) BMCcommdt= micros()-timeStamp;
     timeCheck();                //tries to keep loop time roughly constant

@@ -19,7 +19,7 @@ void socCal(){
  *----------------------------------------------------------------------------*/
 void initalizeSoc(){
 //  Serial.println(int(minVol*1000)); 
-  SOC=findIntSoc(int(minVol*1000))/10.0;
+  SOC=findIntSoc(int(minVol*1000)+20)/10.0;
   if(SOC>100) SOC=100;
   if(SOC<0) SOC=0; 
   cap=SOC*capMax*0.01;

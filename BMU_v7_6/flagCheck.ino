@@ -17,7 +17,7 @@ void checkFlags(void){
 
 /*------------------------------------------------------------------------------
  * void timeoutCheck()
- * ??????????
+ * time out after 10 hours of chargeing or balancing
  *----------------------------------------------------------------------------*/
  void timeoutCheck(){
    timeoutFlag=false;      //Charging or balance time > 10 hours
@@ -51,7 +51,7 @@ void checkFlags(void){
    presFlag =false;      // Pressure < 1.5 PSI or Pressure  > 2.5 PSI
    
    if(presRate>=presRateHigh) presRateFlag= true;
-   if((pressure>=presLowLimit) || (pressure>=presLowLimit)) presFlag= true;
+   if((pressure>=presHighLimit) || (pressure<=presLowLimit)) presFlag= true;
  }
 
 /*------------------------------------------------------------------------------
@@ -179,10 +179,12 @@ void volCheck(void){
   if(maxVol >= 6.5 ){     // check vertual cell voltage sensor for failure 
        volFailFlag = true;             // set voltage failure flag
   } 
-  else if(maxVol >= volHighAlarm){  // check vertual cell voltage for high voltage flag
+  else if((maxVol >= volHighAlarm) | (chargeOn && maxVol>=(charge2Vol+0.01))){  // check vertual cell voltage for high voltage flag
     volHighAlarmFlag  = true;          // set high voltage error flag
+    if(uartPrint) Serial.println(maxVol,4);
   }  
- 
+  
+  
   if(minVol <= 0.0){     // check vertual cell voltage sensor for failure 
        volFailFlag = true;             // set voltage failure flag
   } 
@@ -211,7 +213,7 @@ void volCheck(void){
 //   if(presRateFlag) flagBMU=flagBMU | (1<<4);
 //   if(presFlag) flagBMU=flagBMU | (1<<5); 
    if(volHighAlarmFlag) flagBMU=flagBMU | (1<<6);
-//   if(volLowBalAlarmFlag) flagBMU=flagBMU | (1<<7);
+   if(volLowBalAlarmFlag) flagBMU=flagBMU | (1<<7);
    if(volLowWarnFlag) flagBMU=flagBMU | (1<<8);
    if(volLowAlarmFlag) flagBMU=flagBMU | (1<<9);
 //   if(deadBatAlarmFlag) flagBMU=flagBMU | (1<<10);
@@ -224,8 +226,8 @@ void volCheck(void){
 //   if(chargeCurFlag) flagBMU=flagBMU | (1<<17);
 //   if(stopCurFlag) flagBMU=flagBMU | (1<<18);
 //   if(timeoutFlag) flagBMU=flagBMU | (1<<19);
-//   if(chargeDoneFalg) flagBMU=flagBMU | (1<<20);      
-//   if(balDoneFlag) flagBMU=flagBMU | (1<<21);
+   if(chargeDoneFalg) flagBMU=flagBMU | (1<<20);      
+   if(balDoneFlag) flagBMU=flagBMU | (1<<21);
 //   if(balRecFlag) flagBMU=flagBMU | (1<<22);
    
    flagBMU= flagBMU & ~flagOverride;
@@ -277,6 +279,8 @@ void volCheck(void){
    stopUntil=false; 
    flagOverride=0;
    overrideCount=0;
+   chargeDoneFalg=false;
+   balDoneFlag=false;
    for(int j;j<BMENum;j++){                // goes through all BMEs
      BME[j].ignoreiT=false;
      for (int i=0;i<4;i++){
