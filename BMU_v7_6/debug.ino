@@ -245,6 +245,15 @@ void debugCommand(String input){
       Serial.println("dof to turn resistors off");
     }
   }
+   
+  else if(input.indexOf("drt") >=0){
+    if(uartPrint)Serial.println("Discharge Test");
+    int sVal=input.indexOf("_"); //find the first underscore
+    int eVal=input.indexOf('\n',sVal+1); //find the end of the command
+    String drtString=input.substring(sVal+1,eVal); //grab command after "drt_"
+    drtString=String("deb_1_" + drtString);
+    BMCcommand=drtString;
+  }
   //else if(some other debug mode){ BMCcommand=[debug_input]}
   //else if(some other debug mode){ BMCcommand=[debug_input]}
   //else if(some other debug mode){ BMCcommand=[debug_input]}
