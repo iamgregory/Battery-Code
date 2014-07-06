@@ -71,6 +71,34 @@ void checkMode(String input){
     }
   }
   
+  else if(input.indexOf("deb") >=0)//checks for debug test commands
+  { // debug commands look like deb_<debugmode>_<additional commands>
+    int sVal =input.indexOf("_"); // grab first underscore location
+    int eVal=input.indexOf("_",sVal+1); // grab second underscore location
+    String debugModeString=input.substring(sVal+1,eVal); //grab the debug mode as a string
+    int debugMode=debugModeString.toInt();  // store debug mode as an int
+    
+    switch (debugModue) {
+    case 1:  // discharge resistor test
+      if (sVal>0){ 
+      int sVal=input.indexOf("_",eVal+1); //find the second underscore
+      String drtModuleString=input.substring(eVal+1,sVal); //grab the requested module
+      int drtModule=drtModuleString.toInt();  // store requested module as an integer
+      eVal=input.indexOf('\n',sVal+1); //find the end of the command
+      String drtLayerString=input.substring(sVal+1,eVal); // grab the requested layer
+      int drtLayer=drtLayerString.toInt();  // store requested module as an integer
+      dischargeResistorTest(drtModule,drtLayer);
+      break;
+    case 2: //do something when var equals 2
+       //callSomeDebugCommand();
+      break;
+    default: 
+      // if nothing else matches, do the default
+      // default is optional
+    }
+    
+  }
+  
   priorityMode();                   //sets contactors according to the mode and flags
 }
 

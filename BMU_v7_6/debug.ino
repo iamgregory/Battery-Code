@@ -191,7 +191,6 @@ void testBME(BMEdata& _BME){
  *----------------------------------------------------------------------------*/
 void debugCommand(String input){
   
-  
   if(input.indexOf("pri") >=0){
     int sVal=input.indexOf(" ");
     if(sVal>0){
@@ -246,8 +245,12 @@ void debugCommand(String input){
       Serial.println("dof to turn resistors off");
     }
   }
+  //else if(some other debug mode){ BMCcommand=[debug_input]}
+  //else if(some other debug mode){ BMCcommand=[debug_input]}
+  //else if(some other debug mode){ BMCcommand=[debug_input]}
+
   else {
-    BMCcommandBMCcommand=input;
+    BMCcommand=input; //regular mode commands like charge, balance, stop, clear,
   }
     
 
