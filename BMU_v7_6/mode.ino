@@ -52,7 +52,7 @@ void checkMode(String input){
     if(!stopUntil){
       contactorsOn=false;
       if (!balanceOn){
-        Serial.print(BMCcommad);
+        Serial.print(BMCcommand);
         int sVal=input.indexOf("_");
         int eVal=input.indexOf("_",sVal+1);
         String bal2string=input.substring(sVal+1,eVal);
@@ -119,7 +119,7 @@ void checkMode(String input){
  void stopMode(void){
     contactorsOn=false;
     if(!stopOn){
-      if(uartPrint) Serial.print(BMCcommad);
+      if(uartPrint) Serial.print(BMCcommand);
       if(uartPrint) Serial.println("Stop");
       stopBal();
       chargeOn=false;
@@ -269,7 +269,7 @@ void balTempControl(void){
  for(int j=0;j<BMENum;j++){                         // goes through all BMEs
    if(!BME[j].dataCheck){       // check if BME is communicating
      BME[j].balTempCon=false;
-     for (int i=0;i<cellNum;i++){                   // goes through all vartual cells in a BME
+     for (int i=0;i<cellNum;i++){                   // goes through all virtual cells in a BME
        if(!BME[j].ignoreT[i] && BME[j].fTemp[i] >= tempVCWarn-5){
          BME[j].balTempCon=true;
        }

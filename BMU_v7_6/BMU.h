@@ -33,14 +33,14 @@
   #define doneCur 4.45         //the current at which the charging is called done
   
   #define balRecVol 0.050       // voltage difference at which balancing will be recommended 
-  #define volTolerance 0.005   // the max voltage difference that the vertual cells will have at the end of balancing 
+  #define volTolerance 0.005   // the max voltage difference that the virtual cells will have at the end of balancing 
   #define volBalStop -0.006   // voltage difference that the battery will stop balancing
   
   #define timeoutLimit 180000     //a timeout limit of 10 hours/looptime==>180000 for charging and balanceing 
   #define overrideTLimit 310        // a time limit for priority flag of 2 or 3 5*62==>62sec
 
 //BMU ADC conversion constants
-  #define curConst 0.08587        //80/V*3.3V/4095*4.01ohm/3.01ohm  sensor resulution*adc resulution*voltage divider
+  #define curConst 0.08587        //80/V*3.3V/4095*4.01ohm/3.01ohm  sensor resolution*adc resolution*voltage divider
   #define volConst 0.04852  //.0439    //(174Kohm+10Kohm)/10Kohm*(10kohm+5.1kohm)/5.1kohm*3.3V/4095
   #define presConst 0.0061034   //1 kpa/5V/0.018*4.7ohm/3.2ohm*3.3V/4095*0.14503 gpsi/kpa
   #define presOffset 0.0058016     //0.04 kpa 0.14503 gpsi/kpa
@@ -84,7 +84,7 @@
   const int frontWPin = 22;  //front water leak sensor
   const int backWPin = 23;    // back water leak sensor
 // BMU varibles
-String BMCcommad="";      //The command from BMC
+String BMCcommand="";      //The command from BMC
 int conOnTime=0;          // counter to enable contactor
 boolean contactorsOn=false;
 

@@ -247,7 +247,7 @@ void debugCommand(String input){
     }
   }
   else {
-    BMCcommad=input;
+    BMCcommandBMCcommand=input;
   }
     
 

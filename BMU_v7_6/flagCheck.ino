@@ -76,7 +76,7 @@ void checkFlags(void){
    
    for(int j=0;j<BMENum;j++){                         // goes through all BMEs
      if(!BME[j].dataCheck){                           // check if BME is communicating
-       for (int i=0;i<cellNum;i++){                   // goes through all vartual cells in a BME
+       for (int i=0;i<cellNum;i++){                   // goes through all virtual cells in a BME
          if(BME[j].uFlag[i] || BME[j].oFlag[i]) bmeAlarmFlag=true;
        }
        if(BME[j].muxCheck || BME[j].volSelfCheck || 
@@ -100,14 +100,14 @@ void tempCheck(void){
  //
  for(int j=0;j<BMENum;j++){                         // goes through all BMEs
    if(!BME[j].dataCheck){                           // check if BME is communicating
-     for (int i=0;i<cellNum;i++){                   // goes through all vartual cells in a BME
+     for (int i=0;i<cellNum;i++){                   // goes through all virtual cells in a BME
        if(!BME[j].ignoreT[i]){
          if(BME[j].fTemp[i] <=-42 || BME[j].fTemp[i]== 'nan'){  //check and set temperature sensor failure flag
            if(flagIgnoreTemp) BME[j].ignoreT[i]=true;
            else tempFailFlag= true;
          }
-         else if(BME[j].fTemp[i] >= tempVCWarn){           // check vertual cell temperature for temperature warning
-           if(BME[j].fTemp[i] >= tempVCAlarm){        // check vertual cell temperature for temperature error
+         else if(BME[j].fTemp[i] >= tempVCWarn){           // check virtual cell temperature for temperature warning
+           if(BME[j].fTemp[i] >= tempVCAlarm){        // check virtual cell temperature for temperature error
              if(flagIgnoreTemp) BME[j].ignoreT[i]=true;
              else tempAlarmFlag=true;                          // set temperature alarm flag
            }
@@ -176,22 +176,22 @@ void volCheck(void){
    }
   }
   if(abs(totalVoltage-volSum)>=volMismatch) volMisFlag =true;
-  if(maxVol >= 6.5 ){     // check vertual cell voltage sensor for failure 
+  if(maxVol >= 6.5 ){     // check virtual cell voltage sensor for failure 
        volFailFlag = true;             // set voltage failure flag
   } 
-  else if((maxVol >= volHighAlarm) | (chargeOn && maxVol>=(charge2Vol+0.01))){  // check vertual cell voltage for high voltage flag
+  else if((maxVol >= volHighAlarm) | (chargeOn && maxVol>=(charge2Vol+0.01))){  // check virtual cell voltage for high voltage flag
     volHighAlarmFlag  = true;          // set high voltage error flag
     if(uartPrint) Serial.println(maxVol,4);
   }  
   
   
-  if(minVol <= 0.0){     // check vertual cell voltage sensor for failure 
+  if(minVol <= 0.0){     // check virtual cell voltage sensor for failure 
        volFailFlag = true;             // set voltage failure flag
   } 
-  else if(minVol <= deadBatAlarm && !driveOn) deadBatAlarmFlag=true;  // check vertual cell voltage for dead batteries
-  else if(minVol <= volLowBalAlarm && !chargeOn){     // check vertual cell voltage for low voltage balancing alarm flag and not in charge mode
-    if(minVol <= volLowWarn){                      // check vertual cell voltage for low voltage warnning flag
-      if(minVol <= volLowAlarm){                    // check vertual cell voltage for low voltage error flag
+  else if(minVol <= deadBatAlarm && !driveOn) deadBatAlarmFlag=true;  // check virtual cell voltage for dead batteries
+  else if(minVol <= volLowBalAlarm && !chargeOn){     // check virtual cell voltage for low voltage balancing alarm flag and not in charge mode
+    if(minVol <= volLowWarn){                      // check virtual cell voltage for low voltage warnning flag
+      if(minVol <= volLowAlarm){                    // check virtual cell voltage for low voltage error flag
         volLowAlarmFlag = true;    // set dead battery flag
       }
       else volLowWarnFlag = true;     // set low voltage error flag
