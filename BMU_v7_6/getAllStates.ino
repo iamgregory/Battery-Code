@@ -102,7 +102,7 @@
   minVol=findMinV();                    //updates min cell voltage and total battery-string voltage
   maxVol=findMaxV();
   maxTemp=findMaxT();                  // updates the max temperature reading
-  volSumCal();                       // sums all the vertual cell voltages into modules and half-strin voltage
+  volSumCal();                       // sums all the virtual cell voltages into modules and half-strin voltage
  }
 
  /*------------------------------------------------------------------------------

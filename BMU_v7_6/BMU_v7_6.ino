@@ -33,7 +33,7 @@ created 10/3/2013
     
     BMCcomm();         //send and receive information through ethernet to BMC every 1 sec
     
-    checkMode(BMCcommad);
+    checkMode(BMCcommand);
     
     setContactors();
     

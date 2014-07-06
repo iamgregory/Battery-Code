@@ -45,7 +45,7 @@ void vint2float(int* vint, float* vfloat, int n)
  * takes voltage from int to float
  *----------------------------------------------------------------------------*/
 void maxOutVol(BMEdata& _BME){
-  for (int i=0;i<cellNum;i++){                   // goes through all vartual cells in a BME
+  for (int i=0;i<cellNum;i++){                   // goes through all virtual cells in a BME
     if(_BME.fVol[i]>balanceMax) _BME.fVol[i]=balanceMax;
   }
 }
