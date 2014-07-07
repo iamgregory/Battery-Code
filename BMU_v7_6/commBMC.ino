@@ -19,7 +19,7 @@ void BMCcomm()
           BMCcommand += c; //store characters to string 
         }    
       }
-      if(BMCcommandvirtual.indexOf("cle") >=0) {
+      if(BMCcommand.indexOf("cle") >=0) {
         clearFlags();            //clear flags
       }
       sendData((EthernetClient&) client);
