@@ -223,6 +223,7 @@ void debugCommand(String input){
   }
   else if(input.indexOf("dof") >=0) {
     stopBal();
+    BMCcommand="";
     if(uartPrint)Serial.println("Resistors Off ");
   }
   else if(input.indexOf("d1") >=0) {
@@ -291,13 +292,13 @@ void debugCommand(String input){
         BME[module-1].DCC= BME[module-1].DCC | (1<<(3-layer));    // turn on the moudle layer's resistor
         int j=0;
         for(j=0;j<cellNum;j++){           // print voltage of each cell with tab spacers "vol1 \t vol2 \tb vol3 \n"            
-          Serial.print(BME[module-1].fVol[2-j],4); // four decimal precision on voltages
+          Serial.print(BME[module-1].fVol[j],4); // four decimal precision on voltages
           Serial.print("\t");
         }
         Serial.println("");      // prints carriage return
       }
       else {  // if voltage is too low, stop the discharge resistor test
-        BME[module-1].DCC= BME[module-1].DCC & byte(!(1<<(2-i)));   // stop balancing by disabling the bit flag corresponding to the i-th virtual layer
+        BME[module-1].DCC= BME[module-1].DCC & byte(!(1<<(3-layer)));   // stop balancing by disabling the bit flag corresponding to the i-th virtual layer
         Serial.print("Voltage too low. Try another cell or recharge.");  
         BMCcommand = "stop";
       }
