@@ -287,7 +287,7 @@ void debugCommand(String input){
  
  void dischargeResistorTest(int module,int layer){
    if ((0<module<=BMENum) && (0<layer<=cellNum )){  // make sure the command isn't garbage, Layer 1-3 Module 1-14
-      BME[module-1].balFlag[layer-1])= 1;
+      BME[module-1].balFlag[layer-1]= 1;
       if(BME[module-1].fVol[layer-1] > volLowWarn) { //make sure voltage isnt too low
         BME[module-1].DCC= BME[module-1].DCC | (1<<(3-layer));    // turn on the moudle layer's resistor
         int j=0;

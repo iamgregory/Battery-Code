@@ -87,10 +87,10 @@ void checkMode(String input){
       if (sVal>0){ 
       sVal=input.indexOf("_",eVal+1); //find the second underscore
       string1=input.substring(eVal+1,sVal); //grab the requested module
-      integer1=drtModuleString.toInt();  // store requested module as an integer
+      integer1=string1.toInt();  // store requested module as an integer
       eVal=input.indexOf('\n',sVal+1); //find the end of the command
       string2=input.substring(sVal+1,eVal); // grab the requested layer
-      integer2=drtLayerString.toInt();  // store requested module as an integer
+      integer2=string2.toInt();  // store requested module as an integer
       dischargeResistorTest(integer1,integer2);
       break;
     case 2: //do something when var equals 2
@@ -101,7 +101,7 @@ void checkMode(String input){
       // default is optional
       break;
     }
-    
+  }
   }
   priorityMode();                   //sets contactors according to the mode and flags
 }
