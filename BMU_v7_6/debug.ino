@@ -286,10 +286,24 @@ void debugCommand(String input){
  *----------------------------------------------------------------------------*/
  
  void dischargeResistorTest(int module,int layer){
-   if ((0<module<=BMENum) && (0<layer<=cellNum )){  // make sure the command isn't garbage, Layer 1-3 Module 1-14
+   if (0<module<=BMENum) {  // make sure the command is Module 1-14
       BME[module-1].balFlag[layer-1]= 1;
       if(BME[module-1].fVol[layer-1] > volLowWarn) { //make sure voltage isnt too low
-        BME[module-1].DCC= BME[module-1].DCC | (1<<(3-layer));    // turn on the moudle layer's resistor
+        if (layer > 122) {
+          BME[module-1].DCC= BME[module-1].DCC=7;    // turn  on all layers
+        }
+        else if (layer >22) {
+          BME[module-1].DCC= BME[module-1].DCC=3;    // turn  on all layers
+        }
+        else if (layer >12) {
+          BME[module-1].DCC= BME[module-1].DCC=5;    // turn  on all laye
+        }
+        else if (layer >11) {
+          BME[module-1].DCC= BME[module-1].DCC=6;    // turn  on all laye
+        }
+        else if (layer >0) {
+          BME[module-1].DCC= BME[module-1].DCC | (1<<(3-layer));    // turn on the moudle layer's resistor
+        }
         int j=0;
         for(j=0;j<cellNum;j++){           // print voltage of each cell with tab spacers "vol1 \t vol2 \tb vol3 \n"            
           Serial.print(BME[module-1].fVol[j],4); // four decimal precision on voltages
