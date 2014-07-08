@@ -10,7 +10,7 @@
  }
  
  /*------------------------------------------------------------------------------
- * boolean areWeThereYet(unsigned long referenceTimeStamp, long waitTime)
+ * boolean areWeThereYet(const unsigned long &referenceTimeStamp, const long &waitTime)
  * returns true if waitTime has elapsed since referenceTimeStamp
  * returns false if not
  *----------------------------------------------------------------------------*/
@@ -20,7 +20,7 @@
    if(referenceTimeStamp > currentTimeStamp){                // check if a rollover has occured
       timeSince= ~(referenceTimeStamp - currentTimeStamp)+1;              // correct for rollover
     }
-   else timeSince = currentTimeStamp-timeStamp;
+   else timeSince = currentTimeStamp-referenceTimeStamp;
    if (timeSince>=waitTime)
      return true;
    else

@@ -226,7 +226,7 @@ void volCheck(void){
 //   if(chargeCurFlag) flagBMU=flagBMU | (1<<17);
 //   if(stopCurFlag) flagBMU=flagBMU | (1<<18);
 //   if(timeoutFlag) flagBMU=flagBMU | (1<<19);
-   if(chargeDoneFalg) flagBMU=flagBMU | (1<<20);      
+   if(chargeDoneFlag) flagBMU=flagBMU | (1<<20);      
    if(balDoneFlag) flagBMU=flagBMU | (1<<21);
 //   if(balRecFlag) flagBMU=flagBMU | (1<<22);
    
@@ -280,7 +280,7 @@ void volCheck(void){
    fanOn= false;
    flagOverride=0;
    overrideCount=0;
-   chargeDoneFalg=false;
+   chargeDoneFlag=false;
    balDoneFlag=false;
    for(int j;j<BMENum;j++){                // goes through all BMEs
      BME[j].ignoreiT=false;

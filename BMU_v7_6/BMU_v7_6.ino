@@ -37,6 +37,8 @@ created 10/3/2013
     
     setContactors();
     
+   // if(uartPrint) Serial.println(micros()-timeStamp);
+ 
     timeCheck();                //tries to keep loop time roughly constant
   }
   

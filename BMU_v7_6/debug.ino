@@ -255,10 +255,13 @@ void debugCommand(String input){
     drtString=String("deb_1_" + drtString);
     BMCcommand=drtString;
   }
-  //else if(some other debug mode){ BMCcommand=[debug_input]}
-  //else if(some other debug mode){ BMCcommand=[debug_input]}
-  //else if(some other debug mode){ BMCcommand=[debug_input]}
-
+  else if(input.indexOf("flag") >=0){
+    int sVal=input.indexOf("_"); //find the first underscore
+    int eVal=input.indexOf('\n',sVal+1); //find the end of the command
+    String flagDebugString=input.substring(sVal+1,eVal); //grab command after "drt_"
+    int flagDebugInt = flagDebugString.toInt();
+    flagDebugTest(flagDebugInt);
+  }
   else {
     BMCcommand=input; //regular mode commands like charge, balance, stop, clear,
   }
@@ -289,7 +292,7 @@ void debugCommand(String input){
    if (0<module<=BMENum) {  // make sure the command is Module 1-14
       BME[module-1].balFlag[layer-1]= 1;
       if (1) { //(BME[module-1].fVol[layer-1] > 0) { //make sure voltage isnt too low volLowWarn
-        if (layer > 122) {
+        if (layer >122) {
           BME[module-1].DCC= BME[module-1].DCC=7;    // turn  on all layers
         }
         else if (layer >22) {
@@ -317,5 +320,14 @@ void debugCommand(String input){
         BMCcommand = "stop";
       }
    } 
+ }
+ 
+  /*------------------------------------------------------------------------------
+ *  void flagDebugTest(void)
+ * discharges all the virtual cells of a battery
+ *----------------------------------------------------------------------------*/
+ 
+ void flagDebugTest(const int &flag){
+   if (0<flag && flag <33) flagBMU= 0 | (1<<(flag-1)); 
  }
 

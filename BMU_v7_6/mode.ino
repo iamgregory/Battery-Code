@@ -67,12 +67,14 @@ void checkMode(String input){
          volLowBalAlarmFlag = true;
         }
       }
-    }
-    else if (areWeThereYet(balanceTimeStamp,balanceCheckTime))
-    {  disableResistors();
-       if (areWeThereYet(balanceTimeStamp,balanceCheckTime+dLoopTime-1))  // if a loop has happened since the resistors were disabled
-       {  balanceCal(); // if balancing mode is on, then calculate which cells need to be discarged
-       }
+   
+      else if (areWeThereYet(balanceTimeStamp,balanceCheckTime))
+      {  disableResistors();
+         if (areWeThereYet(balanceTimeStamp,balanceCheckTime+3*controlTime))  // if a loop has happened since the resistors were disabled
+         {  balanceCal(); // if balancing mode is on, then calculate which cells need to be discarged
+         }
+      }
+      balTempControl();
     }
   }
   
@@ -202,12 +204,12 @@ void checkMode(String input){
       overrideCount=0;
       conOnTime=0;
       timeoutCount=0;
-      chargeDoneFalg=false;
+      chargeDoneFlag=false;
       BMESelfTest();
     }
     contactorsOn=true;
     if( charge2Vol <= maxVol && current<=doneCur){
-      chargeDoneFalg=true;
+      chargeDoneFlag=true;
     }
    }
  }
@@ -285,11 +287,12 @@ void checkMode(String input){
    boolean balOn=false;
    balanceTimeStamp=micros();
    balTempControl();
+   maxVol=findMaxV();
    for(j=0;j<BMENum;j++){
      if(!BME[j].dataCheck){
        //BME[j].DCC=0;
        for(i=0;i<cellNum;i++){
-         if(BME[j].fVol[i]-balance2Vol > 0 && BME[j].balFlag[i] && !BME[j].balTempCon){
+         if(BME[j].fVol[i]-balance2Vol > 0 && BME[j].balFlag[i]){
            BME[j].DCC= BME[j].DCC | (1<<(2-i));    // balance by enabling the bit flag corresponding to the i-th virtual layer
            balOn=true;
          }
@@ -302,11 +305,7 @@ void checkMode(String input){
        BME[j].DCC=0;
      }
    }
-   if(balOn) balDoneCount=0;
-   else{
-     balDoneCount++;
-     if(balDoneCount>=25) balDoneFlag=true;
-   }
+   if(!balOn) balDoneFlag=true;
  }
  
  /*------------------------------------------------------------------------------
@@ -332,6 +331,7 @@ void balTempControl(void){
      }
    }
    if (BME[j].balTempCon) {
+     BME[j].DCC=0;
      fanOn = true;
    }
  } 

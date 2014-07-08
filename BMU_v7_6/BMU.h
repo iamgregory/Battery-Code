@@ -194,7 +194,7 @@ boolean stopCurFlag=false;     //abs(Current)>1A
 
 boolean timeoutFlag=false;      //Charging or balance time > 10 hours
 
-boolean chargeDoneFalg =false;   // charging done flag
+boolean chargeDoneFlag =false;   // charging done flag
 boolean balDoneFlag =false;      // balancing done flag
 boolean balRecFlag =false;       // balancing recommended flag
 
