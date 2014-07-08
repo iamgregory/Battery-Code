@@ -22,8 +22,8 @@ void BMCcomm()
       if(BMCcommand.indexOf("cle") >=0) {
         clearFlags();            //clear flags
       }
+      BMCcommdt=micros()-BMCcommdt;
       sendData((EthernetClient&) client);
-      BMCcommdt=0;
       bmcComFlag=false;
       //  if(!bmcComFlag) Serial.println("Not Communicating to BMC");
     }
