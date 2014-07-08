@@ -56,7 +56,7 @@
   
   CLRCELL(0);          // wake the bme 
   
-  ADCV(0,0);
+  ADCV(0,0);          //  broadcast to all channels
   delayMicroseconds(BMEConDelay1);
   
   for(int i=0;i<BMENum;i++){ 

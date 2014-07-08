@@ -288,7 +288,7 @@ void debugCommand(String input){
  void dischargeResistorTest(int module,int layer){
    if (0<module<=BMENum) {  // make sure the command is Module 1-14
       BME[module-1].balFlag[layer-1]= 1;
-      if(BME[module-1].fVol[layer-1] > volLowWarn) { //make sure voltage isnt too low
+      if (1) { //(BME[module-1].fVol[layer-1] > 0) { //make sure voltage isnt too low volLowWarn
         if (layer > 122) {
           BME[module-1].DCC= BME[module-1].DCC=7;    // turn  on all layers
         }
@@ -312,7 +312,7 @@ void debugCommand(String input){
         Serial.println("");      // prints carriage return
       }
       else {  // if voltage is too low, stop the discharge resistor test
-        BME[module-1].DCC= BME[module-1].DCC & byte(!(1<<(3-layer)));   // stop balancing by disabling the bit flag corresponding to the i-th virtual layer
+        BME[module-1].DCC= 0;   // stop balancing by disabling the bit flag corresponding to the i-th virtual layer
         Serial.print("Voltage too low. Try another cell or recharge.");  
         BMCcommand = "stop";
       }

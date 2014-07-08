@@ -66,7 +66,9 @@
  // loop timing variables
  const long controlTime=200000;  // loop time in uSec  .2 s loops ==> 5Hz
  const float dt=controlTime/1000000.0;  // control time in sec
- long timeStamp=0;          // used to keep track of the loop time
+ unsigned long timeStamp=0;          // used to keep track of the loop time
+ unsigned long balanceTimeStamp=0;  // keeps track of balancing timing
+ long balanceCheckTime=30000000; // 30 seconds
  long dloopTime=0;         //actual loop time in usec
  long BMCcommdt=0;          // the time between bmc communications
  int loopCount=0;            // counts the number of loops up to the count Limit

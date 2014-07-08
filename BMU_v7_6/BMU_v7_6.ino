@@ -31,7 +31,7 @@ created 10/3/2013
     
     checkFlags();                     //checks and sets flags and set priority
     
-    BMCcomm();         //send and receive information through ethernet to BMC every 1 sec
+    //BMCcomm();         //send and receive information through ethernet to BMC every 1 sec
     
     checkMode(BMCcommand);
     

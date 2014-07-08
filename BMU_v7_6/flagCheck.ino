@@ -277,6 +277,7 @@ void volCheck(void){
    flagBMU=0;
    flagPriority=0;
    stopUntil=false; 
+   fanOn= false;
    flagOverride=0;
    overrideCount=0;
    chargeDoneFalg=false;

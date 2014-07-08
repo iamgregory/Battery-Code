@@ -20,6 +20,24 @@
    BMCcommdt=BMCcommdt+dloopTime;
  }
  
+ /*------------------------------------------------------------------------------
+ * boolean areWeThereYet(unsigned long referenceTimeStamp, long waitTime)
+ * returns true if waitTime has elapsed since referenceTimeStamp
+ * returns false if not
+ *----------------------------------------------------------------------------*/
+ boolean areWeThereYet(unsigned long referenceTimeStamp, long waitTime){
+   unsigned long currentTimeStamp =micros();
+   unsigned long timeSince=0;
+   if(referenceTimeStamp > currentTimeStamp){                // check if a rollover has occured
+      timeSince= ~(referenceTimeStamp - currentTimeStamp)+1;              // correct for rollover
+    }
+   else timeSince = currentTimeStamp-timeStamp;
+   if (timeSince>=waitTime)
+     return true;
+   else
+     return false;
+ }
+ 
  
 
  

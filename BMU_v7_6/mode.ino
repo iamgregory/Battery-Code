@@ -67,7 +67,12 @@ void checkMode(String input){
           volLowBalAlarmFlag = true;
         }
       }
-      balanceCal(); // if balancing mode is on, then calculate which cells need to be discarged
+      else if (areWeThereYet(balanceTimeStamp,balanceCheckTime){
+        disableResistors();
+        if (areWeThereYet(balanceTimeStamp,balanceCheckTime+dLoopTime-1){  // if a loop has happened since the resistors were disabled
+          balanceCal(); // if balancing mode is on, then calculate which cells need to be discarged
+        }
+      }
     }
   }
   
@@ -238,23 +243,35 @@ void checkMode(String input){
     balanceOn=true;
     overrideCount=0;
     timeoutCount=0;
+    balanceTimeStamp=micros()-balanceCheckTime; //make sure balanceCal executes the first time through
     balDoneFlag=false;
  }
  
  /*------------------------------------------------------------------------------
  * void stopBal(void)
- * balances the virtual cells of a battery with in a +/- 5mv
+ * stops all balancing by disconnecting all resistors
  *----------------------------------------------------------------------------*/
  void stopBal(void){
    int j,i;
-   for(j=0;j<BMENum;j++){   
-     BME[j].DCC=0;               // set the 3 bit DCC registry to "000" 
-     WRCFG((BMEdata&) BME[j]);  
+   disableResistors();
+   for(j=0;j<BMENum;j++){    
      for(i=0;i<cellNum;i++){
-       BME[j].balFlag[i]=false;
+       BME[j].balFlag[i]=false;  // clear all the balancing flags
      }
    }
    balanceOn=false;
+ }
+ 
+  /*------------------------------------------------------------------------------
+ * void disableResistors(void)
+ * set the DCC registries to 0 and communicate that to all BMEs
+ --------------------------------------------------------------------------*/
+ void disableResistors(void){
+   int j;
+   for(j=0;j<BMENum;j++){   
+     BME[j].DCC=0;               // set the 3 bit DCC registry to "000" 
+     WRCFG((BMEdata&) BME[j]);  
+   }
  }
  
  
@@ -266,6 +283,7 @@ void checkMode(String input){
  void balanceCal(void){
    int i,j;
    boolean balOn=false;
+   balanceTimeStamp=micros();
    balTempControl();
    for(j=0;j<BMENum;j++){
      if(!BME[j].dataCheck){
@@ -297,7 +315,7 @@ void checkMode(String input){
  * temperature warnings and temperature errors
  *----------------------------------------------------------------------------*/
 void balTempControl(void){
- 
+ fanOn = false;
  for(int j=0;j<BMENum;j++){                         // goes through all BMEs
    if(!BME[j].dataCheck){       // check if BME is communicating
      BME[j].balTempCon=false;
@@ -313,7 +331,12 @@ void balTempControl(void){
        BME[j].balTempCon=true;
      }
    }
+   if (BME[j].balTempCon) {
+     fanOn = true;
+   }
  } 
+ 
 }
+
 
 
