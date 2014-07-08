@@ -8,16 +8,16 @@
    do{
     currentTimeStamp=micros();
     if(timeStamp > currentTimeStamp){                // check if a rollover has occured
-      dloopTime= ~(timeStamp - currentTimeStamp)+1;              // correct for rollover
+      dLoopTime= ~(timeStamp - currentTimeStamp)+1;              // correct for rollover
     }
-    else dloopTime = currentTimeStamp-timeStamp;          // microseconds since "void Loop" began
+    else dLoopTime = currentTimeStamp-timeStamp;          // microseconds since "void Loop" began
     
-    if (dloopTime>(controlTime+50)){                // for debugging purposes
-      if(uartPrint)Serial.println(dloopTime);
+    if (dLoopTime>(controlTime+50)){                // for debugging purposes
+      if(uartPrint)Serial.println(dLoopTime);
     }
    
-   }while(dloopTime < controlTime);                 // kill time till next "void Loop" should execute
-   BMCcommdt=BMCcommdt+dloopTime;
+   }while(dLoopTime < controlTime);                 // kill time till next "void Loop" should execute
+   BMCcommdt=BMCcommdt+dLoopTime;
  }
  
  /*------------------------------------------------------------------------------

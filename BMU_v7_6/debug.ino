@@ -107,7 +107,7 @@ void printOutBME(BMEdata& _BME){
   else if(fwLeak & !bwLeak) Serial.print("front leak");
   else if(fwLeak & bwLeak) Serial.print("both leak");
   Serial.print(" \t looptime (s): ");
-  Serial.println(dloopTime/1000000.0);
+  Serial.println(dLoopTime/1000000.0);
   Serial.print(" \nFlag: ");
   Serial.print(flagBMU,HEX);
   Serial.print(" \t SOC: ");

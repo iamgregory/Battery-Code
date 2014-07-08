@@ -49,30 +49,30 @@ void checkMode(String input){
   
   else if(input.indexOf("bal") >=0)//checks for Balance
   {
-    if(!stopUntil){
-      contactorsOn=false;
-      if (!balanceOn){
-        Serial.print(BMCcommand);
+    if(!stopUntil)
+    {  contactorsOn=false;
+      if (!balanceOn)
+      { Serial.print(BMCcommand);
         int sVal=input.indexOf("_");
         int eVal=input.indexOf("_",sVal+1);
         String bal2string=input.substring(sVal+1,eVal);
         int bal2int=bal2string.toInt();
         float tempo = bal2int*0.0001;
-        if(tempo>=volLowBalAlarm){
-          balance2Vol=tempo;
-          balanceMode();
+        if(tempo>=volLowBalAlarm)
+        {  balance2Vol=tempo;
+           balanceMode();
         }
-        else{
-          if(uartPrint)Serial.println("bad bal2vol!");
-          volLowBalAlarmFlag = true;
-        }
-      }
-      else if (areWeThereYet(balanceTimeStamp,balanceCheckTime){
-        disableResistors();
-        if (areWeThereYet(balanceTimeStamp,balanceCheckTime+dLoopTime-1){  // if a loop has happened since the resistors were disabled
-          balanceCal(); // if balancing mode is on, then calculate which cells need to be discarged
+        else
+        {  if(uartPrint)Serial.println("bad bal2vol!");
+         volLowBalAlarmFlag = true;
         }
       }
+    }
+    else if (areWeThereYet(balanceTimeStamp,balanceCheckTime))
+    {  disableResistors();
+       if (areWeThereYet(balanceTimeStamp,balanceCheckTime+dLoopTime-1))  // if a loop has happened since the resistors were disabled
+       {  balanceCal(); // if balancing mode is on, then calculate which cells need to be discarged
+       }
     }
   }
   
@@ -289,12 +289,12 @@ void checkMode(String input){
      if(!BME[j].dataCheck){
        //BME[j].DCC=0;
        for(i=0;i<cellNum;i++){
-         if(BME[j].fVol[i]-balance2Vol > volTolerance && BME[j].balFlag[i]){
+         if(BME[j].fVol[i]-balance2Vol > 0 && BME[j].balFlag[i] && !BME[j].balTempCon){
            BME[j].DCC= BME[j].DCC | (1<<(2-i));    // balance by enabling the bit flag corresponding to the i-th virtual layer
            balOn=true;
          }
-         if(BME[j].fVol[i]-balance2Vol <= volBalStop || BME[j].balTempCon){
-           BME[j].DCC= BME[j].DCC & byte(!(1<<(2-i)));   // stop balancing by disabling the bit flag corresponding to the i-th virtual layer
+         else {
+           BME[j].balFlag[i]=false;
          }
        }
      }
