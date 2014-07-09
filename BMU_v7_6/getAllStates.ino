@@ -85,7 +85,7 @@
     WRCFG((BMEdata&) BME[i]);          // Sends out the GPIO command
   }
 
-if (balanceOn) saturateBalanceVoltage();
+  if (balanceOn) saturateBalanceVoltage();
   for(int i=0;i<BMENum;i++){
     int2float((BMEdata&) BME[i]); // passes pointer to BME[i]
   }

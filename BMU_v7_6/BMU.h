@@ -33,7 +33,7 @@
   #define doneCur 4.45         //the current at which the charging is called done
   
   #define balRecVol 0.050       // voltage difference at which balancing will be recommended 
-  //#define volTolerance 0.005   // the max voltage difference that the virtual cells will have at the end of balancing 
+  #define volTolerance 0.002   // the max voltage difference that the virtual cells will have at the end of balancing 
   //#define volBalStop -0.006   // voltage difference that the battery will stop balancing
   
   #define timeoutLimit 180000     //a timeout limit of 10 hours/looptime==>180000 for charging and balanceing 
@@ -111,7 +111,6 @@ float maxTemp=0;          //  max temperature of all virtual cells
 float minVol=7.0;        //  minimum voltage of virtual cells?
 float maxVol=0.0;          // maximum voltage of virtual cells?
 float balance2Vol=4.2;    // voltage to balance to
-float balanceMax=4.2;
 int balDoneCount=0;
 float charge2Vol=3.0;      //voltage to charge to
 
