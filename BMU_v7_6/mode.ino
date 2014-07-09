@@ -69,9 +69,11 @@ void checkMode(String input){
       }
    
       else if (areWeThereYet(balanceTimeStamp,balanceCheckTime))
-      {  disableResistors();
+      { if(uartPrint) Serial.println("Disable Resistors");
+        disableResistors();
          if (areWeThereYet(balanceTimeStamp,balanceCheckTime+3*controlTime))  // if a loop has happened since the resistors were disabled
-         {  balanceCal(); // if balancing mode is on, then calculate which cells need to be discarged
+         { if(uartPrint) Serial.println("balanceCal()");
+           balanceCal(); // if balancing mode is on, then calculate which cells need to be discarged
          }
       }
       balTempControl();
@@ -229,7 +231,7 @@ void checkMode(String input){
     for(int j=0;j<BMENum;j++){
      if(!BME[j].dataCheck){
        for(int i=0;i<cellNum;i++){
-         if(BME[j].fVol[i]-balance2Vol > volTolerance){
+         if(BME[j].fVol[i]>balance2Vol){
            BME[j].balFlag[i]=1;
          }
          else {
@@ -292,7 +294,7 @@ void checkMode(String input){
      if(!BME[j].dataCheck){
        //BME[j].DCC=0;
        for(i=0;i<cellNum;i++){
-         if(BME[j].fVol[i]-balance2Vol > 0 && BME[j].balFlag[i]){
+         if(BME[j].fVol[i]> balance2Vol && BME[j].balFlag[i]){
            BME[j].DCC= BME[j].DCC | (1<<(2-i));    // balance by enabling the bit flag corresponding to the i-th virtual layer
            balOn=true;
          }
@@ -305,7 +307,11 @@ void checkMode(String input){
        BME[j].DCC=0;
      }
    }
-   if(!balOn) balDoneFlag=true;
+   if(!balOn) {
+     balDoneFlag=true;
+     if(uartPrint) Serial.println("Balancing Done");
+     //if(uartPrint) BMCcommand="stop";
+   }
  }
  
  /*------------------------------------------------------------------------------
@@ -321,13 +327,33 @@ void balTempControl(void){
      for (int i=0;i<cellNum;i++){                   // goes through all virtual cells in a BME
        if(!BME[j].ignoreT[i] && BME[j].fTemp[i] >= tempVCWarn-5){
          BME[j].balTempCon=true;
+            if(uartPrint){
+              Serial.print("TempVCWarn- BME ");
+              Serial.print(j);
+              Serial.print(" layer ");
+              Serial.print(i);
+              Serial.print(": \t");
+              Serial.println(BME[j].fTemp[i]);
+            }
        }
      }
      if(!BME[j].ignoreT[3] && BME[j].fTemp[3] >= tempHSWarn-5){ 
        BME[j].balTempCon=true;
+       if(uartPrint){
+              Serial.print("tempHSWarn- BME ");
+              Serial.print(j);
+              Serial.print(": \t");
+              Serial.println(BME[j].fTemp[3]);
+            }
      }
      if(!BME[j].ignoreiT && BME[j].fiTemp >= tempTiWarn-5){
        BME[j].balTempCon=true;
+       if(uartPrint){
+              Serial.print("tempTiWarn- BME ");
+              Serial.print(j);
+              Serial.print(": \t");
+              Serial.println(BME[j].fiTemp);
+            }
      }
    }
    if (BME[j].balTempCon) {

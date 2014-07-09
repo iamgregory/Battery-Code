@@ -8,11 +8,11 @@
 void BMCcomm()
 {
   if(loopCount%bmcComTime==0){      //execute once a sec
-    BMCcommand="";//clearing string for next read
     bmcComFlag=true;
    // listen for incoming clients
     EthernetClient client = server.available();
     if (client) {
+      BMCcommand="";//clearing string for next read
       while (client.available()) {
         char c = client.read();
         if (BMCcommand.length() < 50) {
