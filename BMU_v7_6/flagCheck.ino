@@ -165,7 +165,6 @@ void volCheck(void){
   volFailFlag =false;      //Any VC voltage < .1 V or >6.5 or Vref2<2.978 or>3.020
   volMisFlag =false;      /*5V difference between overall half-string voltage and sum of half-string VC voltages or
                                      50mV difference between battery module voltage and sum of its VC voltages*/
-  balRecFlag =false;
   
   for(int j=0;j<BMENum;j++){                // goes through all BMEs
    if(!BME[j].dataCheck){                   // check if BME is communicating
@@ -206,7 +205,7 @@ void volCheck(void){
  * Sets the flag
  *----------------------------------------------------------------------------*/
  void setFlag(void){
-//   if(leakFlag) flagBMU=flagBMU | 1;
+//   if(leakFlag) flagBMU=flagBMU | 1;    // fwleak and bwleak get set in getBMUdata
 //   if(tempWarnFlag) flagBMU=flagBMU | (1<<1);
 //   if(tempAlarmFlag) flagBMU=flagBMU | (1<<2);
 //   if(tempFailFlag) flagBMU=flagBMU | (1<<3);
@@ -228,7 +227,7 @@ void volCheck(void){
 //   if(timeoutFlag) flagBMU=flagBMU | (1<<19);
    if(chargeDoneFlag) flagBMU=flagBMU | (1<<20);      
    if(balDoneFlag) flagBMU=flagBMU | (1<<21);
-//   if(balRecFlag) flagBMU=flagBMU | (1<<22);
+//   if(balRecFlag) flagBMU=flagBMU | (1<<22); maxVol-minVol in volCheck function, !balanceOn, set balRecVol=0
    
    flagBMU= flagBMU & ~flagOverride;
 //   if(uartPrint){

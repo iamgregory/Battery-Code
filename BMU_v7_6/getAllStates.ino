@@ -90,6 +90,12 @@
     int2float((BMEdata&) BME[i]); // passes pointer to BME[i]
   }
   
+  if (fakeTempFlag)
+    BME[1].fTemp[1]=fakeTemp;
+  if (fakeVolFlag)
+    BME[1].fVol[1]=fakeVol;
+  if (fakePressFlag)
+    pressure=fakePress;
 }
 
  /*------------------------------------------------------------------------------

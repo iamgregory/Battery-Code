@@ -262,6 +262,43 @@ void debugCommand(String input){
     int flagDebugInt = flagDebugString.toInt();
     flagDebugTest(flagDebugInt);
   }
+  else if(input.indexOf("fake") >=0){  
+    if(input.indexOf("v") >=0){
+      int sVal=input.indexOf("p");
+      sVal=input.indexOf("_",sVal+1); //find the first underscore
+      int eVal=input.indexOf('\n',sVal+1); //find the end of the command
+      String theValueString=input.substring(sVal+1,eVal); //grab command after "drt_"
+      int theValueInt= theValueString.toInt();
+      if(uartPrint)Serial.println("Faking voltage");
+      float theValueFloat= theValueInt*0.0001;
+      fakeSensorData(theValueFloat,1);
+    }
+    else if(input.indexOf("t") >=0){
+      int sVal=input.indexOf("t");
+      sVal=input.indexOf("_",sVal+1); //find the first underscore
+      int eVal=input.indexOf('\n',sVal+1); //find the end of the command
+      String theValueString=input.substring(sVal+1,eVal); //grab command after "drt_"
+      int theValueInt= theValueString.toInt();
+      if(uartPrint)Serial.println("Faking temp");
+      float theValueFloat= theValueInt*0.0001;
+      fakeSensorData(theValueFloat,2);
+    }
+    else if(input.indexOf("p") >=0){
+      int sVal=input.indexOf("p");
+      sVal=input.indexOf("_",sVal+1); //find the first underscore
+      int eVal=input.indexOf('\n',sVal+1); //find the end of the command
+      String theValueString=input.substring(sVal+1,eVal); //grab command after "drt_"
+      int theValueInt= theValueString.toInt();
+      float theValueFloat= theValueInt*0.0001;
+      if(uartPrint)Serial.println("Faking pressure");
+      fakeSensorData(theValueFloat,3);
+    }
+    else{
+      fakeTempFlag=false;
+      fakeVolFlag=false;
+      fakePressFlag=false;
+    }
+  }
   else {
     BMCcommand=input; //regular mode commands like charge, balance, stop, clear,
   }
@@ -330,4 +367,32 @@ void debugCommand(String input){
  void flagDebugTest(const int &flag){
    if (0<flag && flag <33) flagBMU= 0 | (1<<(flag-1)); 
  }
+ 
+ /*------------------------------------------------------------------------------
+ *  void fakeSensorData(void)
+ * discharges all the virtual cells of a battery
+ *----------------------------------------------------------------------------*/
+ 
+ void fakeSensorData(const float &reading, const int &datatype){
+   switch (datatype) {
+    case 1:  // voltage
+      fakeVolFlag= true;
+      fakeVol=reading;
+      break;
+    case 2: //temp
+      fakeTempFlag=true;
+      fakeTemp=reading;
+      break;
+    case 3: //pressure
+      fakePressFlag=true;
+      fakePress=reading;
+      break;
+    default: 
+      // if nothing else matches, do the default
+      // default is optional
+      break;
+    }
+ }
+ 
+ 
 
