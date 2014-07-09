@@ -62,6 +62,13 @@
 // debugging variables
   boolean uartPrint=true;    // print for debugging
   String inputString="";
+  boolean fakeVolFlag=false;
+  float fakeVol=0;
+  boolean fakeTempFlag=false;
+  float fakeTemp=0;
+  boolean fakePressFlag=false;
+  float fakePress=0;
+  
   
  // loop timing variables
  const long controlTime=200000;  // loop time in uSec  .2 s loops ==> 5Hz
