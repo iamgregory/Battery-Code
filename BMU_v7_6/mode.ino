@@ -49,28 +49,69 @@ void checkMode(String input){
   
   else if(input.indexOf("bal") >=0)//checks for Balance
   {
-    if(!stopUntil){
-      contactorsOn=false;
-      if (!balanceOn){
-        Serial.print(BMCcommad);
+    if(!stopUntil)
+    {  contactorsOn=false;
+      if (!balanceOn)
+      { Serial.print(BMCcommand);
         int sVal=input.indexOf("_");
         int eVal=input.indexOf("_",sVal+1);
         String bal2string=input.substring(sVal+1,eVal);
         int bal2int=bal2string.toInt();
         float tempo = bal2int*0.0001;
-        if(tempo>=volLowBalAlarm){
-          balance2Vol=tempo;
-          balanceMode();
+        if(tempo>=volLowBalAlarm)
+        {  balance2Vol=tempo;
+           balanceMode();
         }
-        else{
-          if(uartPrint)Serial.println("bad bal2vol!");
-          volLowBalAlarmFlag = true;
+        else
+        {  if(uartPrint)Serial.println("bad bal2vol!");
+         volLowBalAlarmFlag = true;
         }
       }
-      balanceCal(); // if balancing mode is on, then calculate which cells need to be discarged
+   
+      else if (areWeThereYet(balanceTimeStamp,balanceCheckTime))
+      { if(uartPrint) Serial.println("Disable Resistors");
+        disableResistors();
+         if (areWeThereYet(balanceTimeStamp,balanceCheckTime+3*controlTime))  // if a loop has happened since the resistors were disabled
+         { if(uartPrint) Serial.println("balanceCal()");
+           balanceCal(); // if balancing mode is on, then calculate which cells need to be discarged
+         }
+      }
+      balTempControl();
     }
   }
   
+  else if(input.indexOf("deb") >=0)//checks for debug test commands
+  { // debug commands look like deb_<debugmode>_<additional commands>
+    int sVal =input.indexOf("_"); // grab first underscore location
+    int eVal=input.indexOf("_",sVal+1); // grab second underscore location
+    String debugModeString=input.substring(sVal+1,eVal); //grab the debug mode as a string
+    int debugMode=debugModeString.toInt();  // store debug mode as an int
+    String string1="";
+    String string2="";
+    int integer1 =0;
+    int integer2 =0;
+    
+    switch (debugMode) {
+    case 1:  // discharge resistor test
+      if (sVal>0){ 
+      sVal=input.indexOf("_",eVal+1); //find the second underscore
+      string1=input.substring(eVal+1,sVal); //grab the requested module
+      integer1=string1.toInt();  // store requested module as an integer
+      eVal=input.indexOf('\n',sVal+1); //find the end of the command
+      string2=input.substring(sVal+1,eVal); // grab the requested layer
+      integer2=string2.toInt();  // store requested module as an integer
+      dischargeResistorTest(integer1,integer2);
+      break;
+    case 2: //do something when var equals 2
+       //callSomeDebugCommand();
+     // break;
+    default: 
+      // if nothing else matches, do the default
+      // default is optional
+      break;
+    }
+  }
+  }
   priorityMode();                   //sets contactors according to the mode and flags
 }
 
@@ -119,7 +160,7 @@ void checkMode(String input){
  void stopMode(void){
     contactorsOn=false;
     if(!stopOn){
-      if(uartPrint) Serial.print(BMCcommad);
+      if(uartPrint) Serial.print(BMCcommand);
       if(uartPrint) Serial.println("Stop");
       stopBal();
       chargeOn=false;
@@ -165,12 +206,12 @@ void checkMode(String input){
       overrideCount=0;
       conOnTime=0;
       timeoutCount=0;
-      chargeDoneFalg=false;
+      chargeDoneFlag=false;
       BMESelfTest();
     }
     contactorsOn=true;
     if( charge2Vol <= maxVol && current<=doneCur){
-      chargeDoneFalg=true;
+      chargeDoneFlag=true;
     }
    }
  }
@@ -190,7 +231,7 @@ void checkMode(String input){
     for(int j=0;j<BMENum;j++){
      if(!BME[j].dataCheck){
        for(int i=0;i<cellNum;i++){
-         if(BME[j].fVol[i]-balance2Vol > volTolerance){
+         if(BME[j].fVol[i]>balance2Vol){
            BME[j].balFlag[i]=1;
          }
          else {
@@ -206,23 +247,35 @@ void checkMode(String input){
     balanceOn=true;
     overrideCount=0;
     timeoutCount=0;
+    balanceTimeStamp=micros()-balanceCheckTime; //make sure balanceCal executes the first time through
     balDoneFlag=false;
  }
  
  /*------------------------------------------------------------------------------
  * void stopBal(void)
- * balances the virtual cells of a battery with in a +/- 5mv
+ * stops all balancing by disconnecting all resistors
  *----------------------------------------------------------------------------*/
  void stopBal(void){
    int j,i;
-   for(j=0;j<BMENum;j++){   
-     BME[j].DCC=0;               // set the 3 bit DCC registry to "000" 
-     WRCFG((BMEdata&) BME[j]);  
+   disableResistors();
+   for(j=0;j<BMENum;j++){    
      for(i=0;i<cellNum;i++){
-       BME[j].balFlag[i]=false;
+       BME[j].balFlag[i]=false;  // clear all the balancing flags
      }
    }
    balanceOn=false;
+ }
+ 
+  /*------------------------------------------------------------------------------
+ * void disableResistors(void)
+ * set the DCC registries to 0 and communicate that to all BMEs
+ --------------------------------------------------------------------------*/
+ void disableResistors(void){
+   int j;
+   for(j=0;j<BMENum;j++){   
+     BME[j].DCC=0;               // set the 3 bit DCC registry to "000" 
+     WRCFG((BMEdata&) BME[j]);  
+   }
  }
  
  
@@ -234,17 +287,19 @@ void checkMode(String input){
  void balanceCal(void){
    int i,j;
    boolean balOn=false;
+   balanceTimeStamp=micros();
    balTempControl();
+   maxVol=findMaxV();
    for(j=0;j<BMENum;j++){
      if(!BME[j].dataCheck){
        //BME[j].DCC=0;
        for(i=0;i<cellNum;i++){
-         if(BME[j].fVol[i]-balance2Vol > volTolerance && BME[j].balFlag[i]){
+         if(BME[j].fVol[i]> balance2Vol && BME[j].balFlag[i]){
            BME[j].DCC= BME[j].DCC | (1<<(2-i));    // balance by enabling the bit flag corresponding to the i-th virtual layer
            balOn=true;
          }
-         if(BME[j].fVol[i]-balance2Vol <= volBalStop || BME[j].balTempCon){
-           BME[j].DCC= BME[j].DCC & byte(!(1<<(2-i)));   // stop balancing by disabling the bit flag corresponding to the i-th virtual layer
+         else {
+           BME[j].balFlag[i]=false;
          }
        }
      }
@@ -252,10 +307,10 @@ void checkMode(String input){
        BME[j].DCC=0;
      }
    }
-   if(balOn) balDoneCount=0;
-   else{
-     balDoneCount++;
-     if(balDoneCount>=25) balDoneFlag=true;
+   if(!balOn) {
+     balDoneFlag=true;
+     if(uartPrint) Serial.println("Balancing Done");
+     //if(uartPrint) BMCcommand="stop";
    }
  }
  
@@ -265,23 +320,49 @@ void checkMode(String input){
  * temperature warnings and temperature errors
  *----------------------------------------------------------------------------*/
 void balTempControl(void){
- 
+ fanOn = false;
  for(int j=0;j<BMENum;j++){                         // goes through all BMEs
    if(!BME[j].dataCheck){       // check if BME is communicating
      BME[j].balTempCon=false;
-     for (int i=0;i<cellNum;i++){                   // goes through all vartual cells in a BME
+     for (int i=0;i<cellNum;i++){                   // goes through all virtual cells in a BME
        if(!BME[j].ignoreT[i] && BME[j].fTemp[i] >= tempVCWarn-5){
          BME[j].balTempCon=true;
+            if(uartPrint){
+              Serial.print("TempVCWarn- BME ");
+              Serial.print(j);
+              Serial.print(" layer ");
+              Serial.print(i);
+              Serial.print(": \t");
+              Serial.println(BME[j].fTemp[i]);
+            }
        }
      }
      if(!BME[j].ignoreT[3] && BME[j].fTemp[3] >= tempHSWarn-5){ 
        BME[j].balTempCon=true;
+       if(uartPrint){
+              Serial.print("tempHSWarn- BME ");
+              Serial.print(j);
+              Serial.print(": \t");
+              Serial.println(BME[j].fTemp[3]);
+            }
      }
      if(!BME[j].ignoreiT && BME[j].fiTemp >= tempTiWarn-5){
        BME[j].balTempCon=true;
+       if(uartPrint){
+              Serial.print("tempTiWarn- BME ");
+              Serial.print(j);
+              Serial.print(": \t");
+              Serial.println(BME[j].fiTemp);
+            }
      }
    }
+   if (BME[j].balTempCon) {
+     BME[j].DCC=0;
+     fanOn = true;
+   }
  } 
+ 
 }
+
 
 

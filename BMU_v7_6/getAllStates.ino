@@ -56,7 +56,7 @@
   
   CLRCELL(0);          // wake the bme 
   
-  ADCV(0,0);
+  ADCV(0,0);          //  broadcast to all channels
   delayMicroseconds(BMEConDelay1);
   
   for(int i=0;i<BMENum;i++){ 
@@ -85,6 +85,7 @@
     WRCFG((BMEdata&) BME[i]);          // Sends out the GPIO command
   }
 
+if (balanceOn) saturateBalanceVoltage();
   for(int i=0;i<BMENum;i++){
     int2float((BMEdata&) BME[i]); // passes pointer to BME[i]
   }
@@ -100,9 +101,9 @@
  void calStateBME(void){
   
   minVol=findMinV();                    //updates min cell voltage and total battery-string voltage
-  maxVol=findMaxV();
+  if(!balanceOn) maxVol=findMaxV();
   maxTemp=findMaxT();                  // updates the max temperature reading
-  volSumCal();                       // sums all the vertual cell voltages into modules and half-strin voltage
+  volSumCal();                       // sums all the virtual cell voltages into modules and half-strin voltage
  }
 
  /*------------------------------------------------------------------------------
@@ -236,5 +237,20 @@
      }
 //     Serial.println(BME[j].modSum);
      volSum+=BME[j].modSum;
+   }
+ }
+ 
+ 
+ /*------------------------------------------------------------------------------
+ *void saturateBalanceVoltage(void)
+ * saturates voltages if balance mode is on
+ *----------------------------------------------------------------------------*/
+ void saturateBalanceVoltage(void){ 
+   int i,j;
+   for(j=0;j<BMENum;j++){
+     for(i=0;i<cellNum;i++){  
+       if(BME[j].vol[i]> int(maxVol*10000)) BME[j].vol[i]=int(maxVol*10000);
+       else if(BME[j].vol[i]< int((balance2Vol-.005)*10000)) BME[j].vol[i]=int((balance2Vol-.005)*10000);
+     }
    }
  }

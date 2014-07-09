@@ -33,11 +33,12 @@ created 10/3/2013
     
     BMCcomm();         //send and receive information through ethernet to BMC every 1 sec
     
-    checkMode(BMCcommad);
+    checkMode(BMCcommand);
     
     setContactors();
     
-//    if (BMCcommdt< micros()-timeStamp) BMCcommdt= micros()-timeStamp;
+   // if(uartPrint) Serial.println(micros()-timeStamp);
+ 
     timeCheck();                //tries to keep loop time roughly constant
   }
   

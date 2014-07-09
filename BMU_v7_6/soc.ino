@@ -30,7 +30,7 @@ void initalizeSoc(){
  * Finds the SOC given inital voltage
  *----------------------------------------------------------------------------*/
 int findIntSoc(int lVol){
- int lo=-1,hi=1000, mid=0; 
+ int lo=-1,hi=1019, mid=0; 
  while(hi-lo>1){
    mid=(lo+hi)/2;
    if(lookUpVoltage[mid] >= lVol) lo=mid;

@@ -8,22 +8,22 @@
 void BMCcomm()
 {
   if(loopCount%bmcComTime==0){      //execute once a sec
-    BMCcommad="";//clearing string for next read
     bmcComFlag=true;
    // listen for incoming clients
     EthernetClient client = server.available();
     if (client) {
+      BMCcommand="";//clearing string for next read
       while (client.available()) {
         char c = client.read();
-        if (BMCcommad.length() < 50) {
-          BMCcommad += c; //store characters to string 
+        if (BMCcommand.length() < 50) {
+          BMCcommand += c; //store characters to string 
         }    
       }
-      if(BMCcommad.indexOf("cle") >=0) {
+      if(BMCcommand.indexOf("cle") >=0) {
         clearFlags();            //clear flags
       }
+      BMCcommdt=micros()-BMCcommdt;
       sendData((EthernetClient&) client);
-      BMCcommdt=0;
       bmcComFlag=false;
       //  if(!bmcComFlag) Serial.println("Not Communicating to BMC");
     }

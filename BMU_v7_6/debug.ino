@@ -107,7 +107,7 @@ void printOutBME(BMEdata& _BME){
   else if(fwLeak & !bwLeak) Serial.print("front leak");
   else if(fwLeak & bwLeak) Serial.print("both leak");
   Serial.print(" \t looptime (s): ");
-  Serial.println(dloopTime/1000000.0);
+  Serial.println(dLoopTime/1000000.0);
   Serial.print(" \nFlag: ");
   Serial.print(flagBMU,HEX);
   Serial.print(" \t SOC: ");
@@ -186,78 +186,12 @@ void testBME(BMEdata& _BME){
 }
 
 /*------------------------------------------------------------------------------
- * void getCommand(void)
+ * void debugCommand(void)
  * does the command that is sent from the GUI
  *----------------------------------------------------------------------------*/
 void debugCommand(String input){
   
-  if(input.indexOf("cle") >=0) {
-      clearFlags();            //clear flags
-  }
-  
-  if(input.indexOf("sto") >=0)//checks for Stop
-  {
-    stopMode();
-  }
-  
-  else if(input.indexOf("dri") >=0)//checks for start
-  {
-    driveMode();
-  }
-  
-  else if(input.indexOf("ove") >=0)//checks for hdata
-  {
-    if(uartPrint)Serial.println("Override");
-    int sVal=input.indexOf("_");
-    int eVal=input.indexOf("_",sVal+1);
-    String overrideString=input.substring(sVal+1,eVal);
-    int flagNum=overrideString.toInt();
-    if(flagNum>0 && flagNum<23){
-      unsigned long flagOverTempo = 1<<(flagNum-1);
-      flagOverride=flagOverride | flagOverTempo;
-      if(uartPrint)Serial.println(flagOverride,HEX);
-      overrideCount=0;
-    }
-  }
-  else if(input.indexOf("ign") >=0)//checks for hdata
-  { 
-    flagBMU=~(~flagBMU | (0xE));
-    flagOverride=~(~flagOverride | (0xE));
-    flagIgnoreTemp=true;
-  }
-  
-  
-  else if(input.indexOf("cha") >=0)//checks for Charge
-  {
-    chargeMode();
-  }
-  
-  else if(input.indexOf("bal") >=0)//checks for Balance
-  {
-    digitalWrite(relay1, LOW);
-    digitalWrite(relay2, LOW);
-    
-    if (!balanceOn){
-      
-      int sVal=input.indexOf("_");
-      int eVal=input.indexOf("_",sVal+1);
-      String bal2string=input.substring(sVal+1,eVal);
-      int bal2int=bal2string.toInt();
-      float temp = bal2int*0.0001;
-      if(temp>=volLowBalAlarm){
-        if(uartPrint)Serial.println("Balance");
-        balance2Vol=temp;
-        balanceMode();
-      }
-      else{
-        if(uartPrint)Serial.println("bad bal2vol!");
-        volLowBalAlarmFlag = true;
-      }
-    }
-  }
-  
-  
-  else if(input.indexOf("pri") >=0){
+  if(input.indexOf("pri") >=0){
     int sVal=input.indexOf(" ");
     if(sVal>0){
       int eVal=input.indexOf(" ",sVal+1);
@@ -289,6 +223,11 @@ void debugCommand(String input){
   }
   else if(input.indexOf("dof") >=0) {
     stopBal();
+    BMCcommand="";
+    if(uartPrint)Serial.println("Resistors Off ");
+  }
+  else if(input.indexOf("d1") >=0) {
+    
     if(uartPrint)Serial.println("Resistors Off ");
   }
   else if(input.indexOf("help") >=0) {
@@ -307,6 +246,27 @@ void debugCommand(String input){
       Serial.println("dof to turn resistors off");
     }
   }
+   
+  else if(input.indexOf("drt") >=0){
+    if(uartPrint)Serial.println("Discharge Test");
+    int sVal=input.indexOf("_"); //find the first underscore
+    int eVal=input.indexOf('\n',sVal+1); //find the end of the command
+    String drtString=input.substring(sVal+1,eVal); //grab command after "drt_"
+    drtString=String("deb_1_" + drtString);
+    BMCcommand=drtString;
+  }
+  else if(input.indexOf("flag") >=0){
+    int sVal=input.indexOf("_"); //find the first underscore
+    int eVal=input.indexOf('\n',sVal+1); //find the end of the command
+    String flagDebugString=input.substring(sVal+1,eVal); //grab command after "drt_"
+    int flagDebugInt = flagDebugString.toInt();
+    flagDebugTest(flagDebugInt);
+  }
+  else {
+    BMCcommand=input; //regular mode commands like charge, balance, stop, clear,
+  }
+    
+
 }
 
  /*------------------------------------------------------------------------------
@@ -320,3 +280,54 @@ void debugCommand(String input){
      BME[j].DCC= 7;                // set 3 bit DCC registry to "111" 
    } 
  }
+ 
+ 
+ /*------------------------------------------------------------------------------
+ *  void dischargeResistorTest(int module, int layer)
+ * enables the <module>'s <resistor> so discharging occcurs
+ * prints the voltage of each layer in the whole module
+ *----------------------------------------------------------------------------*/
+ 
+ void dischargeResistorTest(int module,int layer){
+   if (0<module<=BMENum) {  // make sure the command is Module 1-14
+      BME[module-1].balFlag[layer-1]= 1;
+      if (1) { //(BME[module-1].fVol[layer-1] > 0) { //make sure voltage isnt too low volLowWarn
+        if (layer >122) {
+          BME[module-1].DCC= BME[module-1].DCC=7;    // turn  on all layers
+        }
+        else if (layer >22) {
+          BME[module-1].DCC= BME[module-1].DCC=3;    // turn  on all layers
+        }
+        else if (layer >12) {
+          BME[module-1].DCC= BME[module-1].DCC=5;    // turn  on all laye
+        }
+        else if (layer >11) {
+          BME[module-1].DCC= BME[module-1].DCC=6;    // turn  on all laye
+        }
+        else if (layer >0) {
+          BME[module-1].DCC= BME[module-1].DCC | (1<<(3-layer));    // turn on the moudle layer's resistor
+        }
+        int j=0;
+        for(j=0;j<cellNum;j++){           // print voltage of each cell with tab spacers "vol1 \t vol2 \tb vol3 \n"            
+          Serial.print(BME[module-1].fVol[j],4); // four decimal precision on voltages
+          Serial.print("\t");
+        }
+        Serial.println("");      // prints carriage return
+      }
+      else {  // if voltage is too low, stop the discharge resistor test
+        BME[module-1].DCC= 0;   // stop balancing by disabling the bit flag corresponding to the i-th virtual layer
+        Serial.print("Voltage too low. Try another cell or recharge.");  
+        BMCcommand = "stop";
+      }
+   } 
+ }
+ 
+  /*------------------------------------------------------------------------------
+ *  void flagDebugTest(void)
+ * discharges all the virtual cells of a battery
+ *----------------------------------------------------------------------------*/
+ 
+ void flagDebugTest(const int &flag){
+   if (0<flag && flag <33) flagBMU= 0 | (1<<(flag-1)); 
+ }
+
