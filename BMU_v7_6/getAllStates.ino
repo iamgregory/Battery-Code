@@ -262,8 +262,8 @@
    int i,j;
    for(j=0;j<BMENum;j++){
      for(i=0;i<cellNum;i++){  
-       if(BME[j].vol[i]> int(maxVol*10000)) BME[j].vol[i]=int(maxVol*10000);
-       else if(BME[j].vol[i]< int((balance2Vol-.005)*10000)) BME[j].vol[i]=int((balance2Vol-.005)*10000);
+       if(BME[j].vol[i]> (int)(maxVol*10000)) BME[j].vol[i]=(int)(maxVol*10000);
+       else if(BME[j].vol[i]< (int)((balance2Vol-.005)*10000)) BME[j].vol[i]=(int)((balance2Vol-.005)*10000);
      }
    }
  }

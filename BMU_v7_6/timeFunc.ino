@@ -4,10 +4,25 @@
  *----------------------------------------------------------------------------*/
  
  void timeCheck(void){
-   unsigned long currentTimeStamp;
-   do{
-   }while(!areWeThereYet(timeStamp, controlTime));                 // kill time till next "void Loop" should execute
+   if(areWeThereYet(timeStamp, controlTime)){
+     unsigned long currentTimeStamp =micros();
+     unsigned long timeSince=0;
+     if(timeStamp > currentTimeStamp){                // check if a rollover has occured
+        timeSince= ~(timeStamp - currentTimeStamp)+1;              // correct for rollover
+     }
+     else{
+       timeSince = currentTimeStamp-timeStamp;
+     }
+     Serial.print("Loop running late by: ");
+     Serial.print(timeSince);
+     Serial.println(" microseconds!");
+   }
+   else{
+     do{
+     }while(!areWeThereYet(timeStamp, controlTime));                 // kill time till next "void Loop" should execute
+   }
  }
+ 
  
  /*------------------------------------------------------------------------------
  * boolean areWeThereYet(const unsigned long &referenceTimeStamp, const long &waitTime)
