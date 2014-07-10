@@ -21,8 +21,8 @@
   
   
   totalVoltage=analogRead(tVolInPin)*volConst;
-  Serial.print(totalVoltage);
-  Serial.print(",");
+//  Serial.print(totalVoltage);
+//  Serial.print(",");
   long tempo=0;
   for(int i=0;i<16;i++){
     tempo+=analogRead(presIn1Pin);
