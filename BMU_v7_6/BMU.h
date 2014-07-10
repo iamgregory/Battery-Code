@@ -24,7 +24,7 @@
  
   #define presHighLimit 5.0    //High pressure limit
   #define presLowLimit 0.5     //Low Pressure limit
-  #define presRateHigh 0.25    //High pressure rate limit //Pressure rate > .25 PSI/sec
+  #define presRateHigh 0.25    //High pressure rate limit
   
   #define inCurLimit 20.0      //current in limit durring Drive
   #define highInCur 92.0      //high current in limit during Charging 
@@ -63,11 +63,20 @@
   boolean uartPrint=true;    // print for debugging
   String inputString="";
   boolean fakeVolFlag=false;
-  float fakeVol=0;
-  boolean fakeTempFlag=false;
-  float fakeTemp=0;
   boolean fakePressFlag=false;
-  float fakePress=0;
+  boolean fakeTempFlag=false;
+  
+  
+  typedef struct  {
+  int tempsensor; //1-3 VC, 4 HS, 5 iTemp
+  int BME;
+  int layer;
+  int voltage;
+  int pressure; 
+  int temperature;
+  } fakeData;
+  
+  fakeData fakeStuff;
   
   
  // loop timing variables
@@ -119,6 +128,7 @@ float maxTemp=0;          //  max temperature of all virtual cells
 float minVol=7.0;        //  minimum voltage of virtual cells?
 float maxVol=0.0;          // maximum voltage of virtual cells?
 float balance2Vol=4.2;    // voltage to balance to
+float balanceMax=4.2;
 int balDoneCount=0;
 float charge2Vol=3.0;      //voltage to charge to
 
@@ -159,6 +169,7 @@ typedef struct  {
 } BMEdata;                   //BME data struct 
 
 BMEdata BME[BMENum];
+
 boolean DCP=false;     //Discharge premitted
 
 //BMU modes flags

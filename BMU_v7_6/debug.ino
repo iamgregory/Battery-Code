@@ -192,13 +192,29 @@ void testBME(BMEdata& _BME){
  * does the command that is sent from the GUI
  *----------------------------------------------------------------------------*/
 void debugCommand(String input){
-  
-  if(input.indexOf("pri") >=0){
-    int sVal=input.indexOf(" ");
-    if(sVal>0){
-      int eVal=input.indexOf(" ",sVal+1);
-      String ignoreBMEString=input.substring(sVal+1,eVal);
-      int i = ignoreBMEString.toInt();
+  char debugStrings[8][8];
+  int sVal=0;
+  int temp=0;
+  int counter=0;
+  int eVal=input.indexOf('\n',sVal+1); //find the end of the command
+  String aString="";
+  sVal=input.indexOf("_",temp); // find next underscore after temp
+
+ do{
+  aString=input.substring(temp,sVal); //grabe string bewteen temp and sVal
+  temp=sVal+1; // set temp to the next position after sVal
+  sVal=input.indexOf("_",temp); // find next underscore after temp
+  aString.toCharArray(debugStrings[counter], 8);
+  counter++;
+ }while(sVal>0);
+aString=input.substring(temp,eVal); //grab final string
+aString.toCharArray(debugStrings[counter], 8);
+aString=debugStrings[0];  
+
+  if(aString.indexOf("pri") >=0){
+    if (counter=1){
+      aString = debugStrings[1];
+      int i = aString.toInt();
       if(i>0 && i<15)testBME((BMEdata&)BME[i-1]);
       else testBMU();
     }
@@ -209,27 +225,21 @@ void debugCommand(String input){
       }
     }
   }
-  
-  else if(input.indexOf("fon") >=0){
-        fanOn=true; 
-        if(uartPrint)Serial.println("Fan On ");
-
+  else if(aString.indexOf("fon") >=0){
+    fanOn=true; 
+    if(uartPrint)Serial.println("Fan On ");
   }
-  else if(input.indexOf("fof") >=0){
+  else if(aString.indexOf("fof") >=0){
     fanOn=false; 
     if(uartPrint)Serial.println("Fan Off ");
   }
-  else if(input.indexOf("don") >=0) {
+  else if(aString.indexOf("don") >=0) {
     dischargeTest();
     if(uartPrint)Serial.println("Resistors On ");
   }
-  else if(input.indexOf("dof") >=0) {
+  else if(aString.indexOf("dof") >=0) {
     stopBal();
     BMCcommand="";
-    if(uartPrint)Serial.println("Resistors Off ");
-  }
-  else if(input.indexOf("d1") >=0) {
-    
     if(uartPrint)Serial.println("Resistors Off ");
   }
   else if(input.indexOf("help") >=0) {
@@ -237,19 +247,21 @@ void debugCommand(String input){
       Serial.println("stop");
       Serial.println("drive");
       Serial.println("charge");
-      Serial.println("balance_bal2int_");
+      Serial.println("discharge test: drt_module_layers: eg. drt_5_12");
+      Serial.println("balance_bal2int: balance_38000");
       Serial.println("override_overflagInt_");
       Serial.println("ignore");
       Serial.println("clear or reset");
-      Serial.println("print_x_ to read data from x bme");
+      Serial.println("print_x to read data from x bme: print_11");
       Serial.println("fon to turn fan on");
       Serial.println("fof to turn fan off");
       Serial.println("don to turn resistors on");
       Serial.println("dof to turn resistors off");
+      Serial.println("recbal_0 or recbal_1 to toggle recommend balance flag");
     }
   }
    
-  else if(input.indexOf("drt") >=0){
+  else if(aString.indexOf("drt") >=0){
     if(uartPrint)Serial.println("Discharge Test");
     int sVal=input.indexOf("_"); //find the first underscore
     int eVal=input.indexOf('\n',sVal+1); //find the end of the command
@@ -257,43 +269,42 @@ void debugCommand(String input){
     drtString=String("deb_1_" + drtString);
     BMCcommand=drtString;
   }
-  else if(input.indexOf("flag") >=0){
-    int sVal=input.indexOf("_"); //find the first underscore
-    int eVal=input.indexOf('\n',sVal+1); //find the end of the command
-    String flagDebugString=input.substring(sVal+1,eVal); //grab command after "drt_"
-    int flagDebugInt = flagDebugString.toInt();
+  else if(aString.indexOf("flag") >=0){
+    aString=debugStrings[1];
+    int flagDebugInt = aString.toInt();
     flagDebugTest(flagDebugInt);
   }
-  else if(input.indexOf("fake") >=0){  
-    if(input.indexOf("v") >=0){
-      int sVal=input.indexOf("p");
-      sVal=input.indexOf("_",sVal+1); //find the first underscore
-      int eVal=input.indexOf('\n',sVal+1); //find the end of the command
-      String theValueString=input.substring(sVal+1,eVal); //grab command after "drt_"
-      int theValueInt= theValueString.toInt();
-      if(uartPrint)Serial.println("Faking voltage");
-      float theValueFloat= theValueInt*0.0001;
-      fakeSensorData(theValueFloat,1);
+  else if(aString.indexOf("fake") >=0){ 
+   aString=debugStrings[1];
+    if(aString=="v"){
+      fakeVolFlag= true;
+      aString=debugStrings[2];
+      temp= aString.toInt(); 
+      fakeStuff.BME=temp;
+      aString=debugStrings[3];
+      temp= aString.toInt(); 
+      fakeStuff.layer=temp;
+      aString=debugStrings[4];
+      temp= aString.toInt(); 
+      fakeStuff.voltage=temp;
     }
-    else if(input.indexOf("t") >=0){
-      int sVal=input.indexOf("t");
-      sVal=input.indexOf("_",sVal+1); //find the first underscore
-      int eVal=input.indexOf('\n',sVal+1); //find the end of the command
-      String theValueString=input.substring(sVal+1,eVal); //grab command after "drt_"
-      int theValueInt= theValueString.toInt();
-      if(uartPrint)Serial.println("Faking temp");
-      float theValueFloat= theValueInt*0.0001;
-      fakeSensorData(theValueFloat,2);
+    else if(aString=="t"){
+      fakeTempFlag= true;
+      aString=debugStrings[2];
+      temp= aString.toInt(); 
+      fakeStuff.BME=temp;
+      aString=debugStrings[3];
+      temp= aString.toInt(); 
+      fakeStuff.tempsensor=temp;
+      aString=debugStrings[4];
+      temp= aString.toInt(); 
+      fakeStuff.temperature=temp;
     }
-    else if(input.indexOf("p") >=0){
-      int sVal=input.indexOf("p");
-      sVal=input.indexOf("_",sVal+1); //find the first underscore
-      int eVal=input.indexOf('\n',sVal+1); //find the end of the command
-      String theValueString=input.substring(sVal+1,eVal); //grab command after "drt_"
-      int theValueInt= theValueString.toInt();
-      float theValueFloat= theValueInt*0.0001;
-      if(uartPrint)Serial.println("Faking pressure");
-      fakeSensorData(theValueFloat,3);
+    else if(aString=="p"){
+      fakePressFlag= true;
+      aString=debugStrings[2];
+      temp= aString.toInt(); 
+      fakeStuff.pressure=temp;
     }
     else{
       fakeTempFlag=false;
@@ -301,11 +312,18 @@ void debugCommand(String input){
       fakePressFlag=false;
     }
   }
+  else if(aString=="recbal") {
+    aString=debugStrings[1];
+    int anInteger= aString.toInt();
+    if (anInteger==1)
+      balRecFlag=true;
+    else if (anInteger==0)
+      balRecFlag=false;
+  }
   else {
     BMCcommand=input; //regular mode commands like charge, balance, stop, clear,
   }
     
-
 }
 
  /*------------------------------------------------------------------------------
@@ -367,34 +385,47 @@ void debugCommand(String input){
  *----------------------------------------------------------------------------*/
  
  void flagDebugTest(const int &flag){
-   if (0<flag && flag <33) flagBMU= 0 | (1<<(flag-1)); 
+   if (0<flag && flag <33){
+     flagBMU= 0 | (1<<(flag-1)); 
+     if(uartPrint)Serial.print("Flag ");
+     if(uartPrint)Serial.print(flag);
+     if(uartPrint)Serial.println(" set.");
+   }
+   else if(flag==0){
+     flagBMU=0;
+     if(uartPrint)Serial.println("Flags Cleared ");
+   }    
  }
  
+ 
  /*------------------------------------------------------------------------------
- *  void fakeSensorData(void)
+ *  void fakeVoltageData(void)
  * discharges all the virtual cells of a battery
  *----------------------------------------------------------------------------*/
  
- void fakeSensorData(const float &reading, const int &datatype){
-   switch (datatype) {
-    case 1:  // voltage
-      fakeVolFlag= true;
-      fakeVol=reading;
-      break;
-    case 2: //temp
-      fakeTempFlag=true;
-      fakeTemp=reading;
-      break;
-    case 3: //pressure
-      fakePressFlag=true;
-      fakePress=reading;
-      break;
-    default: 
-      // if nothing else matches, do the default
-      // default is optional
-      break;
-    }
+ void fakeVoltageData(){  
+   BME[fakeStuff.BME].vol[fakeStuff.layer]=fakeStuff.voltage; 
  }
  
+ /*------------------------------------------------------------------------------
+ *  void fakeTemperatureData(void)
+ * 
+ *----------------------------------------------------------------------------*/
+ 
+ void fakeTemperatureData(){  
+   int anInteger=fakeStuff.tempsensor;
+   if (anInteger >=0 && anInteger<=3)
+     BME[fakeStuff.BME].temp[anInteger]=fakeStuff.temperature; 
+   else if (anInteger==5)
+        BME[fakeStuff.BME].iTemp=fakeStuff.temperature; 
+ }
+ /*------------------------------------------------------------------------------
+ *  void fakePressureData(void)
+ * 
+ *----------------------------------------------------------------------------*/
+ 
+ void fakePressureData(){  
+   pressure=((float)fakeStuff.pressure)*.0001; 
+ }
  
 

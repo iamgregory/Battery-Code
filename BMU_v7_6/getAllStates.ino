@@ -87,16 +87,12 @@
   }
 
   if (balanceOn) saturateBalanceVoltage();
+  if (fakeTempFlag) fakeTemperatureData();
+  if (fakeVolFlag) fakeVoltageData();
+  if (fakePressFlag) fakePressureData();
   for(int i=0;i<BMENum;i++){
     int2float((BMEdata&) BME[i]); // passes pointer to BME[i]
   }
-  
-  if (fakeTempFlag)
-    BME[1].fTemp[1]=fakeTemp;
-  if (fakeVolFlag)
-    BME[1].fVol[1]=fakeVol;
-  if (fakePressFlag)
-    pressure=fakePress;
 }
 
  /*------------------------------------------------------------------------------
