@@ -21,8 +21,15 @@
   
   
   totalVoltage=analogRead(tVolInPin)*volConst;
+  Serial.print(totalVoltage);
+  Serial.print(",");
+  long tempo=0;
+  for(int i=0;i<16;i++){
+    tempo+=analogRead(presIn1Pin);
+    delay(1);
+  }
+  pressure=(tempo>>4)*presConst-presOffset;
   fwLeak=!digitalRead(frontWPin);
-  pressure=analogRead(presIn1Pin)*presConst-presOffset;
   bwLeak=!digitalRead(backWPin);
   current0=analogRead(cur0InPin);
   delay(1);

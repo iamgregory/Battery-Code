@@ -47,10 +47,9 @@ void checkFlags(void){
  * checks the pressure sensor and the calculated pressure rate
  *----------------------------------------------------------------------------*/
  void pressurCheck(){
-   presRateFlag= false;    //Pressure rate > 1 PSI/sec
-   presFlag =false;      // Pressure < 1.5 PSI or Pressure  > 2.5 PSI
-   
-   if(presRate>=presRateHigh) presRateFlag= true;
+   presRateFlag= false;    //Pressure rate > .25 PSI/sec
+   presFlag =false;      // Pressure < 0.5 PSI or Pressure  > 5.0 PSI
+   if(abs(presRate)>=presRateHigh) presRateFlag= true;
    if((pressure>=presHighLimit) || (pressure<=presLowLimit)) presFlag= true;
  }
 
@@ -205,17 +204,17 @@ void volCheck(void){
  * Sets the flag
  *----------------------------------------------------------------------------*/
  void setFlag(void){
-//   if(leakFlag) flagBMU=flagBMU | 1;    // fwleak and bwleak get set in getBMUdata
-//   if(tempWarnFlag) flagBMU=flagBMU | (1<<1);
-//   if(tempAlarmFlag) flagBMU=flagBMU | (1<<2);
-//   if(tempFailFlag) flagBMU=flagBMU | (1<<3);
+   if(leakFlag) flagBMU=flagBMU | 1;    // fwleak and bwleak get set in getBMUdata
+   if(tempWarnFlag) flagBMU=flagBMU | (1<<1);
+   if(tempAlarmFlag) flagBMU=flagBMU | (1<<2);
+   if(tempFailFlag) flagBMU=flagBMU | (1<<3);
 //   if(presRateFlag) flagBMU=flagBMU | (1<<4);
-//   if(presFlag) flagBMU=flagBMU | (1<<5); 
+   if(presFlag) flagBMU=flagBMU | (1<<5); 
    if(volHighAlarmFlag) flagBMU=flagBMU | (1<<6);
    if(volLowBalAlarmFlag) flagBMU=flagBMU | (1<<7);
    if(volLowWarnFlag) flagBMU=flagBMU | (1<<8);
    if(volLowAlarmFlag) flagBMU=flagBMU | (1<<9);
-//   if(deadBatAlarmFlag) flagBMU=flagBMU | (1<<10);
+   if(deadBatAlarmFlag) flagBMU=flagBMU | (1<<10);
 //   if(volFailFlag) flagBMU=flagBMU | (1<<11);
 //   if(volMisFlag) flagBMU=flagBMU | (1<<12);
 //   if(bmeAlarmFlag) flagBMU=flagBMU | (1<<13);

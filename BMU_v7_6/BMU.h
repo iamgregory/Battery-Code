@@ -22,9 +22,9 @@
   #define volMismatch 5.0       //voltage mismatch limit between calculated and measured total voltage 
   #define volModMismatch 0.05   //voltage mismatch limit between calculated and measured total voltage 
  
-  #define presHighLimit 3.5    //High pressure limit
-  #define presLowLimit 1.5     //Low Pressure limit
-  #define presRateHigh 1.0    //High pressure rate limit
+  #define presHighLimit 5.0    //High pressure limit
+  #define presLowLimit 0.5     //Low Pressure limit
+  #define presRateHigh 0.25    //High pressure rate limit //Pressure rate > .25 PSI/sec
   
   #define inCurLimit 20.0      //current in limit durring Drive
   #define highInCur 92.0      //high current in limit during Charging 
