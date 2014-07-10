@@ -34,8 +34,10 @@ void pinInital(void){
     BME[i].GPIO=0;
   }
   BMESelfTest();      // self-check all BMEs
-  getBMEData();     // gets the data from all BMEs 
-  minVol=findMinV();
+  while(minVol==7){
+    getBMEData();     // gets the data from all BMEs 
+    minVol=findMinV();
+  }
   initalizeSoc();
   //************************ BMU setup *************************//   
   pinMode(relay1, OUTPUT); //pin selected to control
@@ -69,7 +71,8 @@ void pinInital(void){
   ipadd[3]=170+BMUNum;
   mac[5]=0xE0+BMUNum;
   port = 40+BMUNum;
-  
+//  Serial.println(BMUNum);
+//  Serial.println(ipadd[3]);
   if(BMUNum==0) mac = { 0x90, 0xA2, 0xDA, 0x0E, 0xCE, 0x7B };
   if(BMUNum==1) mac = { 0x90, 0x2A, 0xDA, 0x0E, 0xCE, 0x78 };
   if(BMUNum==2) mac = { 0x90, 0x2A, 0xDA, 0x0E, 0xCD, 0x9F };

@@ -52,7 +52,7 @@ void checkMode(String input){
     if(!stopUntil)
     {  contactorsOn=false;
       if (!balanceOn)
-      { Serial.print(BMCcommand);
+      { 
         int sVal=input.indexOf("_");
         int eVal=input.indexOf("_",sVal+1);
         String bal2string=input.substring(sVal+1,eVal);
@@ -69,7 +69,7 @@ void checkMode(String input){
       }
    
       else if (areWeThereYet(balanceTimeStamp,balanceCheckTime))
-      { if(uartPrint) Serial.println("Disable Resistors");
+      { //if(uartPrint) Serial.println("Disable Resistors");
         disableResistors();
          if (areWeThereYet(balanceTimeStamp,balanceCheckTime+3*controlTime))  // if a loop has happened since the resistors were disabled
          { if(uartPrint) Serial.println("balanceCal()");
@@ -224,22 +224,21 @@ void checkMode(String input){
  *----------------------------------------------------------------------------*/
  void balanceMode(void){
     if(uartPrint){
-      Serial.println("Balance to: ");
+      Serial.print("Balance to: ");
       Serial.println(balance2Vol,4);
     }
-    balanceMax=maxVol;
-    for(int j=0;j<BMENum;j++){
-     if(!BME[j].dataCheck){
-       for(int i=0;i<cellNum;i++){
-         if(BME[j].fVol[i]>balance2Vol){
-           BME[j].balFlag[i]=1;
-         }
-         else {
-           BME[j].balFlag[i]=0;
-         }
-       }
-     }
-    }
+//    for(int j=0;j<BMENum;j++){
+//     if(!BME[j].dataCheck){
+//       for(int i=0;i<cellNum;i++){
+//         if(BME[j].fVol[i]>balance2Vol){
+//           BME[j].balFlag[i]=1;
+//         }
+//         else {
+//           BME[j].balFlag[i]=0;
+//         }
+//       }
+//     }
+//    }
     BMESelfTest();
     driveOn=false;
     stopOn=false;
@@ -294,12 +293,12 @@ void checkMode(String input){
      if(!BME[j].dataCheck){
        //BME[j].DCC=0;
        for(i=0;i<cellNum;i++){
-         if(BME[j].fVol[i]> balance2Vol && BME[j].balFlag[i]){
+         if(BME[j].fVol[i]- balance2Vol > volTolerance){
            BME[j].DCC= BME[j].DCC | (1<<(2-i));    // balance by enabling the bit flag corresponding to the i-th virtual layer
            balOn=true;
          }
-         else {
-           BME[j].balFlag[i]=false;
+         else if (BME[j].fVol[i] <= balance2Vol) {
+           BME[j].DCC= BME[j].DCC & byte(!(1<<(2-i)));   // stop balancing by disabling the bit flag corresponding to the i-th virtual layer
          }
        }
      }
@@ -307,10 +306,14 @@ void checkMode(String input){
        BME[j].DCC=0;
      }
    }
-   if(!balOn) {
-     balDoneFlag=true;
-     if(uartPrint) Serial.println("Balancing Done");
-     //if(uartPrint) BMCcommand="stop";
+   if(balOn) balDoneCount=0;
+   else{
+     balDoneCount++;
+     if(balDoneCount>=4){
+       balDoneFlag=true;
+       if(uartPrint) Serial.println("Balancing Done");
+       //if(uartPrint) BMCcommand="stop";
+     }
    }
  }
  

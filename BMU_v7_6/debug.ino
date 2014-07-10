@@ -99,6 +99,8 @@ void printOutBME(BMEdata& _BME){
   }
   Serial.print(" A\t Voltage:");
   Serial.print(totalVoltage,2);
+  Serial.print(" V\t layerSum:");
+  Serial.print(volSum,2);
   Serial.print(" V\t Pressure:");
   Serial.print(pressure,1);
   Serial.print(" PSIG\t waterleak: ");
