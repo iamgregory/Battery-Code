@@ -52,7 +52,7 @@ void checkMode(String input){
     if(!stopUntil)
     {  contactorsOn=false;
       if (!balanceOn)
-      { Serial.print(BMCcommand);
+      { 
         int sVal=input.indexOf("_");
         int eVal=input.indexOf("_",sVal+1);
         String bal2string=input.substring(sVal+1,eVal);
@@ -69,7 +69,7 @@ void checkMode(String input){
       }
    
       else if (areWeThereYet(balanceTimeStamp,balanceCheckTime))
-      { if(uartPrint) Serial.println("Disable Resistors");
+      { //if(uartPrint) Serial.println("Disable Resistors");
         disableResistors();
          if (areWeThereYet(balanceTimeStamp,balanceCheckTime+3*controlTime))  // if a loop has happened since the resistors were disabled
          { if(uartPrint) Serial.println("balanceCal()");
@@ -224,7 +224,7 @@ void checkMode(String input){
  *----------------------------------------------------------------------------*/
  void balanceMode(void){
     if(uartPrint){
-      Serial.println("Balance to: ");
+      Serial.print("Balance to: ");
       Serial.println(balance2Vol,4);
     }
 //    for(int j=0;j<BMENum;j++){
@@ -306,7 +306,7 @@ void checkMode(String input){
        BME[j].DCC=0;
      }
    }
-   if(!balOn) balDoneCount=0;
+   if(balOn) balDoneCount=0;
    else{
      balDoneCount++;
      if(balDoneCount>=4){

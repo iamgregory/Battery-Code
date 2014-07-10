@@ -34,8 +34,10 @@ void pinInital(void){
     BME[i].GPIO=0;
   }
   BMESelfTest();      // self-check all BMEs
-  getBMEData();     // gets the data from all BMEs 
-  minVol=findMinV();
+  while(minVol==7){
+    getBMEData();     // gets the data from all BMEs 
+    minVol=findMinV();
+  }
   initalizeSoc();
   //************************ BMU setup *************************//   
   pinMode(relay1, OUTPUT); //pin selected to control
