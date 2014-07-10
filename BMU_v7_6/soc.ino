@@ -5,7 +5,7 @@
 void socCal(){
   
   if(maxVol>=4.199 && current<=5 && chargeOn) cap=capMax;
-  else cap+=current*capConst;
+  else if(current>.3) cap+=current*capConst;
   if(cap>capMax) cap=capMax;
   if(cap<0) cap=0; 
   SOC=cap/capMax*100;

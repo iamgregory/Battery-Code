@@ -18,24 +18,18 @@
  * Measures and calculates data on a half string level 
  *-----------------------------------------------------------------------------*/
  void getBMUData(void){
-  
-  
-  totalVoltage=analogRead(tVolInPin)*volConst;
-//  Serial.print(totalVoltage);
-//  Serial.print(",");
-  long tempo=0;
-  for(int i=0;i<16;i++){
-    tempo+=analogRead(presIn1Pin);
-    delay(1);
-  }
-  pressure=(tempo>>4)*presConst-presOffset;
+   
   fwLeak=!digitalRead(frontWPin);
   bwLeak=!digitalRead(backWPin);
-  current0=analogRead(cur0InPin);
-  delay(1);
-  current=(analogRead(curInPin)-(float)current0)*curConst;
-  if (abs(current)<=.6) current=0;
+  totalVoltage=avgADC(tVolInPin,4)*volConst;
+  pressure=avgADC(presIn1Pin,4)*presConst-presOffset;
+  current0=avgADC(cur0InPin,3);//analogRead(cur0InPin);
+  curMeas=(avgADC(curInPin,3)-(float)current0)*curConst;
+  current=curMeas-currentOffset;
+//  if (abs(current)<=.4) current=0;
+
  }
+ 
  /*------------------------------------------------------------------------------
  * void calStateBMU(void)
  * uses the measured data
@@ -267,3 +261,19 @@
      }
    }
  }
+ 
+ /*------------------------------------------------------------------------------
+ * int avgADC(int adcPin,int n)
+ * average the ADC measurement 2^n times
+ * returns the average
+ *-----------------------------------------------------------------------------*/
+ int avgADC(int adcPin,int n){
+  long tempo=0;
+  for(int i=0;i<(1<<n);i++){
+    tempo+=analogRead(adcPin);
+    delay(1);
+  }
+  tempo=tempo>>n;
+  return (int)tempo;
+ }
+ 

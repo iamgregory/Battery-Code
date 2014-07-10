@@ -103,9 +103,10 @@ float tVolOld =0;          // the last total voltage
 float pressure =0;        // pressure sensor reading
 float presOld =0;              // last pressure value
 float presRate =0;          // filtered pressure rate
-float current0 =0;         // current offset
+int current0 =0;         // current mid point
 float current =0;        // value read from the LEM sensor
-float curOld =0;      // last current value
+float currentOffset =0;  // current offset
+float curMeas =0;        // measured current
 boolean fwLeak =0;         // front leak sensor
 boolean bwLeak =0;         // back leak sensor
 

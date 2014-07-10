@@ -166,6 +166,7 @@ void checkMode(String input){
       chargeOn=false;
       driveOn=false;
       stopOn=true;
+      conOnTime=0;
       BMESelfTest();
     }
  }
@@ -248,6 +249,7 @@ void checkMode(String input){
     timeoutCount=0;
     balanceTimeStamp=micros()-balanceCheckTime; //make sure balanceCal executes the first time through
     balDoneFlag=false;
+    conOnTime=0;
  }
  
  /*------------------------------------------------------------------------------
