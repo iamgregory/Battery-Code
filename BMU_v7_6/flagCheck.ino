@@ -3,6 +3,7 @@
  * Checks and sets all BMU flags burritos
  *----------------------------------------------------------------------------*/
 void checkFlags(void){
+  leakFlag=false;
   if(fwLeak || bwLeak) leakFlag=true;  //hecks the leak sensors
   bmeCommCheck();   //checks the communication of all BME's
   bmeFlagCheck();   //checks the BME's self-checks flags
@@ -226,7 +227,7 @@ void volCheck(void){
 //   if(timeoutFlag) flagBMU=flagBMU | (1<<19);
    if(chargeDoneFlag) flagBMU=flagBMU | (1<<20);      
    if(balDoneFlag) flagBMU=flagBMU | (1<<21);
-//   if(balRecFlag) flagBMU=flagBMU | (1<<22); maxVol-minVol in volCheck function, !balanceOn, set balRecVol=0
+   if(balRecFlag) flagBMU=flagBMU | (1<<22); 
    
    flagBMU= flagBMU & ~flagOverride;
 //   if(uartPrint){
@@ -280,6 +281,7 @@ void volCheck(void){
    overrideCount=0;
    chargeDoneFlag=false;
    balDoneFlag=false;
+   leakFlag=false;
    for(int j;j<BMENum;j++){                // goes through all BMEs
      BME[j].ignoreiT=false;
      for (int i=0;i<4;i++){
