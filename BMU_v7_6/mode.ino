@@ -48,8 +48,8 @@ void checkMode(String input){
   }
   
   else if(input.indexOf("bal") >=0)//checks for Balance
-  {
-    if(!stopUntil)
+  { 
+    if(!stopUntil )
     {  contactorsOn=false;
       if (!balanceOn)
       { 
@@ -57,14 +57,10 @@ void checkMode(String input){
         int eVal=input.indexOf("_",sVal+1);
         String bal2string=input.substring(sVal+1,eVal);
         int bal2int=bal2string.toInt();
-        float tempo = bal2int*0.0001;
-        if(tempo>=volLowBalAlarm)
-        {  balance2Vol=tempo;
-           balanceMode();
-        }
-        else
-        {  if(uartPrint)Serial.println("bad bal2vol!");
-         volLowBalAlarmFlag = true;
+        balance2Vol = bal2int*0.0001;
+        if(balance2Vol>volLowBalAlarm) balanceMode();
+        else{
+          if(uartPrint)Serial.println("bad bal2vol!");
         }
       }
    

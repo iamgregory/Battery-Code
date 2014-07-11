@@ -24,7 +24,7 @@
  
   #define presHighLimit 5.0    //High pressure limit
   #define presLowLimit 0.5     //Low Pressure limit
-  #define presRateHigh 0.25    //High pressure rate limit
+  #define presRateHigh 0.50    //High pressure rate limit
   
   #define inCurLimit 20.0      //current in limit durring Drive
   #define highInCur 92.0      //high current in limit during Charging 
@@ -65,6 +65,9 @@
   boolean fakeVolFlag=false;
   boolean fakePressFlag=false;
   boolean fakeTempFlag=false;
+  boolean fakeTotVolFlag=false;
+  boolean fakeModVolFlag=false;
+  boolean fakeCurFlag=false;
   
   
   typedef struct  {
@@ -74,6 +77,9 @@
   int voltage;
   int pressure; 
   int temperature;
+  float totalVoltage;
+  float modSum;
+  float current;
   } fakeData;
   
   fakeData fakeStuff;
