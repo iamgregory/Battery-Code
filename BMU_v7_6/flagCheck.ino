@@ -218,7 +218,7 @@ void volCheck(void){
 //   if(bmeAlarmFlag) flagBMU=flagBMU | (1<<13);
 //   if(bmeComFlag) flagBMU=flagBMU | (1<<14);
 //   if(bmcComFlag) flagBMU=flagBMU | (1<<15);
-//   if(driveCurflag) flagBMU=flagBMU | (1<<16);
+   if(driveCurflag) flagBMU=flagBMU | (1<<16);
    if(chargeCurFlag) flagBMU=flagBMU | (1<<17);
    if(stopCurFlag) flagBMU=flagBMU | (1<<18);
    if(timeoutFlag) flagBMU=flagBMU | (1<<19);
@@ -250,7 +250,8 @@ void volCheck(void){
    }
    if(stopOn){
      if((flagBMU & 0x400000) !=0) flagPriority=5;   //  B10000000000000000000000
-     if((flagBMU & 0x04FFEF) !=0) flagPriority=4;  //  
+     if((flagBMU & 0x00D92A) !=0) flagPriority=4;  //  
+     if((flagBMU & 0x042655) !=0) flagPriority=3;  //  
    }  
    if(balanceOn){
      if((flagBMU & 0x200000) !=0) flagPriority=5;   //  B10100000000000000000000
