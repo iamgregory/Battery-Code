@@ -271,8 +271,8 @@ aString=debugStrings[0];
   }
   else if(aString.indexOf("flag") >=0){
     aString=debugStrings[1];
-    int flagDebugInt = aString.toInt();
-    flagDebugTest(flagDebugInt);
+    temp = aString.toInt();
+    flagDebugTest(temp);
   }
   else if(aString.indexOf("fake") >=0){ 
    aString=debugStrings[1];
@@ -280,10 +280,10 @@ aString=debugStrings[0];
       fakeVolFlag= true;
       aString=debugStrings[2];
       temp= aString.toInt(); 
-      fakeStuff.BME=temp;
+      fakeStuff.BME=temp-1;
       aString=debugStrings[3];
       temp= aString.toInt(); 
-      fakeStuff.layer=temp;
+      fakeStuff.layer=temp-1;
       aString=debugStrings[4];
       temp= aString.toInt(); 
       fakeStuff.voltage=temp;
@@ -292,10 +292,10 @@ aString=debugStrings[0];
       fakeTempFlag= true;
       aString=debugStrings[2];
       temp= aString.toInt(); 
-      fakeStuff.BME=temp;
+      fakeStuff.BME=temp-1;
       aString=debugStrings[3];
       temp= aString.toInt(); 
-      fakeStuff.tempsensor=temp;
+      fakeStuff.tempsensor=temp-1;
       aString=debugStrings[4];
       temp= aString.toInt(); 
       fakeStuff.temperature=temp;
@@ -388,8 +388,78 @@ aString=debugStrings[0];
    if (0<flag && flag <33){
      flagBMU= 0 | (1<<(flag-1)); 
      if(uartPrint)Serial.print("Flag ");
-     if(uartPrint)Serial.print(flag);
-     if(uartPrint)Serial.println(" set.");
+     switch (flag) {
+    case 1:
+      if(uartPrint)Serial.println("1: Water Leak set.");
+      break;
+    case 2:
+      if(uartPrint)Serial.println("2: High Temperature Warning set.");
+      break;
+    case 3:
+      if(uartPrint)Serial.println("3: High Temperature Alarm set.");
+      break;
+    case 4:
+      if(uartPrint)Serial.println("4: Temperature Sensor Failure set.");
+      break;
+    case 5:
+      if(uartPrint)Serial.println("5: High Pressure Rate set.");
+      break;
+    case 6:
+      if(uartPrint)Serial.println("6: Pressure Out of Range set.");
+      break;
+    case 7:
+      if(uartPrint)Serial.println("7: High Voltage Alarm set.");
+      break;
+    case 8:
+      if(uartPrint)Serial.println("8: Low Balancing Voltage Alarm set.");
+      break;
+    case 9:
+      if(uartPrint)Serial.println("9: Low Voltage Warning set.");
+      break;
+    case 10:
+      if(uartPrint)Serial.println("10: Low Voltage Alarm set.");
+      break;
+    case 11:
+      if(uartPrint)Serial.println("11: Dead Battery Alarm set.");
+      break;
+    case 12:
+      if(uartPrint)Serial.println("12: Voltage Sensor Failure set.");
+      break;
+    case 13:
+      if(uartPrint)Serial.println("13: Voltage Mismatch set.");
+      break;
+    case 14:
+      if(uartPrint)Serial.println("14: BME Flag Alarm set.");
+      break;
+    case 15:
+      if(uartPrint)Serial.println("15: BMU to BME Com Error set.");
+      break;
+    case 16:
+      if(uartPrint)Serial.println("16: BMU to BMC Com Error set.");
+      break;
+    case 17:
+      if(uartPrint)Serial.println("17: Drive Current Out of Range set.");
+      break;
+    case 18:
+      if(uartPrint)Serial.println("18: Charge Current Out of Range set.");
+      break;
+    case 19:
+      if(uartPrint)Serial.println("19:  Stop Current Out of Range  set.");
+      break;
+    case 20:
+      if(uartPrint)Serial.println("20: Charging/Balancing Timeout set.");
+      break;
+    case 21:
+      if(uartPrint)Serial.println("21: Charging Done   set.");
+      break;
+    case 22:
+      if(uartPrint)Serial.println("22: Balancing Done set.");
+      break;
+    case 23:
+      if(uartPrint)Serial.println("23: Balance Recommended  set.");
+      break;
+  }
+
    }
    else if(flag==0){
      flagBMU=0;
@@ -416,7 +486,7 @@ aString=debugStrings[0];
    int anInteger=fakeStuff.tempsensor;
    if (anInteger >=0 && anInteger<=3)
      BME[fakeStuff.BME].temp[anInteger]=fakeStuff.temperature; 
-   else if (anInteger==5)
+   else if (anInteger==4)
         BME[fakeStuff.BME].iTemp=fakeStuff.temperature; 
  }
  /*------------------------------------------------------------------------------
