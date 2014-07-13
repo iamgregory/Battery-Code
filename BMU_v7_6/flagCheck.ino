@@ -246,7 +246,7 @@ void volCheck(void){
    if(driveOn){
      if((flagBMU & 0x400000) !=0) flagPriority=5;   //  B10000000000000000000000
      if((flagBMU & 0x00910A) !=0) flagPriority=4;  //  
-     if((flagBMU & 0x016A75) !=0) flagPriority=3;  //  
+     if((flagBMU & 0x016A75) !=0) flagPriority=2;    
    }
    if(stopOn){
      if((flagBMU & 0x400000) !=0) flagPriority=5;   //  B10000000000000000000000

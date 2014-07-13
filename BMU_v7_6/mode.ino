@@ -16,9 +16,9 @@ void checkMode(String input){
   
   else if(input.indexOf("ove") >=0)//checks for override
   {
-    if(uartPrint)Serial.println("Override");
+    if(uartPrint)Serial.print("Override: ");
     int sVal=input.indexOf("_");
-    int eVal=input.indexOf("_",sVal+1);
+    int eVal=input.indexOf('\n',sVal+1);
     String overrideString=input.substring(sVal+1,eVal);
     int flagNum=overrideString.toInt();
     if(flagNum>0 && flagNum<23){
@@ -126,13 +126,13 @@ void checkMode(String input){
        Serial.println("Should Stop!");
        break;
      case 2:
-     case 3:
        overrideCount++;
        if(overrideCount >=overrideTLimit){
          stopMode();
          stopUntil=true;
        }
        break;
+     case 3:
      case 4:
      case 5:
        break;

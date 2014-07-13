@@ -154,7 +154,16 @@
     RDSTATSTA((BMEdata&) BME[i]);  //check results of self test
     RDSTATSTB((BMEdata&) BME[i]);  //check results of self test
   }
-  getBMEData();
+//  getBMEData();
+  // reset cell temperatures
+  ADAX(0,0);
+  delayMicroseconds(BMEConDelay1);
+  
+  for(int i=0;i<BMENum;i++){
+    RDAUXA((BMEdata&) BME[i]);
+    RDAUXB((BMEdata&) BME[i]);  
+  }
+  
  }
  
 //////////////////////////// sub Functions //////////////////////// 
