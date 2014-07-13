@@ -40,7 +40,7 @@ void checkFlags(void){
 
    if(driveOn && current >= inCurLimit) driveCurflag= true;
    if(chargeOn && current >= highInCur && current >= highOutCur) chargeCurFlag= true;
-   if((stopOn || balanceOn) && timeoutCount >= inOutCur) stopCurFlag= true;
+   if((stopOn || balanceOn) && current >= inOutCur) stopCurFlag= true;
  }
 
 /*------------------------------------------------------------------------------
@@ -156,10 +156,10 @@ void tempCheck(void){
  *----------------------------------------------------------------------------*/
 void volCheck(void){
   // set flags to false before starting the voltage check
-  volHighAlarmFlag =false;      //Any VC voltage > 4.25 V 
+  volHighAlarmFlag =false;      //Any VC voltage > 4.205 V 
   balRecFlag=false;             //Any VC voltage < 3.9 V
-  volLowBalAlarmFlag=false;    //Any VC voltage < 3.7 V
   volLowWarnFlag =false;     //Any VC voltage < 3.2 V
+  volLowBalAlarmFlag = false;
   volLowAlarmFlag =false;    //Any VC voltage < 3.0 V
   deadBatAlarmFlag=false;    //Any VC voltage < 2.5 V
   volFailFlag =false;      //Any VC voltage < .1 V or >6.5 or Vref2<2.978 or>3.020
@@ -183,21 +183,18 @@ void volCheck(void){
     if(uartPrint) Serial.println(maxVol,4);
   }  
   
-  
-  if(minVol <= 0.0){     // check virtual cell voltage sensor for failure 
-       volFailFlag = true;             // set voltage failure flag
-  } 
-  else if(minVol <= deadBatAlarm && !driveOn) deadBatAlarmFlag=true;  // check virtual cell voltage for dead batteries
-  else if(minVol <= volLowBalAlarm && !chargeOn){     // check virtual cell voltage for low voltage balancing alarm flag and not in charge mode
-    if(minVol <= volLowWarn){                      // check virtual cell voltage for low voltage warnning flag
-      if(minVol <= volLowAlarm){                    // check virtual cell voltage for low voltage error flag
-        volLowAlarmFlag = true;    // set dead battery flag
-      }
-      else volLowWarnFlag = true;     // set low voltage error flag
-    }
-    else if(balanceOn) volLowBalAlarmFlag = true;        //set low voltage balancing alarm flag if in balance mode
+  if(minVol <= 0.0) volFailFlag = true;             // set voltage failure flag
+  else if(minVol <= deadBatAlarm && !driveOn) deadBatAlarmFlag=true;  // set dead battery alarm
+  else if(minVol <= volLowAlarm && !chargeOn) volLowAlarmFlag=true;    // low voltage alarm
+  else if(minVol <= volLowWarn  && !chargeOn) volLowWarnFlag = true;    //  low voltage warning      
+  else if(balance2Vol <= volLowBalAlarm  && BMCcommand.indexOf("bal") >=0) volLowBalAlarmFlag = true;    //  low voltage warning
+   
+  if((maxVol-minVol)>=balRecVol && !balanceOn && minVol>=balRecLimit ){
+    balRecFlag=true;    // set balance recomanded flag
   }
-  if((maxVol-minVol)>=balRecVol && !balanceOn && minVol>=balRecLimit ) balRecFlag=true;    // set balance recomanded flag
+
+        
+
 }
 
 /*------------------------------------------------------------------------------
@@ -209,22 +206,22 @@ void volCheck(void){
    if(tempWarnFlag) flagBMU=flagBMU | (1<<1);
    if(tempAlarmFlag) flagBMU=flagBMU | (1<<2);
    if(tempFailFlag) flagBMU=flagBMU | (1<<3);
-//   if(presRateFlag) flagBMU=flagBMU | (1<<4);
+   if(presRateFlag) flagBMU=flagBMU | (1<<4);
    if(presFlag) flagBMU=flagBMU | (1<<5); 
    if(volHighAlarmFlag) flagBMU=flagBMU | (1<<6);
    if(volLowBalAlarmFlag) flagBMU=flagBMU | (1<<7);
    if(volLowWarnFlag) flagBMU=flagBMU | (1<<8);
    if(volLowAlarmFlag) flagBMU=flagBMU | (1<<9);
    if(deadBatAlarmFlag) flagBMU=flagBMU | (1<<10);
-//   if(volFailFlag) flagBMU=flagBMU | (1<<11);
-//   if(volMisFlag) flagBMU=flagBMU | (1<<12);
+   if(volFailFlag) flagBMU=flagBMU | (1<<11);
+   if(volMisFlag) flagBMU=flagBMU | (1<<12);
 //   if(bmeAlarmFlag) flagBMU=flagBMU | (1<<13);
 //   if(bmeComFlag) flagBMU=flagBMU | (1<<14);
 //   if(bmcComFlag) flagBMU=flagBMU | (1<<15);
-//   if(driveCurflag) flagBMU=flagBMU | (1<<16);
-//   if(chargeCurFlag) flagBMU=flagBMU | (1<<17);
-//   if(stopCurFlag) flagBMU=flagBMU | (1<<18);
-//   if(timeoutFlag) flagBMU=flagBMU | (1<<19);
+   if(driveCurflag) flagBMU=flagBMU | (1<<16);
+   if(chargeCurFlag) flagBMU=flagBMU | (1<<17);
+   if(stopCurFlag) flagBMU=flagBMU | (1<<18);
+   if(timeoutFlag) flagBMU=flagBMU | (1<<19);
    if(chargeDoneFlag) flagBMU=flagBMU | (1<<20);      
    if(balDoneFlag) flagBMU=flagBMU | (1<<21);
    if(balRecFlag) flagBMU=flagBMU | (1<<22); 
@@ -253,7 +250,8 @@ void volCheck(void){
    }
    if(stopOn){
      if((flagBMU & 0x400000) !=0) flagPriority=5;   //  B10000000000000000000000
-     if((flagBMU & 0x04FFEF) !=0) flagPriority=4;  //  
+     if((flagBMU & 0x00D92A) !=0) flagPriority=4;  //  
+     if((flagBMU & 0x042655) !=0) flagPriority=3;  //  
    }  
    if(balanceOn){
      if((flagBMU & 0x200000) !=0) flagPriority=5;   //  B10100000000000000000000
@@ -282,6 +280,14 @@ void volCheck(void){
    chargeDoneFlag=false;
    balDoneFlag=false;
    leakFlag=false;
+   //debug stuff
+   fakeVolFlag=false;
+   fakePressFlag=false;
+   fakeTempFlag=false;
+   fakeTotVolFlag=false;
+   fakeModVolFlag=false;
+   fakeCurFlag=false;
+   
    for(int j;j<BMENum;j++){                // goes through all BMEs
      BME[j].ignoreiT=false;
      for (int i=0;i<4;i++){

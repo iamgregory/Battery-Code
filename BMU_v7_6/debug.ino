@@ -306,19 +306,36 @@ aString=debugStrings[0];
       temp= aString.toInt(); 
       fakeStuff.pressure=temp;
     }
+    else if(aString=="c"){
+      fakeCurFlag= true;
+      aString=debugStrings[2];
+      temp= aString.toInt(); 
+      fakeStuff.current=temp*.0001;
+    }
     else{
       fakeTempFlag=false;
       fakeVolFlag=false;
       fakePressFlag=false;
+      fakeCurFlag=false;
     }
   }
-  else if(aString=="recbal") {
+  else if(aString=="totalmm") {
+    fakeTotVolFlag=true;
     aString=debugStrings[1];
-    int anInteger= aString.toInt();
-    if (anInteger==1)
-      balRecFlag=true;
-    else if (anInteger==0)
-      balRecFlag=false;
+    temp= aString.toInt();
+    fakeStuff.totalVoltage=temp*.0001;   
+  }
+  else if(aString=="modmm") {
+      fakeModVolFlag=true;
+      aString=debugStrings[1];
+      temp= aString.toInt();
+      fakeStuff.BME=temp-1;
+      aString=debugStrings[2];
+      temp= aString.toInt();
+      fakeStuff.modSum=temp*.0001;
+  }
+  else if(aString=="clear") {
+    clearFlags();  
   }
   else {
     BMCcommand=input; //regular mode commands like charge, balance, stop, clear,

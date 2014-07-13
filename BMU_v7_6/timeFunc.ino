@@ -14,7 +14,7 @@
        timeSince = currentTimeStamp-timeStamp;
      }
      Serial.print("Loop running late by: ");
-     Serial.print(timeSince);
+     Serial.print(timeSince-controlTime);
      Serial.println(" microseconds!");
    }
    else{
