@@ -16,17 +16,31 @@ void checkMode(String input){
   
   else if(input.indexOf("ove") >=0)//checks for override
   {
-    if(uartPrint)Serial.print("Override: ");
-    int sVal=input.indexOf("_");
-    int eVal=input.indexOf('\n',sVal+1);
-    String overrideString=input.substring(sVal+1,eVal);
-    int flagNum=overrideString.toInt();
-    if(flagNum>0 && flagNum<23){
-      unsigned long flagOverTempo = 1<<(flagNum-1);
-      flagOverride=flagOverride | flagOverTempo;
-      if(uartPrint)Serial.println(flagOverride,HEX);
-      overrideCount=0;
+    int eVal,sVal,temp,flagNum;
+    String overrideString="";
+    sVal=input.indexOf("_");  // first underscore
+    temp=input.indexOf("_",sVal+1); //location of next possible underscore
+    eVal=input.indexOf('\n');  // end location
+    while(temp>0){  // while there are more underscores  
+      overrideString=input.substring(sVal+1,temp);
+      flagNum=overrideString.toInt();
+      if(flagNum>0 && flagNum<23){
+        flagOverride=flagOverride | (1<<(flagNum-1));
+        if(uartPrint)Serial.print("Override: ");
+        if(uartPrint)Serial.println(flagOverride,HEX);
+        overrideCount=0;
+      }
+      sVal=temp;
+      temp=input.indexOf("_",sVal+1);
     }
+    overrideString=input.substring(sVal+1,eVal); // grab string from last underscore to end location
+      flagNum=overrideString.toInt();
+      if(flagNum>0 && flagNum<23){
+        flagOverride=flagOverride | (1<<(flagNum-1));
+        if(uartPrint)Serial.print("Override: ");
+        if(uartPrint)Serial.println(flagOverride,HEX);
+        overrideCount=0;
+      }
   }
   
   else if(input.indexOf("ign") >=0)//checks for ignore
@@ -51,29 +65,33 @@ void checkMode(String input){
   { 
     if(!stopUntil )
     {  contactorsOn=false;
-      if (!balanceOn)
-      { 
+      if (!balanceOn){ 
         int sVal=input.indexOf("_");
         int eVal=input.indexOf("_",sVal+1);
         String bal2string=input.substring(sVal+1,eVal);
         int bal2int=bal2string.toInt();
         balance2Vol = bal2int*0.0001;
-        if(balance2Vol>volLowBalAlarm) balanceMode();
+        if(balance2Vol>volLowBalAlarm){
+          balanceMode();
+          balRelaxFlag=false;
+        }
         else{
           if(uartPrint)Serial.println("bad bal2vol!");
         }
       }
-   
-      else if (areWeThereYet(balanceTimeStamp,balanceCheckTime))
-      { //if(uartPrint) Serial.println("Disable Resistors");
-        disableResistors();
-         if (areWeThereYet(balanceTimeStamp,balanceCheckTime+3*controlTime))  // if a loop has happened since the resistors were disabled
-         { if(uartPrint) Serial.println("balanceCal()");
-           balanceCal(); // if balancing mode is on, then calculate which cells need to be discarged
-         }
+      else if(!balRelaxFlag){   // check to see if the system has relaxed
+        if( areWeThereYet(balanceTimeStamp,balanceRelaxTime) ); 
+        balRelaxFlag=true;   
       }
-      balTempControl();
-    }
+      else if ( areWeThereYet(balanceTimeStamp,balanceCheckTime) ){ 
+        disableResistors();
+        if ( areWeThereYet(balanceTimeStamp,balanceCheckTime+3*controlTime) ){  // if a loop has happened since the resistors were disabled
+          if(uartPrint) Serial.println("balanceCal()");
+          balanceCal(); // if balancing mode is on, then calculate which cells need to be discarged
+        }
+      }
+    balTempControl();
+   }
   }
   
   else if(input.indexOf("deb") >=0)//checks for debug test commands
@@ -107,7 +125,7 @@ void checkMode(String input){
       break;
     }
   }
-  }
+  } 
   priorityMode();                   //sets contactors according to the mode and flags
 }
 
@@ -118,7 +136,7 @@ void checkMode(String input){
  *----------------------------------------------------------------------------*/
  
  void priorityMode(void){
-   
+   setPriority();
    switch(flagPriority){
      case 1:
        stopMode();
@@ -157,7 +175,7 @@ void checkMode(String input){
     contactorsOn=false;
     if(!stopOn){
       if(uartPrint) Serial.print(BMCcommand);
-      if(uartPrint) Serial.println("Stop");
+      if(uartPrint) Serial.println("Stop Mode Entered.");
       stopBal();
       chargeOn=false;
       driveOn=false;
@@ -174,7 +192,7 @@ void checkMode(String input){
  void driveMode(void){
    if(!stopUntil){
     if(!driveOn) {
-      if(uartPrint) Serial.println("Drive");
+      if(uartPrint) Serial.println("Drive Mode Entered.");
       stopBal();
       stopOn=false;
       chargeOn=false;
@@ -200,9 +218,11 @@ void checkMode(String input){
       driveOn=false;
       stopOn=false;
       chargeOn=true;
+      if(uartPrint) Serial.println("Charge Mode Entered.");
+      modeInfo.currentMode=CHARGEMODE;
+      modeTimeReset();
       overrideCount=0;
       conOnTime=0;
-      timeoutCount=0;
       chargeDoneFlag=false;
       BMESelfTest();
     }
@@ -239,10 +259,11 @@ void checkMode(String input){
     BMESelfTest();
     driveOn=false;
     stopOn=false;
+    modeInfo.currentMode=BALANCEMODE;
+    modeTimeReset();
     chargeOn=false;
     balanceOn=true;
     overrideCount=0;
-    timeoutCount=0;
     balanceTimeStamp=micros()-balanceCheckTime; //make sure balanceCal executes the first time through
     balDoneFlag=false;
     conOnTime=0;

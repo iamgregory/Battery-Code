@@ -17,6 +17,7 @@ created 10/3/2013
   
   void setup() {   
     pinInital();    // configure arduino due pins
+    modeTimeReset();
     Serial.println("\n \t\t BMU 7.6\n");    // print the code version
     Serial.println("Enter Command (help for a list of commands)");
   }

@@ -13,7 +13,6 @@ void checkFlags(void){
   pressurCheck();      //checks additional sensors
   timeoutCheck();
   setFlag();       // sets the flag to be sent out 
-  if(flagBMU!=0) setPriority();  // sets the flag priority 
 }
 
 /*------------------------------------------------------------------------------
@@ -21,12 +20,30 @@ void checkFlags(void){
  * time out after 10 hours of chargeing or balancing
  *----------------------------------------------------------------------------*/
  void timeoutCheck(){
-   timeoutFlag=false;      //Charging or balance time > 10 hours
-   
-   if(chargeOn || balanceOn){
-     timeoutCount++;
-     if(timeoutCount >= timeoutLimit) timeoutFlag= true;  // set Timeout flag
+   unsigned long timeSince= timeElapsed(modeInfo.timeKeepingStamp);  // update time in the mode
+   modeInfo.timeKeepingStamp=micros();
+   modeInfo.microseconds+=timeSince;   
+   if (modeInfo.microseconds>ONEMINUTE){
+       modeInfo.microseconds-=ONEMINUTE;
+       modeInfo.minutes++;
    }
+   if (modeInfo.minutes>60){
+       modeInfo.minutes-=60;
+       modeInfo.hours++;
+   }
+   timeoutFlag=false;      // Check if charging or balance time > 10 hours
+   if(modeInfo.currentMode==CHARGEMODE || modeInfo.currentMode==BALANCEMODE){
+     if (modeInfo.hours>=10) timeoutFlag= true;  // set Timeout flag
+   }
+//   if(uartPrint)Serial.print("Mode(");
+//   if(uartPrint)Serial.print(modeInfo.currentMode);
+//   if(uartPrint)Serial.print("), Hours: ");
+//   if(uartPrint)Serial.print(modeInfo.hours);
+//   if(uartPrint)Serial.print(",Minutes: ");
+//   if(uartPrint)Serial.print(modeInfo.minutes);
+//   if(uartPrint)Serial.print(",uSecs: ");
+//   if(uartPrint)Serial.println(modeInfo.microseconds);
+
  }
 
 /*------------------------------------------------------------------------------
