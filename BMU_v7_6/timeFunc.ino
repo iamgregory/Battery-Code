@@ -30,17 +30,35 @@
  * returns false if not
  *----------------------------------------------------------------------------*/
  boolean areWeThereYet(const unsigned long &referenceTimeStamp, const long &waitTime){
+   unsigned long timeSince= timeElapsed(referenceTimeStamp);
+   if (timeSince>=waitTime)
+     return true;
+   else
+     return false;
+ }
+ 
+ long timeElapsed(const unsigned long &referenceTimeStamp){
    unsigned long currentTimeStamp =micros();
    unsigned long timeSince=0;
    if(referenceTimeStamp > currentTimeStamp){                // check if a rollover has occured
       timeSince= ~(referenceTimeStamp - currentTimeStamp)+1;              // correct for rollover
     }
    else timeSince = currentTimeStamp-referenceTimeStamp;
-   if (timeSince>=waitTime)
-     return true;
-   else
-     return false;
+   return timeSince;
  }
+ 
+/*------------------------------------------------------------------------------
+ * void modeTimeReset(void)
+ *
+ *----------------------------------------------------------------------------*/
+ 
+ void modeTimeReset(void){
+   modeInfo.hours=0;
+   modeInfo.minutes=0;
+   modeInfo.microseconds=0;
+   modeInfo.timeKeepingStamp=micros();
+ }
+ 
  
  
 
