@@ -22,10 +22,13 @@
   fwLeak=!digitalRead(frontWPin);
   bwLeak=!digitalRead(backWPin);
   totalVoltage=avgADC(tVolInPin,4)*volConst;
+  if(fakeTotVolFlag) totalVoltage=fakeStuff.totalVoltage;
   pressure=avgADC(presIn1Pin,4)*presConst-presOffset;
+  if (fakePressFlag) fakePressureData();
   current0=avgADC(cur0InPin,3);//analogRead(cur0InPin);
   curMeas=(avgADC(curInPin,3)-(float)current0)*curConst;
   current=curMeas-currentOffset;
+  if(fakeCurFlag) current=fakeStuff.current;
 //  if (abs(current)<=.4) current=0;
 
  }
@@ -89,7 +92,6 @@
   if (balanceOn) saturateBalanceVoltage();
   if (fakeTempFlag) fakeTemperatureData();
   if (fakeVolFlag) fakeVoltageData();
-  if (fakePressFlag) fakePressureData();
   for(int i=0;i<BMENum;i++){
     int2float((BMEdata&) BME[i]); // passes pointer to BME[i]
   }
@@ -107,6 +109,7 @@
   if(!balanceOn) maxVol=findMaxV();
   maxTemp=findMaxT();                  // updates the max temperature reading
   volSumCal();                       // sums all the virtual cell voltages into modules and half-strin voltage
+  if(fakeModVolFlag) BME[fakeStuff.BME].modSum=fakeStuff.modSum;
  }
 
  /*------------------------------------------------------------------------------
@@ -150,6 +153,15 @@
   for(int i=0;i<BMENum;i++){ 
     RDSTATSTA((BMEdata&) BME[i]);  //check results of self test
     RDSTATSTB((BMEdata&) BME[i]);  //check results of self test
+  }
+//  getBMEData();
+  // reset cell temperatures
+  ADAX(0,0);
+  delayMicroseconds(BMEConDelay1);
+  
+  for(int i=0;i<BMENum;i++){
+    RDAUXA((BMEdata&) BME[i]);
+    RDAUXB((BMEdata&) BME[i]);  
   }
   
  }
