@@ -403,7 +403,7 @@ aString=debugStrings[0];
  
  void flagDebugTest(const int &flag){
    if (0<flag && flag <33){
-     flagBMU= 0 | (1<<(flag-1)); 
+     flagBMU= flagBMU | (1<<(flag-1)); 
      if(uartPrint)Serial.print("Flag ");
      switch (flag) {
     case 1:
