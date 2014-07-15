@@ -61,7 +61,11 @@
   
   //time
   #define ONEHOUR 36000000000 //in microseconds
+  #define TWOMINUTES 120000000  // in microseconds
   #define ONEMINUTE 60000000  // in microseconds
+  #define THIRTYSECONDS 30000000 //in microseconds
+  #define FIVESECONDS 5000000 //in microseconds
+  #define ONESECOND 1000000   // in microseconds
 
 // debugging variables
   boolean uartPrint=true;    // print for debugging
@@ -105,14 +109,16 @@
  const float dt=controlTime/1000000.0;  // control time in sec
  unsigned long timeStamp=0;          // used to keep track of the loop time
  unsigned long balanceTimeStamp=0;  // keeps track of balancing timing
- const long balanceRelaxTime=300000000; //five minutes
- const long balanceCheckTime=30000000; // 30 seconds
+ unsigned long bmcComTimeStamp=0;   // keeps track of time since last communication
+ const long balanceRelaxTime=TWOMINUTES; // length of time balance mode must wait before discharging 
+ const long balanceCheckTime=THIRTYSECONDS; // 
  long dLoopTime=0;         //actual loop time in usec
  long BMCcommdt=0;          // the time between bmc communications
  int loopCount=0;            // counts the number of loops up to the count Limit
  const int countLimit=1500;          //1500 at 5Hz is 5min
  const int bmeSelfTestTime=1500;    // set the self test to be done every 5 min
  const int bmcComTime=5;            // set the bmc communication to be done every 1 second (1Hz)
+ 
  unsigned long overrideCount=0;
 unsigned long timeoutCount=0;
  
@@ -240,6 +246,7 @@ boolean chargeDoneFlag =false;   // charging done flag
 boolean balDoneFlag =false;      // balancing done flag
 boolean balRecFlag =false;       // balancing recommended flag
 boolean balRelaxFlag=false;      // true when system has relaxed
+boolean realBalDataFlag=false;
 
 boolean fanOn=false;
 

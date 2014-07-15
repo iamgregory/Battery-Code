@@ -24,13 +24,13 @@ void checkMode(String input){
     while(temp>0){  // while there are more underscores  
       overrideString=input.substring(sVal+1,temp);
       flagNum=overrideString.toInt();
-      if(flagNum>0 && flagNum<23){
-        flagOverride=flagOverride | (1<<(flagNum-1));
+      if(flagNum>0 && flagNum<23){  // if the flagNum is valid
+        flagOverride=flagOverride | (1<<(flagNum-1)); //set override flag
         if(uartPrint)Serial.print("Override: ");
         if(uartPrint)Serial.println(flagOverride,HEX);
         overrideCount=0;
       }
-      sVal=temp;
+      sVal=temp;  // update indices for underscores
       temp=input.indexOf("_",sVal+1);
     }
     overrideString=input.substring(sVal+1,eVal); // grab string from last underscore to end location
@@ -70,22 +70,23 @@ void checkMode(String input){
         int eVal=input.indexOf("_",sVal+1);
         String bal2string=input.substring(sVal+1,eVal);
         int bal2int=bal2string.toInt();
-        balance2Vol = bal2int*0.0001;
+        balance2Vol = bal2int*0.0001;        
         if(balance2Vol>volLowBalAlarm){
           balanceMode();
-          balRelaxFlag=false;
         }
         else{
           if(uartPrint)Serial.println("bad bal2vol!");
         }
       }
       else if(!balRelaxFlag){   // check to see if the system has relaxed
-        if( areWeThereYet(balanceTimeStamp,balanceRelaxTime) ); 
-        balRelaxFlag=true;   
+        if( areWeThereYet(balanceTimeStamp,balanceRelaxTime) ){ 
+          balRelaxFlag=true;   
+          if(uartPrint) Serial.println("Relaxed and Ready to Balance");
+        }
       }
       else if ( areWeThereYet(balanceTimeStamp,balanceCheckTime) ){ 
         disableResistors();
-        if ( areWeThereYet(balanceTimeStamp,balanceCheckTime+3*controlTime) ){  // if a loop has happened since the resistors were disabled
+        if ( realBalDataFlag ){  // if a loop has happened since the resistors were disabled
           if(uartPrint) Serial.println("balanceCal()");
           balanceCal(); // if balancing mode is on, then calculate which cells need to be discarged
         }
@@ -264,8 +265,10 @@ void checkMode(String input){
     chargeOn=false;
     balanceOn=true;
     overrideCount=0;
-    balanceTimeStamp=micros()-balanceCheckTime; //make sure balanceCal executes the first time through
+    balanceTimeStamp=micros(); //make sure balanceCal executes the first time through
     balDoneFlag=false;
+    realBalDataFlag=false;
+    balRelaxFlag=false;
     conOnTime=0;
  }
  
@@ -306,6 +309,7 @@ void checkMode(String input){
    int i,j;
    boolean balOn=false;
    balanceTimeStamp=micros();
+   realBalDataFlag=true;
    balTempControl();
    maxVol=findMaxV();
    for(j=0;j<BMENum;j++){
