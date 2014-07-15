@@ -97,7 +97,6 @@ void checkFlags(void){
  *----------------------------------------------------------------------------*/
  void bmeFlagCheck(void){
    bmeAlarmFlag=false; // If any cell over/under voltage failures or self-check failures are sent from BME 
-   bmeComFlag=false;  // Communication failure occurs between BMU and BME
    
    for(int j=0;j<BMENum;j++){                         // goes through all BMEs
      if(!BME[j].dataCheck){                           // check if BME is communicating
@@ -226,30 +225,32 @@ void volCheck(void){
 
    }
   }
-  if(abs(totalVoltage-volSum)>=volMismatch){
-    volMisFlag =true;
-    if(uartPrint)Serial.print("MISMATCH! totalVoltage:");
-    if(uartPrint)Serial.print(totalVoltage);
-    if(uartPrint)Serial.print(" and volsum:");
-    if(uartPrint)Serial.print(volSum);
-    if(uartPrint)Serial.println("are mismatched");
-  }
-  if(maxVol >= 6.5 ){     // check virtual cell voltage sensor for failure 
-       volFailFlag = true;             // set voltage failure flag
-  } 
-  else if((maxVol >= volHighAlarm) | (chargeOn && maxVol>=(charge2Vol+0.01))){  // check virtual cell voltage for high voltage flag
-    volHighAlarmFlag  = true;          // set high voltage error flag
-    if(uartPrint) Serial.println(maxVol,4);
-  }  
-  
-  if(minVol <= 0.0) volFailFlag = true;             // set voltage failure flag
-  else if(minVol <= deadBatAlarm && !driveOn) deadBatAlarmFlag=true;  // set dead battery alarm
-  else if(minVol <= volLowAlarm && !chargeOn) volLowAlarmFlag=true;    // low voltage alarm
-  else if(minVol <= volLowWarn  && !chargeOn) volLowWarnFlag = true;    //  low voltage warning      
-  else if(balance2Vol <= volLowBalAlarm  && BMCcommand.indexOf("bal") >=0) volLowBalAlarmFlag = true;    //  low voltage warning
-   
-  if((maxVol-minVol)>=balRecVol && !balanceOn && minVol>=balRecLimit ){
-    balRecFlag=true;    // set balance recomanded flag
+  if(bmeComFlag){
+    if(abs(totalVoltage-volSum)>=volMismatch){
+      volMisFlag =true;
+      if(uartPrint)Serial.print("MISMATCH! totalVoltage:");
+      if(uartPrint)Serial.print(totalVoltage);
+      if(uartPrint)Serial.print(" and volsum:");
+      if(uartPrint)Serial.print(volSum);
+      if(uartPrint)Serial.println("are mismatched");
+    }
+    if(maxVol >= 6.5 ){     // check virtual cell voltage sensor for failure 
+         volFailFlag = true;             // set voltage failure flag
+    } 
+    else if((maxVol >= volHighAlarm) | (chargeOn && maxVol>=(charge2Vol+0.01))){  // check virtual cell voltage for high voltage flag
+      volHighAlarmFlag  = true;          // set high voltage error flag
+      if(uartPrint) Serial.println(maxVol,4);
+    }  
+    
+    if(minVol <= 0.0) volFailFlag = true;             // set voltage failure flag
+    else if(minVol <= deadBatAlarm && !driveOn) deadBatAlarmFlag=true;  // set dead battery alarm
+    else if(minVol <= volLowAlarm && !chargeOn) volLowAlarmFlag=true;    // low voltage alarm
+    else if(minVol <= volLowWarn  && !chargeOn) volLowWarnFlag = true;    //  low voltage warning      
+    else if(balance2Vol <= volLowBalAlarm  && BMCcommand.indexOf("bal") >=0) volLowBalAlarmFlag = true;    //  low voltage warning
+     
+    if((maxVol-minVol)>=balRecVol && !balanceOn && minVol>=balRecLimit ){
+      balRecFlag=true;    // set balance recomanded flag
+    }
   }
 
         
@@ -273,8 +274,8 @@ void volCheck(void){
    if(volLowAlarmFlag) flagBMU=flagBMU | (1<<9);
    if(deadBatAlarmFlag) flagBMU=flagBMU | (1<<10);
    if(volFailFlag) flagBMU=flagBMU | (1<<11);
-   if(volMisFlag) flagBMU=flagBMU | (1<<12);
-   if(bmeAlarmFlag) flagBMU=flagBMU | (1<<13);
+//   if(volMisFlag) flagBMU=flagBMU | (1<<12);
+//   if(bmeAlarmFlag) flagBMU=flagBMU | (1<<13);
    if(bmeComFlag) flagBMU=flagBMU | (1<<14);
    if(bmcComFlag) flagBMU=flagBMU | (1<<15);
    if(driveCurflag) flagBMU=flagBMU | (1<<16);
