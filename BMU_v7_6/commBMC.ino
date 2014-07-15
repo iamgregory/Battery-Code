@@ -14,8 +14,10 @@ void BMCcomm()
     EthernetClient client = server.available();
     if (client) {
       bmcComTimeStamp=micros();
-      flagBMU=flagBMU & ~(0x008000);
-      bmcComFlag=false;
+      if(bmcComFlag) {
+        flagBMU=flagBMU & ~(0x008000);
+        bmcComFlag=false;
+      }
       BMCcommand="";//clearing string for next read
       while (client.available()) {
         char c = client.read();
