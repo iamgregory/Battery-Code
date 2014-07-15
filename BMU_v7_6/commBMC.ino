@@ -6,12 +6,15 @@
  *-----------------------------------------------------------------------------*/
 
 void BMCcomm()
-{
-  if(loopCount%bmcComTime==0){      //execute once a sec
-    bmcComFlag=true;
+{  
+  //if(loopCount%bmcComTime==0){      //execute once a secloop areWeThereYet(BMCcommdt,960000)
+  if(areWeThereYet(bmcComTimeStamp,FIVESECONDS)) bmcComFlag=true;
+
    // listen for incoming clients
     EthernetClient client = server.available();
     if (client) {
+      bmcComTimeStamp=micros();
+      bmcComFlag=false;
       BMCcommand="";//clearing string for next read
       while (client.available()) {
         char c = client.read();
@@ -22,13 +25,14 @@ void BMCcomm()
       if(BMCcommand.indexOf("cle") >=0) {
         clearFlags();            //clear flags
       }
-      BMCcommdt=micros()-BMCcommdt;
+      
       sendData((EthernetClient&) client);
-      bmcComFlag=false;
+      //if(uartPrint) Serial.print(timeElapsed(BMCcommdt));
+      BMCcommdt=micros();
+      //if(uartPrint) Serial.println(" uS to comm");
       //  if(!bmcComFlag) Serial.println("Not Communicating to BMC");
     }
-  }
-
+  //}
 }
 
 

@@ -264,8 +264,21 @@
    int i,j;
    for(j=0;j<BMENum;j++){
      for(i=0;i<cellNum;i++){  
-       if(BME[j].vol[i]> (int)(maxVol*10000)) BME[j].vol[i]=(int)(maxVol*10000);
-       else if(BME[j].vol[i]< (int)((balance2Vol-.005)*10000)) BME[j].vol[i]=(int)((balance2Vol-.005)*10000);
+       if(BME[j].vol[i]> (int)(maxVol*10000)){
+         BME[j].vol[i]=(int)(maxVol*10000);
+//         if(uartPrint)Serial.print("upper saturation is occurring for bme");
+//         if(uartPrint)Serial.print(j);
+//         if(uartPrint)Serial.print("and layer");
+//         if(uartPrint)Serial.println(i);
+       }
+       else if(BME[j].vol[i]< (int)((balance2Vol-.005)*10000)){
+         BME[j].vol[i]=(int)((balance2Vol-.005)*10000);
+//         if(uartPrint)Serial.print("lower saturation is occurring for bme");
+//         if(uartPrint)Serial.print(j);
+//         if(uartPrint)Serial.print(" layer");
+//         if(uartPrint)Serial.println(i);
+       }
+
      }
    }
  }

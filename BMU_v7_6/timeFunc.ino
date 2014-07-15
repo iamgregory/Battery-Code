@@ -20,7 +20,8 @@
    else{
      do{
      }while(!areWeThereYet(timeStamp, controlTime));                 // kill time till next "void Loop" should execute
-   }
+     //if(uartPrint) Serial.println(timeElapsed(timeStamp));
+ }
  }
  
  
@@ -39,8 +40,8 @@
  
  long timeElapsed(const unsigned long &referenceTimeStamp){
    unsigned long currentTimeStamp =micros();
-   unsigned long timeSince=0;
-   if(referenceTimeStamp > currentTimeStamp){                // check if a rollover has occured
+   long timeSince=0;
+   if (referenceTimeStamp > currentTimeStamp){                // check if a rollover has occured
       timeSince= ~(referenceTimeStamp - currentTimeStamp)+1;              // correct for rollover
     }
    else timeSince = currentTimeStamp-referenceTimeStamp;
