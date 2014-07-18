@@ -34,7 +34,6 @@
   
   #define balRecVol 0.050       // voltage difference at which balancing will be recommended 
   #define volTolerance 0.001   // the max voltage difference that the virtual cells will have at the end of balancing 
-  //#define volBalStop -0.006   // voltage difference that the battery will stop balancing
   
   #define timeoutLimit 180000     //a timeout limit of 10 hours/looptime==>180000 for charging and balanceing 
   #define overrideTLimit 310        // a time limit for priority flag of 2 or 3 5*62==>62sec
