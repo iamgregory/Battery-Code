@@ -65,7 +65,7 @@ void checkMode(String input){
   { 
     if(!stopUntil )
     {  contactorsOn=false;
-      if (!balanceOn){ 
+      if (modeInfo.currentMode!=BALANCEMODE){ 
         int sVal=input.indexOf("_");
         int eVal=input.indexOf("_",sVal+1);
         String bal2string=input.substring(sVal+1,eVal);
@@ -174,13 +174,10 @@ void checkMode(String input){
  *----------------------------------------------------------------------------*/
  void stopMode(void){
     contactorsOn=false;
-    if(!stopOn){
+    if(modeInfo.currentMode!=STOPMODE){
       if(uartPrint) Serial.print(BMCcommand);
       if(uartPrint) Serial.println("Stop Mode Entered.");
       stopBal();
-      chargeOn=false;
-      driveOn=false;
-      stopOn=true;
       conOnTime=0;
       modeInfo.currentMode=STOPMODE;
       modeTimeReset();
@@ -194,12 +191,9 @@ void checkMode(String input){
  *----------------------------------------------------------------------------*/
  void driveMode(void){
    if(!stopUntil){
-    if(!driveOn) {
+    if(modeInfo.currentMode!=DRIVEMODE) {
       if(uartPrint) Serial.println("Drive Mode Entered.");
       stopBal();
-      stopOn=false;
-      chargeOn=false;
-      driveOn=true;
       overrideCount=0;
       conOnTime=0;
       modeInfo.currentMode=DRIVEMODE;
@@ -216,13 +210,10 @@ void checkMode(String input){
  *----------------------------------------------------------------------------*/
  void chargeMode(void){
    if(!stopUntil){
-    if(!chargeOn){
+    if(modeInfo.currentMode!=CHARGEMODE){
       if(uartPrint) Serial.print("Charge to: ");
       if(uartPrint) Serial.println(charge2Vol,4);
       stopBal();
-      driveOn=false;
-      stopOn=false;
-      chargeOn=true;
       if(uartPrint) Serial.println("Charge Mode Entered.");
       modeInfo.currentMode=CHARGEMODE;
       modeTimeReset();
@@ -262,12 +253,8 @@ void checkMode(String input){
 //     }
 //    }
     BMESelfTest();
-    driveOn=false;
-    stopOn=false;
     modeInfo.currentMode=BALANCEMODE;
     modeTimeReset();
-    chargeOn=false;
-    balanceOn=true;
     overrideCount=0;
     balanceTimeStamp=micros(); //make sure balanceCal executes the first time through
     balDoneFlag=false;
@@ -288,7 +275,6 @@ void checkMode(String input){
        BME[j].balFlag[i]=false;  // clear all the balancing flags
      }
    }
-   balanceOn=false;
  }
  
   /*------------------------------------------------------------------------------

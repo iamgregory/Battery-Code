@@ -88,7 +88,7 @@
     WRCFG((BMEdata&) BME[i]);          // Sends out the GPIO command
   }
 
-  if (balanceOn) saturateBalanceVoltage();
+  if (modeInfo.currentMode==BALANCEMODE) saturateBalanceVoltage();
   if (fakeTempFlag) fakeTemperatureData();
   if (fakeVolFlag) fakeVoltageData();
   for(int i=0;i<BMENum;i++){
@@ -105,7 +105,7 @@
  void calStateBME(void){
   
   minVol=findMinV();                    //updates min cell voltage and total battery-string voltage
-  if(!balanceOn) maxVol=findMaxV();
+  if(modeInfo.currentMode!=BALANCEMODE) maxVol=findMaxV();
   maxTemp=findMaxT();                  // updates the max temperature reading
   volSumCal();                       // sums all the virtual cell voltages into modules and half-strin voltage
   if(fakeModVolFlag) BME[fakeStuff.BME].modSum=fakeStuff.modSum;

@@ -23,7 +23,7 @@
   #define volModMismatch 0.05   //voltage mismatch limit between calculated and measured total voltage 
  
   #define presHighLimit 5.0    //High pressure limit
-  #define presLowLimit 0.5     //Low Pressure limit
+  #define presLowLimit 0.25     //Low Pressure limit
   #define presRateHigh 0.50    //High pressure rate limit
   
   #define inCurLimit 20.0      //current in limit durring Drive
@@ -112,7 +112,7 @@
  const long balanceRelaxTime=TWOMINUTES; // length of time balance mode must wait before discharging 
  const long balanceCheckTime=THIRTYSECONDS; // 
  long dLoopTime=0;         //actual loop time in usec
- long BMCcommdt=0;          // the time between bmc communications
+ int BMCcommdt=0;          // the time between bmc communications
  int loopCount=0;            // counts the number of loops up to the count Limit
  const int countLimit=1500;          //1500 at 5Hz is 5min
  const int bmeSelfTestTime=1500;    // set the self test to be done every 5 min
@@ -204,10 +204,10 @@ BMEdata BME[BMENum];
 boolean DCP=false;     //Discharge premitted
 
 //BMU modes flags
-boolean stopOn=true;
-boolean driveOn=false;
-boolean chargeOn=false;
-boolean balanceOn=false;
+//boolean stopOn=true;
+//boolean driveOn=false;
+//boolean chargeOn=false;
+//boolean balanceOn=false;
 boolean stopUntil=false;      // true until the oprator has acknoladged the software stop
 
 //BMU flags
