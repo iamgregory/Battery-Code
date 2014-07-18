@@ -4,7 +4,7 @@
  *----------------------------------------------------------------------------*/
 void socCal(){
   
-  if(maxVol>=4.2 && current<=4.5 && chargeOn) cap=capMax;
+  if(maxVol>=4.2 && current<=4.5 && modeInfo.currentMode==CHARGEMODE) cap=capMax;
   else if(abs(current)>.3) cap+=current*capConst;
   if(cap>capMax) cap=capMax;
   if(cap<0) cap=0; 
