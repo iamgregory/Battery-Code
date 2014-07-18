@@ -35,9 +35,9 @@ void checkFlags(void){
        modeInfo.minutes-=60;
        modeInfo.hours++;
    }
-   timeoutFlag=false;      // Check if charging or balance time > 10 hours
+   timeoutFlag=false;      // Check if charging or balance time > 8 hours
    if(modeInfo.currentMode==CHARGEMODE || modeInfo.currentMode==BALANCEMODE){
-     if (modeInfo.hours>=10) timeoutFlag= true;  // set Timeout flag
+     if (modeInfo.hours>=8) timeoutFlag= true;  // set Timeout flag
    }
 //   if(uartPrint)Serial.print("Mode(");
 //   if(uartPrint)Serial.print(modeInfo.currentMode);
@@ -225,35 +225,32 @@ void volCheck(void){
 
    }
   }
-  if(bmeComFlag){
-    if(abs(totalVoltage-volSum)>=volMismatch){
-      volMisFlag =true;
-      if(uartPrint)Serial.print("MISMATCH! totalVoltage:");
-      if(uartPrint)Serial.print(totalVoltage);
-      if(uartPrint)Serial.print(" and volsum:");
-      if(uartPrint)Serial.print(volSum);
-      if(uartPrint)Serial.println("are mismatched");
-    }
-    if(maxVol >= 6.5 ){     // check virtual cell voltage sensor for failure 
-         volFailFlag = true;             // set voltage failure flag
-    } 
-    else if((maxVol >= volHighAlarm) | (chargeOn && maxVol>=(charge2Vol+0.01))){  // check virtual cell voltage for high voltage flag
-      volHighAlarmFlag  = true;          // set high voltage error flag
-      if(uartPrint) Serial.println(maxVol,4);
-    }  
-    
-    if(minVol <= 0.0) volFailFlag = true;             // set voltage failure flag
-    else if(minVol <= deadBatAlarm && !driveOn) deadBatAlarmFlag=true;  // set dead battery alarm
-    else if(minVol <= volLowAlarm && !chargeOn) volLowAlarmFlag=true;    // low voltage alarm
-    else if(minVol <= volLowWarn  && !chargeOn) volLowWarnFlag = true;    //  low voltage warning      
-    else if(balance2Vol <= volLowBalAlarm  && BMCcommand.indexOf("bal") >=0) volLowBalAlarmFlag = true;    //  low voltage warning
-     
-    if((maxVol-minVol)>=balRecVol && !balanceOn && minVol>=balRecLimit ){
-      balRecFlag=true;    // set balance recomanded flag
-    }
+  
+  if(abs(totalVoltage-volSum)>=volMismatch){
+    volMisFlag =true;
+    if(uartPrint)Serial.print("MISMATCH! totalVoltage:");
+    if(uartPrint)Serial.print(totalVoltage);
+    if(uartPrint)Serial.print(" and volsum:");
+    if(uartPrint)Serial.print(volSum);
+    if(uartPrint)Serial.println("are mismatched");
   }
-
-        
+  if(maxVol >= 6.5 ){     // check virtual cell voltage sensor for failure 
+       volFailFlag = true;             // set voltage failure flag
+  } 
+  else if((maxVol >= volHighAlarm) | (chargeOn && maxVol>=(charge2Vol+0.01))){  // check virtual cell voltage for high voltage flag
+    volHighAlarmFlag  = true;          // set high voltage error flag
+    if(uartPrint) Serial.println(maxVol,4);
+  }  
+  
+  if(minVol <= 0.0) volFailFlag = true;             // set voltage failure flag
+  else if(minVol <= deadBatAlarm && !driveOn) deadBatAlarmFlag=true;  // set dead battery alarm
+  else if(minVol <= volLowAlarm && !chargeOn) volLowAlarmFlag=true;    // low voltage alarm
+  else if(minVol <= volLowWarn  && !chargeOn) volLowWarnFlag = true;    //  low voltage warning      
+  else if(balance2Vol <= volLowBalAlarm  && BMCcommand.indexOf("bal") >=0) volLowBalAlarmFlag = true;    //  low voltage warning
+   
+  if((maxVol-minVol)>=balRecVol && !balanceOn && minVol>=balRecLimit ){
+    balRecFlag=true;    // set balance recomanded flag
+  }   
 
 }
 
