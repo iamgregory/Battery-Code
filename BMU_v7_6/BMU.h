@@ -23,7 +23,7 @@
   #define volModMismatch 0.05   //voltage mismatch limit between calculated and measured total voltage 
  
   #define presHighLimit 5.0    //High pressure limit
-  #define presLowLimit 0.5     //Low Pressure limit
+  #define presLowLimit 0.25     //Low Pressure limit
   #define presRateHigh 0.50    //High pressure rate limit
   
   #define inCurLimit 20.0      //current in limit durring Drive
@@ -33,15 +33,14 @@
   #define doneCur 4.45         //the current at which the charging is called done
   
   #define balRecVol 0.050       // voltage difference at which balancing will be recommended 
-  #define volTolerance 0.002   // the max voltage difference that the virtual cells will have at the end of balancing 
-  //#define volBalStop -0.006   // voltage difference that the battery will stop balancing
+  #define volTolerance 0.001   // the max voltage difference that the virtual cells will have at the end of balancing 
   
   #define timeoutLimit 180000     //a timeout limit of 10 hours/looptime==>180000 for charging and balanceing 
   #define overrideTLimit 310        // a time limit for priority flag of 2 or 3 5*62==>62sec
 
 //BMU ADC conversion constants
   #define curConst 0.08587        //80/V*3.3V/4095*4.01ohm/3.01ohm  sensor resolution*adc resolution*voltage divider
-  #define volConst 0.04852  //.0439    //(174Kohm+10Kohm)/10Kohm*(10kohm+5.1kohm)/5.1kohm*3.3V/4095
+  #define volConst 0.0482  //.0439    //(174Kohm+10Kohm)/10Kohm*(10kohm+5.1kohm)/5.1kohm*3.3V/4095
   #define presConst 0.0061034   //1 kpa/5V/0.018*4.7ohm/3.2ohm*3.3V/4095*0.14503 gpsi/kpa
   #define presOffset 0.0058016     //0.04 kpa 0.14503 gpsi/kpa
   #define capConst 0.0000555556    //0.2 sec==>.000055556 hours
@@ -113,7 +112,7 @@
  const long balanceRelaxTime=TWOMINUTES; // length of time balance mode must wait before discharging 
  const long balanceCheckTime=THIRTYSECONDS; // 
  long dLoopTime=0;         //actual loop time in usec
- long BMCcommdt=0;          // the time between bmc communications
+ int BMCcommdt=0;          // the time between bmc communications
  int loopCount=0;            // counts the number of loops up to the count Limit
  const int countLimit=1500;          //1500 at 5Hz is 5min
  const int bmeSelfTestTime=1500;    // set the self test to be done every 5 min
@@ -132,7 +131,7 @@ unsigned long timeoutCount=0;
   const int frontWPin = 22;  //front water leak sensor
   const int backWPin = 23;    // back water leak sensor
 // BMU varibles
-String BMCcommand="";      //The command from BMC
+String BMCcommand="stop";      //The command from BMC
 int conOnTime=0;          // counter to enable contactor
 boolean contactorsOn=false;
 
@@ -148,6 +147,8 @@ float currentOffset =0;  // current offset
 float curMeas =0;        // measured current
 boolean fwLeak =0;         // front leak sensor
 boolean bwLeak =0;         // back leak sensor
+int fwLeakCount=0;
+int bwLeakCount=0;
 
 // BMU calculated Variables
 float cap=435;            // battery capacity in Amp hours
@@ -203,10 +204,10 @@ BMEdata BME[BMENum];
 boolean DCP=false;     //Discharge premitted
 
 //BMU modes flags
-boolean stopOn=true;
-boolean driveOn=false;
-boolean chargeOn=false;
-boolean balanceOn=false;
+//boolean stopOn=true;
+//boolean driveOn=false;
+//boolean chargeOn=false;
+//boolean balanceOn=false;
 boolean stopUntil=false;      // true until the oprator has acknoladged the software stop
 
 //BMU flags

@@ -1,7 +1,7 @@
 /*
 created 10/3/2013
- modified 6/16/2014
- by Nima Ghods
+ modified 7/17/2014
+ by Nima Ghods and Greg Mills
  
  BMU code made to communicate with the BME's 
  Circuit: BMU Shield v3_4
@@ -17,7 +17,6 @@ created 10/3/2013
   
   void setup() {   
     pinInital();    // configure arduino due pins
-    modeTimeReset();
     Serial.println("\n \t\t BMU 7.6\n");    // print the code version
     Serial.println("Enter Command (help for a list of commands)");
   }

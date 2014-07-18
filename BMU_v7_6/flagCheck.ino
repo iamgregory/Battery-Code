@@ -35,9 +35,9 @@ void checkFlags(void){
        modeInfo.minutes-=60;
        modeInfo.hours++;
    }
-   timeoutFlag=false;      // Check if charging or balance time > 10 hours
+   timeoutFlag=false;      // Check if charging or balance time > 8 hours
    if(modeInfo.currentMode==CHARGEMODE || modeInfo.currentMode==BALANCEMODE){
-     if (modeInfo.hours>=10) timeoutFlag= true;  // set Timeout flag
+     if (modeInfo.hours>=8) timeoutFlag= true;  // set Timeout flag
    }
 //   if(uartPrint)Serial.print("Mode(");
 //   if(uartPrint)Serial.print(modeInfo.currentMode);
@@ -59,9 +59,9 @@ void checkFlags(void){
    chargeCurFlag=false;      //Current > 92A or current <2A during Charge
    stopCurFlag=false;     //abs(Current)>1A
 
-   if(driveOn && current >= inCurLimit) driveCurflag= true;
-   if(chargeOn && current >= highInCur && current >= highOutCur) chargeCurFlag= true;
-   if((stopOn || balanceOn) && current >= inOutCur) stopCurFlag= true;
+   if(modeInfo.currentMode==DRIVEMODE && current >= inCurLimit) driveCurflag= true;
+   if(modeInfo.currentMode==CHARGEMODE && current >= highInCur && current >= highOutCur) chargeCurFlag= true;
+   if((modeInfo.currentMode==STOPMODE || modeInfo.currentMode==BALANCEMODE) && current >= inOutCur) stopCurFlag= true;
  }
 
 /*------------------------------------------------------------------------------
@@ -97,7 +97,6 @@ void checkFlags(void){
  *----------------------------------------------------------------------------*/
  void bmeFlagCheck(void){
    bmeAlarmFlag=false; // If any cell over/under voltage failures or self-check failures are sent from BME 
-   bmeComFlag=false;  // Communication failure occurs between BMU and BME
    
    for(int j=0;j<BMENum;j++){                         // goes through all BMEs
      if(!BME[j].dataCheck){                           // check if BME is communicating
@@ -226,6 +225,7 @@ void volCheck(void){
 
    }
   }
+  
   if(abs(totalVoltage-volSum)>=volMismatch){
     volMisFlag =true;
     if(uartPrint)Serial.print("MISMATCH! totalVoltage:");
@@ -237,22 +237,21 @@ void volCheck(void){
   if(maxVol >= 6.5 ){     // check virtual cell voltage sensor for failure 
        volFailFlag = true;             // set voltage failure flag
   } 
-  else if((maxVol >= volHighAlarm) | (chargeOn && maxVol>=(charge2Vol+0.01))){  // check virtual cell voltage for high voltage flag
+  else if((maxVol >= volHighAlarm) || (modeInfo.currentMode==CHARGEMODE && maxVol>=(charge2Vol+0.01))){  // check virtual cell voltage for high voltage flag
     volHighAlarmFlag  = true;          // set high voltage error flag
+    if(uartPrint)Serial.print("high voltage alarm: ");
     if(uartPrint) Serial.println(maxVol,4);
   }  
   
   if(minVol <= 0.0) volFailFlag = true;             // set voltage failure flag
-  else if(minVol <= deadBatAlarm && !driveOn) deadBatAlarmFlag=true;  // set dead battery alarm
-  else if(minVol <= volLowAlarm && !chargeOn) volLowAlarmFlag=true;    // low voltage alarm
-  else if(minVol <= volLowWarn  && !chargeOn) volLowWarnFlag = true;    //  low voltage warning      
+  else if(minVol <= deadBatAlarm && modeInfo.currentMode!=DRIVEMODE) deadBatAlarmFlag=true;  // set dead battery alarm
+  else if(minVol <= volLowAlarm && modeInfo.currentMode!=CHARGEMODE) volLowAlarmFlag=true;    // low voltage alarm
+  else if(minVol <= volLowWarn  && modeInfo.currentMode!=CHARGEMODE) volLowWarnFlag = true;    //  low voltage warning      
   else if(balance2Vol <= volLowBalAlarm  && BMCcommand.indexOf("bal") >=0) volLowBalAlarmFlag = true;    //  low voltage warning
    
-  if((maxVol-minVol)>=balRecVol && !balanceOn && minVol>=balRecLimit ){
+  if((maxVol-minVol)>=balRecVol && modeInfo.currentMode!=BALANCEMODE && minVol>=balRecLimit ){
     balRecFlag=true;    // set balance recomanded flag
-  }
-
-        
+  }   
 
 }
 
@@ -302,22 +301,22 @@ void volCheck(void){
    
    flagPriority=0;
    
-   if(driveOn){
+   if(modeInfo.currentMode==DRIVEMODE){
      if((flagBMU & 0x400000) !=0) flagPriority=5;   //  B10000000000000000000000
      if((flagBMU & 0x00910A) !=0) flagPriority=4;  //  
      if((flagBMU & 0x016A75) !=0) flagPriority=2;    
    }
-   if(stopOn){
+   else if(modeInfo.currentMode==STOPMODE){
      if((flagBMU & 0x400000) !=0) flagPriority=5;   //  B10000000000000000000000
      if((flagBMU & 0x00D92A) !=0) flagPriority=4;  //  
      if((flagBMU & 0x042655) !=0) flagPriority=3;  //  
    }  
-   if(balanceOn){
+   else if(modeInfo.currentMode==BALANCEMODE){
      if((flagBMU & 0x200000) !=0) flagPriority=5;   //  B10100000000000000000000
      if((flagBMU & 0x00102A) !=0) flagPriority=2;  //  B00000000000000000101010
      if((flagBMU & 0x0CEFD5) !=0) flagPriority=1;  //  B00010101111100011010101
    }
-   if(chargeOn){
+   else if(modeInfo.currentMode==CHARGEMODE){
      if((flagBMU & 0x500000) !=0) flagPriority=5;   //  B01000000000000000000000
      if((flagBMU & 0x00002A) !=0) flagPriority=2;   // 
      if((flagBMU & 0x0AFC55) !=0) flagPriority=1;  //  

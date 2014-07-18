@@ -13,8 +13,12 @@ void BMCcomm()
    // listen for incoming clients
     EthernetClient client = server.available();
     if (client) {
+      BMCcommdt=(int)(timeElapsed(bmcComTimeStamp)/1000);
       bmcComTimeStamp=micros();
-      bmcComFlag=false;
+      if(bmcComFlag) {
+        flagBMU=flagBMU & ~(0x008000);
+        bmcComFlag=false;
+      }
       BMCcommand="";//clearing string for next read
       while (client.available()) {
         char c = client.read();
@@ -25,14 +29,9 @@ void BMCcomm()
       if(BMCcommand.indexOf("cle") >=0) {
         clearFlags();            //clear flags
       }
-      
       sendData((EthernetClient&) client);
-      //if(uartPrint) Serial.print(timeElapsed(BMCcommdt));
-      BMCcommdt=micros();
-      //if(uartPrint) Serial.println(" uS to comm");
-      //  if(!bmcComFlag) Serial.println("Not Communicating to BMC");
     }
-  //}
+
 }
 
 
@@ -46,7 +45,7 @@ void sendData(EthernetClient& _Client){
   
   _Client.print(flagBMU,HEX);
   _Client.print(',');
-  _Client.print(flagPriority);
+  _Client.print(BMCcommdt);
   _Client.print(',');
   _Client.print(BMUNum+1);
   _Client.print(',');

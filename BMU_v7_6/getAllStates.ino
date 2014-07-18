@@ -18,12 +18,11 @@
  * Measures and calculates data on a half string level 
  *-----------------------------------------------------------------------------*/
  void getBMUData(void){
-   
-  fwLeak=!digitalRead(frontWPin);
-  bwLeak=!digitalRead(backWPin);
+  
+  leakCheck();
   totalVoltage=avgADC(tVolInPin,4)*volConst;
   if(fakeTotVolFlag) totalVoltage=fakeStuff.totalVoltage;
-  pressure=avgADC(presIn1Pin,4)*presConst-presOffset;
+  pressure=avgADC(presIn1Pin,5)*presConst-presOffset;
   if (fakePressFlag) fakePressureData();
   current0=avgADC(cur0InPin,3);//analogRead(cur0InPin);
   curMeas=(avgADC(curInPin,3)-(float)current0)*curConst;
@@ -89,7 +88,7 @@
     WRCFG((BMEdata&) BME[i]);          // Sends out the GPIO command
   }
 
-  if (balanceOn) saturateBalanceVoltage();
+  if (modeInfo.currentMode==BALANCEMODE) saturateBalanceVoltage();
   if (fakeTempFlag) fakeTemperatureData();
   if (fakeVolFlag) fakeVoltageData();
   for(int i=0;i<BMENum;i++){
@@ -106,7 +105,7 @@
  void calStateBME(void){
   
   minVol=findMinV();                    //updates min cell voltage and total battery-string voltage
-  if(!balanceOn) maxVol=findMaxV();
+  if(modeInfo.currentMode!=BALANCEMODE) maxVol=findMaxV();
   maxTemp=findMaxT();                  // updates the max temperature reading
   volSumCal();                       // sums all the virtual cell voltages into modules and half-strin voltage
   if(fakeModVolFlag) BME[fakeStuff.BME].modSum=fakeStuff.modSum;
@@ -167,6 +166,23 @@
  }
  
 //////////////////////////// sub Functions //////////////////////// 
+
+ /*------------------------------------------------------------------------------
+ * void leakCheck(void)
+ * checks to the if there is a leak in front or back of the half-string
+ *-----------------------------------------------------------------------------*/
+ void leakCheck(void)
+ {
+  if(!digitalRead(frontWPin)) fwLeakCount++;
+  else fwLeakCount=0;
+  if(fwLeakCount > 1) fwLeak=true;
+  else fwLeak=false;
+  
+  if(!digitalRead(backWPin)) bwLeakCount++;
+  else bwLeakCount=0;
+  if(bwLeakCount > 1) bwLeak=true;
+  else fwLeak=false;
+ }
  
  /*------------------------------------------------------------------------------
  *  float rateCal(float value, float valueLast)
