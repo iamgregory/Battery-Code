@@ -33,7 +33,7 @@
   #define doneCur 4.45         //the current at which the charging is called done
   
   #define balRecVol 0.050       // voltage difference at which balancing will be recommended 
-  #define volTolerance 0.002   // the max voltage difference that the virtual cells will have at the end of balancing 
+  #define volTolerance 0.001   // the max voltage difference that the virtual cells will have at the end of balancing 
   //#define volBalStop -0.006   // voltage difference that the battery will stop balancing
   
   #define timeoutLimit 180000     //a timeout limit of 10 hours/looptime==>180000 for charging and balanceing 
@@ -41,7 +41,7 @@
 
 //BMU ADC conversion constants
   #define curConst 0.08587        //80/V*3.3V/4095*4.01ohm/3.01ohm  sensor resolution*adc resolution*voltage divider
-  #define volConst 0.04852  //.0439    //(174Kohm+10Kohm)/10Kohm*(10kohm+5.1kohm)/5.1kohm*3.3V/4095
+  #define volConst 0.0482  //.0439    //(174Kohm+10Kohm)/10Kohm*(10kohm+5.1kohm)/5.1kohm*3.3V/4095
   #define presConst 0.0061034   //1 kpa/5V/0.018*4.7ohm/3.2ohm*3.3V/4095*0.14503 gpsi/kpa
   #define presOffset 0.0058016     //0.04 kpa 0.14503 gpsi/kpa
   #define capConst 0.0000555556    //0.2 sec==>.000055556 hours
@@ -148,6 +148,8 @@ float currentOffset =0;  // current offset
 float curMeas =0;        // measured current
 boolean fwLeak =0;         // front leak sensor
 boolean bwLeak =0;         // back leak sensor
+int fwLeakCount=0;
+int bwLeakCount=0;
 
 // BMU calculated Variables
 float cap=435;            // battery capacity in Amp hours

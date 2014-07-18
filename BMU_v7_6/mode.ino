@@ -182,6 +182,8 @@ void checkMode(String input){
       driveOn=false;
       stopOn=true;
       conOnTime=0;
+      modeInfo.currentMode=STOPMODE;
+      modeTimeReset();
       BMESelfTest();
     }
  }
@@ -200,6 +202,8 @@ void checkMode(String input){
       driveOn=true;
       overrideCount=0;
       conOnTime=0;
+      modeInfo.currentMode=DRIVEMODE;
+      modeTimeReset();
       BMESelfTest();
     }
     contactorsOn=true;
@@ -302,8 +306,7 @@ void checkMode(String input){
  
  /*------------------------------------------------------------------------------
  * void balanceCal(void)
- * balances the virtual cells of a battery with in a +/- 5mv 
- * conversion BNME.vol*1.5mV
+ * balances the virtual cells of a battery with in a +/- volTolerance/2
  *----------------------------------------------------------------------------*/
  void balanceCal(void){
    int i,j;
@@ -332,7 +335,7 @@ void checkMode(String input){
    if(balOn) balDoneCount=0;
    else{
      balDoneCount++;
-     if(balDoneCount>=4){
+     if(balDoneCount>=16){
        balDoneFlag=true;
        if(uartPrint) Serial.println("Balancing Done");
        //if(uartPrint) BMCcommand="stop";
