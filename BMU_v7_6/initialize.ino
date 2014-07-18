@@ -39,7 +39,9 @@ void pinInital(void){
     minVol=findMinV();
   }
   initalizeSoc();
-  //************************ BMU setup *************************//   
+  //************************ BMU setup *************************// 
+  modeInfo.currentMode=STOPMODE;
+  modeTimeReset();
   pinMode(relay1, OUTPUT); //pin selected to control
   digitalWrite(relay1, LOW);
   pinMode(relay2, OUTPUT); //pin selected to control

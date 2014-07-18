@@ -237,8 +237,9 @@ void volCheck(void){
   if(maxVol >= 6.5 ){     // check virtual cell voltage sensor for failure 
        volFailFlag = true;             // set voltage failure flag
   } 
-  else if((maxVol >= volHighAlarm) | (modeInfo.currentMode==CHARGEMODE && maxVol>=(charge2Vol+0.01))){  // check virtual cell voltage for high voltage flag
+  else if((maxVol >= volHighAlarm) || (modeInfo.currentMode==CHARGEMODE && maxVol>=(charge2Vol+0.01))){  // check virtual cell voltage for high voltage flag
     volHighAlarmFlag  = true;          // set high voltage error flag
+    if(uartPrint)Serial.print("high voltage alarm: ");
     if(uartPrint) Serial.println(maxVol,4);
   }  
   

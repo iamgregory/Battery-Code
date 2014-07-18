@@ -131,7 +131,7 @@ unsigned long timeoutCount=0;
   const int frontWPin = 22;  //front water leak sensor
   const int backWPin = 23;    // back water leak sensor
 // BMU varibles
-String BMCcommand="";      //The command from BMC
+String BMCcommand="stop";      //The command from BMC
 int conOnTime=0;          // counter to enable contactor
 boolean contactorsOn=false;
 
