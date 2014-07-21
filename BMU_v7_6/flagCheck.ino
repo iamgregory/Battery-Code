@@ -334,7 +334,6 @@ void volCheck(void){
    stopUntil=false; 
    fanOn= false;
    flagOverride=0;
-   overrideCount=0;
    chargeDoneFlag=false;
    balDoneFlag=false;
    leakFlag=false;
