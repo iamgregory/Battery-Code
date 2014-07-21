@@ -41,7 +41,7 @@ void pinInital(void){
   initalizeSoc();
   //************************ BMU setup *************************// 
   modeInfo.currentMode=STOPMODE;
-  modeTimeReset();
+  modeReset();
   pinMode(relay1, OUTPUT); //pin selected to control
   digitalWrite(relay1, LOW);
   pinMode(relay2, OUTPUT); //pin selected to control

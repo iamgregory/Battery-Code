@@ -118,6 +118,7 @@
  *-----------------------------------------------------------------------------*/
  void BMESelfTest(void){
   int i;
+  modeInfo.selfCheck=true;
   
   for(i=0;i<BMENum;i++){           //sets flags to false
     BME[i].dataCheck=false;

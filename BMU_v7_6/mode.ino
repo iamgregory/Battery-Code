@@ -28,7 +28,6 @@ void checkMode(String input){
         flagOverride=flagOverride | (1<<(flagNum-1)); //set override flag
         if(uartPrint)Serial.print("Override: ");
         if(uartPrint)Serial.println(flagOverride,HEX);
-        overrideCount=0;
       }
       sVal=temp;  // update indices for underscores
       temp=input.indexOf("_",sVal+1);
@@ -39,7 +38,6 @@ void checkMode(String input){
         flagOverride=flagOverride | (1<<(flagNum-1));
         if(uartPrint)Serial.print("Override: ");
         if(uartPrint)Serial.println(flagOverride,HEX);
-        overrideCount=0;
       }
   }
   
@@ -145,8 +143,7 @@ void checkMode(String input){
        Serial.println("Should Stop!");
        break;
      case 2:
-       overrideCount++;
-       if(overrideCount >=overrideTLimit){
+       if(areWeThereYet(overrideTimeStamp,ONEMINUTE+FIVESECONDS)){
          stopMode();
          stopUntil=true;
        }
@@ -154,8 +151,10 @@ void checkMode(String input){
      case 3:
      case 4:
      case 5:
+       overrideTimeStamp=micros();
        break;
      default:
+       overrideTimeStamp=micros();
        break;
    } 
    
@@ -180,8 +179,7 @@ void checkMode(String input){
       stopBal();
       conOnTime=0;
       modeInfo.currentMode=STOPMODE;
-      modeTimeReset();
-      BMESelfTest();
+      modeReset();
     }
  }
  
@@ -194,11 +192,9 @@ void checkMode(String input){
     if(modeInfo.currentMode!=DRIVEMODE) {
       if(uartPrint) Serial.println("Drive Mode Entered.");
       stopBal();
-      overrideCount=0;
       conOnTime=0;
       modeInfo.currentMode=DRIVEMODE;
-      modeTimeReset();
-      BMESelfTest();
+      modeReset();
     }
     contactorsOn=true;
    }
@@ -216,11 +212,9 @@ void checkMode(String input){
       stopBal();
       if(uartPrint) Serial.println("Charge Mode Entered.");
       modeInfo.currentMode=CHARGEMODE;
-      modeTimeReset();
-      overrideCount=0;
+      modeReset();
       conOnTime=0;
       chargeDoneFlag=false;
-      BMESelfTest();
     }
     contactorsOn=true;
     if( charge2Vol <= maxVol && current<=doneCur){
@@ -240,22 +234,8 @@ void checkMode(String input){
       Serial.print("Balance to: ");
       Serial.println(balance2Vol,4);
     }
-//    for(int j=0;j<BMENum;j++){
-//     if(!BME[j].dataCheck){
-//       for(int i=0;i<cellNum;i++){
-//         if(BME[j].fVol[i]>balance2Vol){
-//           BME[j].balFlag[i]=1;
-//         }
-//         else {
-//           BME[j].balFlag[i]=0;
-//         }
-//       }
-//     }
-//    }
-    BMESelfTest();
     modeInfo.currentMode=BALANCEMODE;
-    modeTimeReset();
-    overrideCount=0;
+    modeReset();
     balanceTimeStamp=micros(); //make sure balanceCal executes the first time through
     balDoneFlag=false;
     realBalDataFlag=false;
