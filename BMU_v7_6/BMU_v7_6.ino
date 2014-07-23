@@ -25,7 +25,7 @@ created 10/3/2013
   {
     timeStamp=micros();                // microseconds since board initialized, overflow/rollover after ~11.9 hours (2^32-1 uS)
                                        // returned in 1 microsecond resolution
-    loopCount=loopCount%countLimit+1;  // counts the number of loops up to countLimit
+    if(!modeInfo.selfCheck) BMESelfTest();
     
     measCalAllstates();                // Measures and calculates all states of half string
     
@@ -38,7 +38,6 @@ created 10/3/2013
     setContactors();
     
    //if(uartPrint) Serial.println(timeElapsed(timeStamp));
-   
     timeCheck();                //tries to keep loop time roughly constant
   }
   

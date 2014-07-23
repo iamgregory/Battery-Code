@@ -112,16 +112,16 @@ void checkFlags(void){
        }
        if(BME[j].muxCheck || BME[j].volSelfCheck || BME[j].AuxSelfCheck || BME[j].StatSelfCheck){
          bmeAlarmFlag=true;
-         if(uartPrint)Serial.print("BME ");
-         if(uartPrint)Serial.print(j);
-         if(uartPrint)Serial.print(": mux ");
-         if(uartPrint)Serial.print(BME[j].muxCheck);
-         if(uartPrint)Serial.print(", volself ");
-         if(uartPrint)Serial.print(BME[j].volSelfCheck);
-         if(uartPrint)Serial.print(",auxself ");
-         if(uartPrint)Serial.print(BME[j].AuxSelfCheck);
-         if(uartPrint)Serial.print(",statself ");
-         if(uartPrint)Serial.println(BME[j].StatSelfCheck);
+//         if(uartPrint)Serial.print("BME ");
+//         if(uartPrint)Serial.print(j);
+//         if(uartPrint)Serial.print(": mux ");
+//         if(uartPrint)Serial.print(BME[j].muxCheck);
+//         if(uartPrint)Serial.print(", volself ");
+//         if(uartPrint)Serial.print(BME[j].volSelfCheck);
+//         if(uartPrint)Serial.print(",auxself ");
+//         if(uartPrint)Serial.print(BME[j].AuxSelfCheck);
+//         if(uartPrint)Serial.print(",statself ");
+//         if(uartPrint)Serial.println(BME[j].StatSelfCheck);
        }
      }  
    }   
@@ -204,6 +204,7 @@ void volCheck(void){
   volLowAlarmFlag =false;    //Any VC voltage < 3.0 V
   deadBatAlarmFlag=false;    //Any VC voltage < 2.5 V
   volFailFlag =false;      //Any VC voltage < .1 V or >6.5 or Vref2<2.978 or>3.020
+  boolean misTempo=false;
   volMisFlag =false;      /*5V difference between overall half-string voltage and sum of half-string VC voltages or
                                      50mV difference between battery module voltage and sum of its VC voltages*/
                                      
@@ -213,34 +214,33 @@ void volCheck(void){
        volFailFlag = true;             // set voltage failure flag
      } 
      if(abs(BME[j].modSum-BME[j].fVSum)>=volModMismatch){
-       volMisFlag =true; 
-       Serial.print("BME ");
-       Serial.print(j);
-       Serial.print(": modSum ");
-       Serial.print(BME[j].modSum);
-       Serial.print(" and fVsum ");
-       Serial.print(BME[j].fVSum);
-       Serial.println("are mismatched");
+       misTempo =true;
+//       Serial.print("BME ");
+//       Serial.print(j);
+//       Serial.print(": modSum ");
+//       Serial.print(BME[j].modSum);
+//       Serial.print(" and fVsum ");
+//       Serial.print(BME[j].fVSum);
+//       Serial.println("are mismatched");
      }
 
    }
   }
-  
   if(abs(totalVoltage-volSum)>=volMismatch){
-    volMisFlag =true;
-    if(uartPrint)Serial.print("MISMATCH! totalVoltage:");
-    if(uartPrint)Serial.print(totalVoltage);
-    if(uartPrint)Serial.print(" and volsum:");
-    if(uartPrint)Serial.print(volSum);
-    if(uartPrint)Serial.println("are mismatched");
+    misTempo = true;
+//    if(uartPrint)Serial.print("MISMATCH! totalVoltage:");
+//    if(uartPrint)Serial.print(totalVoltage);
+//    if(uartPrint)Serial.print(" and volsum:");
+//    if(uartPrint)Serial.print(volSum);
+//    if(uartPrint)Serial.println("are mismatched");
   }
   if(maxVol >= 6.5 ){     // check virtual cell voltage sensor for failure 
        volFailFlag = true;             // set voltage failure flag
   } 
   else if((maxVol >= volHighAlarm) || (modeInfo.currentMode==CHARGEMODE && maxVol>=(charge2Vol+0.01))){  // check virtual cell voltage for high voltage flag
     volHighAlarmFlag  = true;          // set high voltage error flag
-    if(uartPrint)Serial.print("high voltage alarm: ");
-    if(uartPrint) Serial.println(maxVol,4);
+//    if(uartPrint)Serial.print("high voltage alarm: ");
+//    if(uartPrint) Serial.println(maxVol,4);
   }  
   
   if(minVol <= 0.0) volFailFlag = true;             // set voltage failure flag
@@ -252,7 +252,10 @@ void volCheck(void){
   if((maxVol-minVol)>=balRecVol && modeInfo.currentMode!=BALANCEMODE && minVol>=balRecLimit ){
     balRecFlag=true;    // set balance recomanded flag
   }   
-
+  
+  if(misTempo) mismatchCount++;
+  else mismatchCount=0;
+  if(mismatchCount>1) volMisFlag =true;
 }
 
 /*------------------------------------------------------------------------------
@@ -334,7 +337,6 @@ void volCheck(void){
    stopUntil=false; 
    fanOn= false;
    flagOverride=0;
-   overrideCount=0;
    chargeDoneFlag=false;
    balDoneFlag=false;
    leakFlag=false;
