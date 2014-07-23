@@ -108,8 +108,6 @@ void printOutBME(BMEdata& _BME){
   else if(!fwLeak & bwLeak) Serial.print("back leak");
   else if(fwLeak & !bwLeak) Serial.print("front leak");
   else if(fwLeak & bwLeak) Serial.print("both leak");
-  Serial.print(" \t looptime (s): ");
-  Serial.println(dLoopTime/1000000.0);
   Serial.print(" \nFlag: ");
   Serial.print(flagBMU,HEX);
   Serial.print(" \t SOC: ");
@@ -134,7 +132,7 @@ void testBME(BMEdata& _BME){
 
   int i=0;
   
-  int2float((BMEdata&) _BME);
+//  int2float((BMEdata&) _BME);
   Serial.print("-------------------------------------------------------------------------------------\n");
   if(BME[i].dataCheck){
      Serial.print("ERROR Communicating with BME ");
@@ -220,8 +218,8 @@ aString=debugStrings[0];
     }
     else{
       testBMU();
-      for(int i=0;i<14;i++){
-        printOutBME((BMEdata&)BME[i]);
+      for(int j=0;j<14;j++){
+        printOutBME((BMEdata&)BME[j]);
       }
     }
   }
