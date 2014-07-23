@@ -19,12 +19,12 @@
   #define volLowWarn 3.2       //low virtual cell voltage limit for voltage warning
   #define volLowAlarm 3.0      //low virtual cell voltage limit for voltage error 
   #define deadBatAlarm 2.5   // the voltage at whitch the system will not go in to charge mode
-  #define volMismatch 5.0       //voltage mismatch limit between calculated and measured total voltage 
-  #define volModMismatch 0.05   //voltage mismatch limit between calculated and measured total voltage 
+  #define volMismatch 3.0       //voltage mismatch limit between calculated and measured total voltage of half-string
+  #define volModMismatch 0.06   //voltage mismatch limit between calculated and measured total voltage of battery module
  
   #define presHighLimit 5.0    //High pressure limit
   #define presLowLimit 0.25     //Low Pressure limit
-  #define presRateHigh 0.50    //High pressure rate limit
+  #define presRateHigh 0.25    //High pressure rate limit
   
   #define inCurLimit 20.0      //current in limit durring Drive
   #define highInCur 92.0      //high current in limit during Charging 
@@ -33,7 +33,7 @@
   #define doneCur 4.45         //the current at which the charging is called done
   
   #define balRecVol 0.050       // voltage difference at which balancing will be recommended 
-  #define volTolerance 0.001   // the max voltage difference that the virtual cells will have at the end of balancing 
+  #define volTolerance 0.002   // the max voltage difference that the virtual cells will have at the end of balancing 
   
   #define timeoutLimit 180000     //a timeout limit of 10 hours/looptime==>180000 for charging and balanceing 
   #define overrideTLimit 310        // a time limit for priority flag of 2 or 3 5*62==>62sec
@@ -56,7 +56,7 @@
   #define IntTempConst  0.013333  //0.1mV/7.5mV is the convertion from the reading to K for internal temperature
   #define Binv .00024777  // 1/ B-value where B-value is 4190 K
   #define T0inv 0.003354  // 1/T_0 where T_0 is 298.15 K
-  #define VIN 5.0      // Temperature reference
+//  #define VIN 5.0      // Temperature reference
   
   //time
   #define ONEHOUR 36000000000 //in microseconds
@@ -144,6 +144,7 @@ boolean fwLeak =0;         // front leak sensor
 boolean bwLeak =0;         // back leak sensor
 int fwLeakCount=0;
 int bwLeakCount=0;
+int mismatchCount=0;
 
 // BMU calculated Variables
 float cap=435;            // battery capacity in Amp hours

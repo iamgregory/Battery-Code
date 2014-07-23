@@ -62,7 +62,7 @@ void checkMode(String input){
   else if(input.indexOf("bal") >=0)//checks for Balance
   { 
     if(!stopUntil )
-    {  contactorsOn=false;
+    {  
       if (modeInfo.currentMode!=BALANCEMODE){ 
         int sVal=input.indexOf("_");
         int eVal=input.indexOf("_",sVal+1);
@@ -73,6 +73,7 @@ void checkMode(String input){
           balanceMode();
         }
         else{
+          stopMode();
           if(uartPrint)Serial.println("bad bal2vol!");
         }
       }
@@ -234,6 +235,7 @@ void checkMode(String input){
       Serial.print("Balance to: ");
       Serial.println(balance2Vol,4);
     }
+    contactorsOn=false;
     modeInfo.currentMode=BALANCEMODE;
     modeReset();
     balanceTimeStamp=micros(); //make sure balanceCal executes the first time through
