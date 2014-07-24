@@ -23,10 +23,10 @@
   #define volModMismatch 0.06   //voltage mismatch limit between calculated and measured total voltage of battery module
  
   #define presHighLimit 5.0    //High pressure limit
-  #define presLowLimit 0.25     //Low Pressure limit
+  #define presLowLimit 0.5     //Low Pressure limit
   #define presRateHigh 0.25    //High pressure rate limit
   
-  #define inCurLimit 20.0      //current in limit durring Drive
+  #define inCurLimit 2.0      //current in limit durring Drive
   #define highInCur 92.0      //high current in limit during Charging 
   #define highOutCur -2.0      //current out limit during Charging
   #define inOutCur 1.0          // current in or out limit durring stop and balance
