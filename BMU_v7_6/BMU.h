@@ -76,7 +76,7 @@
   boolean fakeModVolFlag=false;
   boolean fakeCurFlag=false;
   
-  enum mode { CHARGEMODE,BALANCEMODE, DRIVEMODE, STOPMODE};
+  enum mode { STOPMODE, DRIVEMODE, CHARGEMODE,BALANCEMODE};
   
   typedef struct{
     mode currentMode;

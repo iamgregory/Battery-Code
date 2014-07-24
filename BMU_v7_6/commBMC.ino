@@ -13,7 +13,7 @@ void BMCcomm()
    // listen for incoming clients
     EthernetClient client = server.available();
     if (client) {
-      BMCcommdt=(int)(timeElapsed(bmcComTimeStamp)/1000);
+      BMCcommdt=(int)(timeElapsed(bmcComTimeStamp)/1000); //milliseconds since last communication 
       bmcComTimeStamp=micros();
       if(bmcComFlag) {
         flagBMU=flagBMU & ~(0x008000);
@@ -47,7 +47,8 @@ void sendData(EthernetClient& _Client){
   _Client.print(',');
   _Client.print(BMCcommdt);
   _Client.print(',');
-  _Client.print(BMUNum+1);
+ // _Client.print(BMUNum+1);
+  _Client.print(modeInfo.currentMode+1);
   _Client.print(',');
   _Client.print(SOC,2);
   _Client.print(',');
