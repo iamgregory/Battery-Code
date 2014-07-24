@@ -121,6 +121,21 @@ void printOutBME(BMEdata& _BME){
   Serial.print("V \t maxTemp: ");
   Serial.print(maxTemp,2);
   Serial.println(" C");
+  Serial.print("Current Mode:\t");
+  switch (modeInfo.currentMode+1) {
+    case 1:
+      if(uartPrint)Serial.println("STOP");
+      break;
+    case 2:
+      if(uartPrint)Serial.println("DRIVE");
+      break;
+    case 3:
+      if(uartPrint)Serial.println("CHARGE");
+      break;
+    case 4:
+      if(uartPrint)Serial.println("BALANCE");
+      break;
+  }
 //  Serial.print(presRate,2);
  }
  
