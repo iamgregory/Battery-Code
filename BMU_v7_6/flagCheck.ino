@@ -80,10 +80,13 @@ void checkFlags(void){
  * checks the communication of all BME's
  *----------------------------------------------------------------------------*/
  void bmeCommCheck(void){
+   static int dataCheckCounter[BMENum]={0};
    bmeComFlag=false;  // Communication failure occurs between BMU and BME
    
    for(int j=0;j<BMENum;j++){                         // goes through all BMEs
-     if(BME[j].dataCheck){
+     if(BME[j].dataCheck) dataCheckCounter[j]++;
+     else dataCheckCounter[j]=0;
+     if(dataCheckCounter[j]>1){
        bmeComFlag=true;          // set communication error flag
        if(uartPrint)Serial.print("dataCheck error on bME ");
        if(uartPrint)Serial.println(j);
@@ -331,7 +334,7 @@ void volCheck(void){
  * clears all flags
  *----------------------------------------------------------------------------*/
  void clearFlags(void){
-   if(uartPrint)Serial.println("Clear");
+   if(uartPrint)Serial.println("inside of clearFlags()");
    flagBMU=0;
    flagPriority=0;
    stopUntil=false; 
