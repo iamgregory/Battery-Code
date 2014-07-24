@@ -107,24 +107,24 @@ void checkFlags(void){
          if(BME[j].uFlag[i] || BME[j].oFlag[i]){
            bmeAlarmFlag=true;
            if(uartPrint)Serial.print("BME ");
-           if(uartPrint)Serial.print(j);
+           if(uartPrint)Serial.print(j+1);
            if(uartPrint)Serial.print(" layer ");
-           if(uartPrint)Serial.print(i);
+           if(uartPrint)Serial.print(i+1);
            if(uartPrint)Serial.print(" bmeAlarmflag ");
          }      
        }
        if(BME[j].muxCheck || BME[j].volSelfCheck || BME[j].AuxSelfCheck || BME[j].StatSelfCheck){
          bmeAlarmFlag=true;
-//         if(uartPrint)Serial.print("BME ");
-//         if(uartPrint)Serial.print(j);
-//         if(uartPrint)Serial.print(": mux ");
-//         if(uartPrint)Serial.print(BME[j].muxCheck);
-//         if(uartPrint)Serial.print(", volself ");
-//         if(uartPrint)Serial.print(BME[j].volSelfCheck);
-//         if(uartPrint)Serial.print(",auxself ");
-//         if(uartPrint)Serial.print(BME[j].AuxSelfCheck);
-//         if(uartPrint)Serial.print(",statself ");
-//         if(uartPrint)Serial.println(BME[j].StatSelfCheck);
+         if(uartPrint)Serial.print("BME ");
+         if(uartPrint)Serial.print(j+1);
+         if(uartPrint)Serial.print(": mux ");
+         if(uartPrint)Serial.print(BME[j].muxCheck);
+         if(uartPrint)Serial.print(", volself ");
+         if(uartPrint)Serial.print(BME[j].volSelfCheck);
+         if(uartPrint)Serial.print(",auxself ");
+         if(uartPrint)Serial.print(BME[j].AuxSelfCheck);
+         if(uartPrint)Serial.print(",statself ");
+         if(uartPrint)Serial.println(BME[j].StatSelfCheck);
        }
      }  
    }   
@@ -352,9 +352,15 @@ void volCheck(void){
    fakeCurFlag=false;
    
    for(int j;j<BMENum;j++){                // goes through all BMEs
+     BME[j].volSelfCheck=false;
+     BME[j].AuxSelfCheck=false;
+     BME[j].StatSelfCheck=false;
+     BME[j].muxCheck=false;
      BME[j].ignoreiT=false;
      for (int i=0;i<4;i++){
        BME[j].ignoreT[i]=false;
+       BME[j].uFlag[i]=false;
+       BME[j].oFlag[i]=false;
      }
    }
  }

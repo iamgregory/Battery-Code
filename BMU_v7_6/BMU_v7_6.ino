@@ -1,11 +1,11 @@
 /*
 created 10/3/2013
- modified 7/17/2014
+ modified 7/22/2014
  by Nima Ghods and Greg Mills
  
  BMU code made to communicate with the BME's 
- Circuit: BMU Shield v3_4
-          BME V5_5 attached to arduino due
+ Circuit: BMU Shield v4_0
+          BME V5_6 attached to arduino due
  */
 
 //included libraries:

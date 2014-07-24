@@ -6,10 +6,8 @@
 void pinInital(void){
   int i=0;
   
-  if(uartPrint){
-    Serial.begin(9600);           // set up Serial library at 9600 bps 
-    
-  }
+  Serial.begin(9600);           // set up Serial library at 9600 bps 
+  
   //************************ SPI setup *************************//
   
   pinMode(csBME1, OUTPUT);           // set pin to output
