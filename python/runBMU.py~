@@ -1,0 +1,66 @@
+
+"""socketTest_x_x.py
+script that setsup communication with the arduino though ethernet
+"""
+
+__author__ = "Nima Ghods (nima.ghods@ga.com)"
+__version__ = "$Revision: 4.2 $"
+__date__ = "$Date: 2014/05/10$"
+__copyright__ = "Copyright (c) 2012 General Atomics"
+__license__ = "Python"
+
+from subFunc import *
+
+
+
+if __name__ == '__main__':  
+  
+  while True:
+    timeStamp=datetime.datetime.now()
+    print loopTime
+    if comms[6]==0: connect2mysql(sqlComm)  
+    else : 
+	for ii in range(0,BMUnum):
+		BMUcommand[ii]=getCommand(sqlComm,ii)
+		#~ print BMUcommand[ii]
+		#~ if balanceDone[ii]: BMUcommand[ii]="stop"
+		if comms[ii]==0: connect2BMU(ii)
+		comms[ii]=sendCommand(BMUcomms[ii],BMUcommand[ii])
+		reply=getData(BMUcomms[ii],ii)
+		if len(reply)>=2 and comms[ii]==1:
+			reply=parseData(reply)
+			chargeVol[ii]=reply[7]
+			bmuflags=int2binary(reply[0])
+			#~ if ii==3: print bmuflags
+			chargeDone[ii]=bmuflags[20]
+			balanceDone[ii]=bmuflags[21]
+			#~ if chargeDone[ii]: print chargeDone
+			#~ if balanceDone[ii]: print balanceDone
+			#~ print reply
+			comms[6]=setData(sqlComm,reply) 
+	for ii in range(0,2):
+		if 'cha' in BMUcommand[2*ii] and 'cha' in BMUcommand[2*ii+1] and not chargeDone[2*ii] and not chargeDone[2*ii+1] :
+			if comms[ii+4]==0:
+				pidControl[ii].setPoint(volGoal)
+				pidControl[ii].setDerivator(volGoal-max(chargeVol[2*ii],chargeVol[2*ii+1]))
+				connect2Charger(ii)
+				if comms[ii+4]==0:
+					if ii==0: os.system("sh ChargerCon1.sh|telnet")
+					if ii==1: os.system("sh ChargerCon2.sh|telnet")
+					connect2Charger(ii)
+				setupCharger(ii)
+			else :
+				commandTemp=BMUcommand[2*ii].split('_')
+				if volGoal!=float(commandTemp[1])/10000:
+					volGoal=float(commandTemp[1])/10000
+					pidControl[ii].setPoint(volGoal)
+					if debug: print volGoal
+				setChargeCur(ii)
+			#~ #if comms[ii+4]==0: chargerComm[ii].close()
+		elif comms[ii+4]==1:
+			endCharge(ii)
+			if chargeDone[2*ii] or chargeDone[2*ii+1]: print "Charge Done"
+			else: print "Charging Stoped!"
+    loopTime=datetime.datetime.now()-timeStamp
+    while loopTime.seconds < 1 :
+	loopTime=datetime.datetime.now()-timeStamp

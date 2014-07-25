@@ -36,8 +36,11 @@ class PID:
 		self.P_value = self.Kp * self.error
 		self.D_value = self.Kd * ( self.error - self.Derivator)
 		self.Derivator = self.error
-
-		self.Integrator = self.Integrator + self.error
+		
+		if self.error<0:
+			self.Integrator = self.Integrator + 10*self.error
+		else:
+			self.Integrator = self.Integrator + self.error
 
 		if self.Integrator > self.Integrator_max:
 			self.Integrator = self.Integrator_max
@@ -45,7 +48,6 @@ class PID:
 			self.Integrator = self.Integrator_min
 
 		self.I_value = self.Integrator * self.Ki
-
 		PID = self.P_value + self.I_value + self.D_value
 
 		return PID
