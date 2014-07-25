@@ -6,11 +6,16 @@ void checkFlags(void){
   leakFlag=false;
   if(fwLeak || bwLeak) leakFlag=true;  //hecks the leak sensors
   bmeCommCheck();   //checks the communication of all BME's
-  bmeFlagCheck();   //checks the BME's self-checks flags
-  if(modeInfo.currentMode!=BALANCEMODE) volCheck();      //checks the voltage for over and under voltage
+  if(modeInfo.currentMode!=BALANCEMODE){
+    volCheck();      //checks the voltage for over and under voltage
+    bmeFlagCheck();  //checks the BME's self-checks flags
+  }
   else{
     realBalDataFlag=areWeThereYet(balanceTimeStamp,balanceCheckTime+6*controlTime) & balRelaxFlag;
-    if(realBalDataFlag) volCheck();
+    if(realBalDataFlag){
+      volCheck();      //checks the voltage for over and under voltage
+      bmeFlagCheck(); //checks the BME's self-checks flags
+    }
   }
   tempCheck();     //checks the temperature for over temperature
   currentCheck();  //checks the current 
@@ -113,21 +118,9 @@ void checkFlags(void){
            if(uartPrint)Serial.print(" bmeAlarmflag ");
          }      
        }
-       if(BME[j].muxCheck || BME[j].volSelfCheck || BME[j].AuxSelfCheck || BME[j].StatSelfCheck){
-         bmeAlarmFlag=true;
-         if(uartPrint)Serial.print("BME ");
-         if(uartPrint)Serial.print(j+1);
-         if(uartPrint)Serial.print(": mux ");
-         if(uartPrint)Serial.print(BME[j].muxCheck);
-         if(uartPrint)Serial.print(", volself ");
-         if(uartPrint)Serial.print(BME[j].volSelfCheck);
-         if(uartPrint)Serial.print(",auxself ");
-         if(uartPrint)Serial.print(BME[j].AuxSelfCheck);
-         if(uartPrint)Serial.print(",statself ");
-         if(uartPrint)Serial.println(BME[j].StatSelfCheck);
-       }
      }  
-   }   
+   }
+  if(selfTestFlag) bmeAlarmFlag=true;   
  }
 
 /*------------------------------------------------------------------------------
@@ -350,12 +343,8 @@ void volCheck(void){
    fakeTotVolFlag=false;
    fakeModVolFlag=false;
    fakeCurFlag=false;
-   
+   selfTestFlag =false;
    for(int j;j<BMENum;j++){                // goes through all BMEs
-     BME[j].volSelfCheck=false;
-     BME[j].AuxSelfCheck=false;
-     BME[j].StatSelfCheck=false;
-     BME[j].muxCheck=false;
      BME[j].ignoreiT=false;
      for (int i=0;i<4;i++){
        BME[j].ignoreT[i]=false;

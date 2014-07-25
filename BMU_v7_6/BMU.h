@@ -229,6 +229,7 @@ boolean deadBatAlarmFlag=false;    //Any VC voltage < 2.5 V
 boolean volFailFlag =false;      //Any VC voltage < .1 V or >6.5 or Vref2<2.978 or>3.020
 boolean volMisFlag =false;      /*5V difference between overall half-string voltage and sum of half-string VC voltages or
                                      50mV difference between battery module voltage and sum of its VC voltages*/
+boolean selfTestFlag =false;     // self-check failures are sent from BME                                
 boolean bmeAlarmFlag =false;     // If any cell over/under voltage failures or self-check failures are sent from BME 
 boolean bmeComFlag =false;       // Communication failure occurs between BMU and BME
 boolean bmcComFlag =false;       // Communication failure occurs between BMU and BMC
