@@ -13,14 +13,15 @@ BMUcommand=['stop','stop','stop','stop']
 chargerComm=['charger1','charger2']
 sqlComm=['sqlcon','sqlcur']
 comms=[0,0,0,0,0,0,0]
-BMUnum=1
+BMUnum=2
 host= "192.168.0.17"
 port= 40
 charger_host="192.168.0.19"
 charger_port=9221
 chargeVol=[0,0,0,0]
+
 waitTime=0.2
-maxVol=180#360
+maxVol=360
 cMax=44.5
 cStop=4.0
 pidControl=['pid1','pid2']
@@ -35,7 +36,69 @@ pidControl[1]=PID(Kp,Ki,Kd,0,0,iMax,iMin)
 cvStart=4.15
 volGoal=4.2
 slop=(cStop-cMax)/(volGoal-cvStart)
-chargeDone=[1,1]
+chargeDone=[0,0,0,0]
+balanceDone=[0,0,0,0]
+
+def connect2Charger(ii):
+  """ connects to a Charger """
+  chargerComm[ii]=setupComm(charger_host+str(5+ii),charger_port+ii) 
+  #~ if chargerComm[ii]==False
+	#~ comms[ii+4]=0
+	#~ if debug: print "not connected to charger #%d" % (ii+1) 
+  #~ else
+  comms[ii+4]=1
+  sendCommand(chargerComm[ii],"*IDN? \n")
+  time.sleep(waitTime)
+  reply=getData(chargerComm[ii],ii+4)
+  if  len(reply)<3: comms[ii+4]=0
+  if debug: print "connected to charger #%d" % (ii+1)
+    
+
+def setupCharger(ii):
+    sendCommand(chargerComm[ii],"*IDN? \n")
+    time.sleep(waitTime)
+    reply=getData(chargerComm[ii],ii+4)
+    comms[ii+4]=sendCommand(chargerComm[ii],"outp:stat 1\n")
+    time.sleep(waitTime)
+    comms[ii+4]=sendCommand(chargerComm[ii],"sour:volt:prot 365\n")
+    time.sleep(waitTime)
+    comms[ii+4]=sendCommand(chargerComm[0],"sour:curr 0\n")
+    time.sleep(waitTime)
+    comms[ii+4]=sendCommand(chargerComm[ii],"sour:volt " +str(maxVol)+'\n')
+    if  len(reply)<3:comms[ii+4]=0
+    
+    
+def setChargeCur(ii):
+    comms[ii+4]=sendCommand(chargerComm[ii],"meas:curr? \n")
+    time.sleep(waitTime)
+    reply=getData(chargerComm[ii],ii+4)
+    #~ print reply
+    topCell = max(chargeVol[2*ii],chargeVol[2*ii+1])
+    #~ print topCell
+    #~ if topCell>cvStart : cur=cMax+slop*(topCell-cvStart)
+    #~ else : cur=cMax
+    cur=2+pidControl[ii].update(topCell)
+    #~ print [cur, round(volGoal-topCell,4), float(reply.strip())] 
+    cur=round(max(min(cur,cMax),0),2)
+    #~ if (abs(volGoal-topCell)<0.01 and cur<2.25) or chargeDone[ii]:
+      #~ cur=0.0
+      #~ chargerComm[ii].close()
+      #~ comms[ii+4]=0
+      #~ chargeDone[ii]=1
+    #~ print "sour:curr " +str(cur)+'\n'
+    comms[ii+4]=sendCommand(chargerComm[ii],"sour:curr " +str(cur)+'\n')
+    if  len(reply)<2: comms[ii+4]=0
+    if comms[ii+4]: print [cur*2, round(volGoal-topCell,4), round(float(reply.strip())*2,2)] 
+    return cur
+
+def endCharge(ii):
+  comms[ii+4]=sendCommand(chargerComm[ii],"outp:stat 0\n")
+  time.sleep(waitTime)
+  comms[ii+4]=sendCommand(chargerComm[ii],"sour:volt 0\n")
+  time.sleep(waitTime)
+  comms[ii+4]=sendCommand(chargerComm[ii],"sour:curr 0\n")
+  chargerComm[ii].close()
+  comms[ii+4]=0
 
 def setData(_sqlComm,bmuData):
   """ send BMU ii Data to mysql database """
@@ -75,15 +138,15 @@ def connect2mysql(_sqlComm):
     if debug: print "not connected to database" 
 
 def connect2BMU(ii):
-  """ connects to a BMU """
-  try:
-    BMUcomms[ii]=setupComm(host+str(ii),port+ii)  
-    comms[ii]=1
-    if debug: print "connected to BMU #%d" % (ii+1)
-  except:
-    comms[ii]=0
-    if debug: print "not connected to BMU #%d" % (ii+1)
-    
+	""" connects to a BMU """
+	BMUcomms[ii]=setupComm(host+str(ii),port+ii)  
+	if BMUcomms[ii]==False
+		comms[ii]=0
+		if debug: print "not connected to BMU #%d" % (ii+1)
+	else
+		comms[ii]=1
+		if debug: print "connected to BMU #%d" % (ii+1)
+  
   
 def setupMysql():
   result = False
@@ -101,7 +164,7 @@ def setupComm(host,port):
     result.settimeout(1)
     result.connect((host,port))
   except:
-    result=False
+    print 'Failed to create socket'
   return result
   
 def sendCommand(_s,_c): 
@@ -170,8 +233,16 @@ def parseData(v):
 	value[i]=1.0/value[i]-273
     #convert internal chip temperature
     for i in range(startInx+BMEnum*9,startInx+BMEnum*10):
-        value[i]=value[i]/75-273
+        value[i]=value[i]/75-263
     value=[round(i,4) for i in value]
     value[0]=int(value[0])
     value[2]=int(value[2])
     return value
+
+def int2binary(num):
+	n=num
+	digit_lst=[0]*23
+	for idx in range(0,22):
+		if n % 2==1:digit_lst[idx]=1
+		n=n/2
+	return digit_lst

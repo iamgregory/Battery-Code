@@ -1,5 +1,6 @@
+
 """socketTest_x_x.py
-script that setsup communication with the arduino though ethernet
+script that sets up communication with the Arduino though ethernet
 """
 
 __author__ = "Nima Ghods (nima.ghods@ga.com)"
@@ -10,111 +11,50 @@ __license__ = "Python"
 
 from subFunc import *
 
-def connect2Charger(ii):
-  """ connects to a Charger """
-  try:
-    chargerComm[ii]=setupComm(charger_host+str(5+ii),charger_port+ii) 
-    comms[ii+4]=1
-    if debug: print "connected to charger #%d" % (ii+1)
-  except:
-    comms[ii+4]=0
-    if debug: print "not connected to charger #%d" % (ii+1) 
-
-def setupCharger(ii):
-    #~ os.system("bash ChargerCon.sh|telnet")
-    #~ sendCommand(chargerComm[ii],"*CLS \n")
-    #~ time.sleep(waitTime)
-    sendCommand(chargerComm[ii],"*IDN? \n")
-    time.sleep(waitTime)
-    reply=getData(chargerComm[ii],ii+4)
-    #~ print comms[6]
-    #~ print "this is " + str(len(reply))
-    comms[ii+4]=sendCommand(chargerComm[ii],"outp:stat 1\n")
-    time.sleep(waitTime)
-    comms[ii+4]=sendCommand(chargerComm[ii],"sour:volt:prot 365\n")
-    time.sleep(waitTime)
-    comms[ii+4]=sendCommand(chargerComm[ii],"sour:volt " +str(maxVol)+'\n')
-    #~ time.sleep(waitTime)
-    #~ comms[ii+4]=sendCommand(chargerComm[0],"sour:curr 2\n")
-    #~ print comms[6]
-    if  len(reply)<3:comms[ii+4]=0
-    pidControl[ii].setPoint(volGoal)
-    pidControl[ii].setDerivator(volGoal-max(chargeVol[2*ii],chargeVol[2*ii+1]))
-    
-def setChargeCur(ii):
-    comms[ii+4]=sendCommand(chargerComm[ii],"meas:curr? \n")
-    time.sleep(waitTime)
-    #~ print comms[4]
-    reply=getData(chargerComm[ii],ii+4)
-    #~ print reply
-    topCell = max(chargeVol[2*ii],chargeVol[2*ii+1])
-    #~ if topCell>cvStart : cur=cMax+slop*(topCell-cvStart)
-    #~ else : cur=cMax
-    cur=2+pidControl[ii].update(topCell)
-    #~ print [cur, round(volGoal-topCell,4), float(reply.strip())] 
-    cur=round(max(min(cur,cMax),0),2)
-    #~ if (abs(volGoal-topCell)<0.01 and cur<2.25) or chargeDone[ii]:
-      #~ cur=0.0
-      #~ chargerComm[ii].close()
-      #~ comms[ii+4]=0
-      #~ chargeDone[ii]=1
-    #~ print [cur, round(volGoal-topCell,4), float(reply.strip()), round(pidControl[ii].getIntegrator(),3)] 
-    #~ print "sour:curr " +str(cur)+'\n'
-    comms[ii+4]=sendCommand(chargerComm[ii],"sour:curr " +str(cur)+'\n')
-    if  len(reply)<2: comms[ii+4]=0
-    print comms[4]
-    return cur
-
-def endCharge(ii):
-  comms[ii+4]=sendCommand(chargerComm[ii],"outp:stat 0\n")
-  time.sleep(waitTime)
-  comms[ii+4]=sendCommand(chargerComm[ii],"sour:volt 0\n")
-  time.sleep(waitTime)
-  comms[ii+4]=sendCommand(chargerComm[ii],"sour:curr 0\n")
-
-if __name__ == '__main__':  
-  
-  while True:
-    #~ print comms[4]
-    if comms[6]==0: connect2mysql(sqlComm)  
-    else :  
-      for ii in range(0,BMUnum):
-        BMUcommand[ii]=getCommand(sqlComm,ii)
-        #~ print comms[6]
-        if comms[ii]==0: connect2BMU(ii)
-        #~ BMUcommand[ii]="charge_39000_"
-        #~ BMUcommand[ii]="stop"
-        comms[ii]=sendCommand(BMUcomms[ii],BMUcommand[ii])
-        reply=getData(BMUcomms[ii],ii)
-        #~ BMUcommand[ii]="charge_40000_"
-        if len(reply)>=2 and comms[ii]==1:
-          reply=parseData(reply)
-          chargeVol[ii]=reply[7]
-          #~ print comms[6]
-          comms[6]=setData(sqlComm,reply) 
-          #~ if debug: print reply
-          #~ if debug: print reply[2]
+if __name__ == '__main__':
+    while True:
+        timeStamp = datetime.datetime.now()  # get time
+        if communicationFlags[6] == 0:  # are we not connected database?
+            connect_to_mysql()  # connect to db
         else:
-	  if debug: print "Lost communicaion to BMU %d" %(ii+1)
-      for ii in range(0,1):
-        if 'cha' in BMUcommand[2*ii]:
-	  #~ print comms[6]
-	  #~ BMUcommand[ii]="charge_40000_"
-	  if comms[ii+4]==0:
-	    #~ print comms[6]
-	    os.system("bash ChargerCon.sh|telnet")
-	    #~ time.sleep(1)
-	    connect2Charger(ii)
-	    #~ setupCharger(ii)
-	    #~ os.system("bash ChargerCon.sh|telnet")
-	    #~ time.sleep(1)
-	    #~ connect2Charger(ii)
-	    if comms[ii+4]==1:setupCharger(ii)
-	  else :
-	    commandTemp=BMUcommand[2*ii].split('_')
-	    #~ volGoal=3.9
-	    if volGoal!=float(commandTemp[1])/10000:
-	      volGoal=float(commandTemp[1])/10000
-	      pidControl[ii].setPoint(volGoal)
-	      if debug: print volGoal
-	    setChargeCur(ii)
+            for ii in range(0, BMUnum):  # for all BMUs
+                BMUCommand[ii] = get_command(ii) # get command from database
+                if communicationFlags[ii] == 0:  # if not connected to BMU[ii]
+                    connect_to_bmu(ii)  # connect to BMU[ii], also sets global BMUSocket[ii]
+                communicationFlags[ii] = send_command(BMUSocket[ii], BMUCommand[ii])  # sends command to BMU[ii]
+                reply = get_data(BMUSocket[ii], ii)  # gets data from BMUs
+                if len(reply) >= 3 and communicationFlags[ii] == 1:  # if connected and non-empty message
+                    reply = process_data(reply, ii)  # parses and processes data, assigns some variables too
+                    set_data(reply, ii+1)  # puts reply info in database
+            for ii in range(0, 2):
+                if 'cha' in BMUCommand[2*ii] and 'cha' in BMUCommand[2*ii+1] and not\
+                        chargeDone[2*ii] and not chargeDone[2*ii+1]:
+                    if communicationFlags[ii+4] == 0:  # is the charger not connected?
+                        pidControl[ii].setPoint(volGoal[ii])  # PID Goal for ii'th full string if not connected
+                        pidControl[ii].setDerivator(volGoal[ii]-max(chargeVol[2*ii], chargeVol[2*ii+1]))
+                        connect_to_charger(ii)  # connect ii'th full string to charger, sets communicationFlags
+                        # if communicationFlags[ii+4] == 0:  # is the charger still not connected?
+                        #     if ii == 0:  # try to connect a different way if connection failed
+                        #         try:
+                        #             os.system("sh ChargerCon1.sh|telnet")
+                        #         except:
+                        #             communicationFlags[ii+4] = 0
+                        #     if ii == 1:  # try to connect a different way if connection failed
+                        #         try:
+                        #             os.system("sh ChargerCon2.sh|telnet")
+                        #         except:
+                        #             pass
+                        #     connect_to_charger(ii)  # try to connect the regular way one more time.
+                        if communicationFlags[ii+4] == 1:
+                            setup_charger(ii)  # set up the charger, also verifies communication
+                    else:
+                        commandTemp = BMUCommand[2*ii].split('_')  # value after charge_<xxx>, checks ii=0, 2
+                        if volGoal[ii] != float(commandTemp[1])/10000:  # if goal is not the command
+                            volGoal[ii] = float(commandTemp[1])/10000  # set goal to the command
+                            pidControl[ii].setPoint(volGoal[ii])  # update the PID with the new goal
+                        set_charge_current(ii)  # calls PID, sets charger to the current from PID
+                elif communicationFlags[ii+4] == 1:  # if you're not asking for charge or done charging, and still communicating
+                    end_charge(ii)  # end charging, disconnects chargers
+        loopTime = datetime.datetime.now()-timeStamp
+        while loopTime.seconds < 1:  # do while the loop time is under 1 second
+            loopTime = datetime.datetime.now()-timeStamp  # stalls till 1 second by repeatedly calculating loopTime
