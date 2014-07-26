@@ -141,7 +141,7 @@ void checkMode(String input){
      case 1:
        stopMode();
        stopUntil=true;
-       Serial.println("Should Stop!");
+       if(uartPrint) Serial.println("Should Stop!");
        break;
      case 2:
        if(areWeThereYet(overrideTimeStamp,ONEMINUTE+FIVESECONDS)){
