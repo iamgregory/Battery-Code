@@ -118,7 +118,7 @@
  void BMESelfTest(void){
   int i;
   modeInfo.selfCheck=true;
-  
+  selfTestFlag =false;
   for(i=0;i<BMENum;i++){           //sets flags to false
     BME[i].dataCheck=false;
     BME[i].muxCheck=false;
@@ -149,10 +149,28 @@
   delayMicroseconds(BMEConDelay2);
   DIAGN(0);
   delayMicroseconds(BMEConDelay2);
-  for(int i=0;i<BMENum;i++){ 
+  for(i=0;i<BMENum;i++){ 
     RDSTATSTA((BMEdata&) BME[i]);  //check results of self test
     RDSTATSTB((BMEdata&) BME[i]);  //check results of self test
   }
+  
+  for(i=0;i<BMENum;i++){                         // goes through all BMEs
+     if(!BME[i].dataCheck){                           // check if BME is communicating       
+       if(BME[i].muxCheck || BME[i].volSelfCheck || BME[i].AuxSelfCheck || BME[i].StatSelfCheck){
+         selfTestFlag =true;
+         if(uartPrint)Serial.print("BME ");
+         if(uartPrint)Serial.print(i+1);
+         if(uartPrint)Serial.print(": mux ");
+         if(uartPrint)Serial.print(BME[i].muxCheck);
+         if(uartPrint)Serial.print(", volself ");
+         if(uartPrint)Serial.print(BME[i].volSelfCheck);
+         if(uartPrint)Serial.print(",auxself ");
+         if(uartPrint)Serial.print(BME[i].AuxSelfCheck);
+         if(uartPrint)Serial.print(",statself ");
+         if(uartPrint)Serial.println(BME[i].StatSelfCheck);
+       }
+     }  
+   }
   // reset cell data
   getBMEData();
   

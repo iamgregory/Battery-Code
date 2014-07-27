@@ -6,11 +6,16 @@ void checkFlags(void){
   leakFlag=false;
   if(fwLeak || bwLeak) leakFlag=true;  //hecks the leak sensors
   bmeCommCheck();   //checks the communication of all BME's
-  bmeFlagCheck();   //checks the BME's self-checks flags
-  if(modeInfo.currentMode!=BALANCEMODE) volCheck();      //checks the voltage for over and under voltage
+  if(modeInfo.currentMode!=BALANCEMODE){
+    volCheck();      //checks the voltage for over and under voltage
+    bmeFlagCheck();  //checks the BME's self-checks flags
+  }
   else{
     realBalDataFlag=areWeThereYet(balanceTimeStamp,balanceCheckTime+6*controlTime) & balRelaxFlag;
-    if(realBalDataFlag) volCheck();
+    if(realBalDataFlag){
+      volCheck();      //checks the voltage for over and under voltage
+      bmeFlagCheck(); //checks the BME's self-checks flags
+    }
   }
   tempCheck();     //checks the temperature for over temperature
   currentCheck();  //checks the current 
@@ -39,14 +44,14 @@ void checkFlags(void){
    if(modeInfo.currentMode==CHARGEMODE || modeInfo.currentMode==BALANCEMODE){
      if (modeInfo.hours>=8) timeoutFlag= true;  // set Timeout flag
    }
-//   if(uartPrint)Serial.print("Mode(");
-//   if(uartPrint)Serial.print(modeInfo.currentMode);
-//   if(uartPrint)Serial.print("), Hours: ");
-//   if(uartPrint)Serial.print(modeInfo.hours);
-//   if(uartPrint)Serial.print(",Minutes: ");
-//   if(uartPrint)Serial.print(modeInfo.minutes);
-//   if(uartPrint)Serial.print(",uSecs: ");
-//   if(uartPrint)Serial.println(modeInfo.microseconds);
+   if(uartPrint)Serial.print("Mode(");
+   if(uartPrint)Serial.print(modeInfo.currentMode);
+   if(uartPrint)Serial.print("), Hours: ");
+   if(uartPrint)Serial.print(modeInfo.hours);
+   if(uartPrint)Serial.print(",Minutes: ");
+   if(uartPrint)Serial.print(modeInfo.minutes);
+   if(uartPrint)Serial.print(",uSecs: ");
+   if(uartPrint)Serial.println(modeInfo.microseconds);
 
  }
 
@@ -113,21 +118,9 @@ void checkFlags(void){
            if(uartPrint)Serial.print(" bmeAlarmflag ");
          }      
        }
-       if(BME[j].muxCheck || BME[j].volSelfCheck || BME[j].AuxSelfCheck || BME[j].StatSelfCheck){
-         bmeAlarmFlag=true;
-         if(uartPrint)Serial.print("BME ");
-         if(uartPrint)Serial.print(j+1);
-         if(uartPrint)Serial.print(": mux ");
-         if(uartPrint)Serial.print(BME[j].muxCheck);
-         if(uartPrint)Serial.print(", volself ");
-         if(uartPrint)Serial.print(BME[j].volSelfCheck);
-         if(uartPrint)Serial.print(",auxself ");
-         if(uartPrint)Serial.print(BME[j].AuxSelfCheck);
-         if(uartPrint)Serial.print(",statself ");
-         if(uartPrint)Serial.println(BME[j].StatSelfCheck);
-       }
      }  
-   }   
+   }
+   if(selfTestFlag) bmeAlarmFlag=true;   
  }
 
 /*------------------------------------------------------------------------------
@@ -218,32 +211,32 @@ void volCheck(void){
      } 
      if(abs(BME[j].modSum-BME[j].fVSum)>=volModMismatch){
        misTempo =true;
-//       Serial.print("BME ");
-//       Serial.print(j);
-//       Serial.print(": modSum ");
-//       Serial.print(BME[j].modSum);
-//       Serial.print(" and fVsum ");
-//       Serial.print(BME[j].fVSum);
-//       Serial.println("are mismatched");
+       Serial.print("BME ");
+       Serial.print(j);
+       Serial.print(": modSum ");
+       Serial.print(BME[j].modSum);
+       Serial.print(" and fVsum ");
+       Serial.print(BME[j].fVSum);
+       Serial.println("are mismatched");
      }
 
    }
   }
   if(abs(totalVoltage-volSum)>=volMismatch){
     misTempo = true;
-//    if(uartPrint)Serial.print("MISMATCH! totalVoltage:");
-//    if(uartPrint)Serial.print(totalVoltage);
-//    if(uartPrint)Serial.print(" and volsum:");
-//    if(uartPrint)Serial.print(volSum);
-//    if(uartPrint)Serial.println("are mismatched");
+    if(uartPrint)Serial.print("MISMATCH! totalVoltage:");
+    if(uartPrint)Serial.print(totalVoltage);
+    if(uartPrint)Serial.print(" and volsum:");
+    if(uartPrint)Serial.print(volSum);
+    if(uartPrint)Serial.println("are mismatched");
   }
   if(maxVol >= 6.5 ){     // check virtual cell voltage sensor for failure 
        volFailFlag = true;             // set voltage failure flag
   } 
   else if((maxVol >= volHighAlarm) || (modeInfo.currentMode==CHARGEMODE && maxVol>=(charge2Vol+0.01))){  // check virtual cell voltage for high voltage flag
     volHighAlarmFlag  = true;          // set high voltage error flag
-//    if(uartPrint)Serial.print("high voltage alarm: ");
-//    if(uartPrint) Serial.println(maxVol,4);
+    if(uartPrint)Serial.print("high voltage alarm: ");
+    if(uartPrint) Serial.println(maxVol,4);
   }  
   
   if(minVol <= 0.0) volFailFlag = true;             // set voltage failure flag
@@ -291,12 +284,6 @@ void volCheck(void){
    if(balRecFlag) flagBMU=flagBMU | (1<<22); 
    
    flagBMU= flagBMU & ~flagOverride;
-//   if(uartPrint){
-//     Serial.print(minVol,4);
-//     Serial.print('\t');
-//     Serial.println(maxVol,4);
-//   }
-//   if(uartPrint && flagBMU !=0) Serial.println(flagBMU,HEX);
  }
  
  /*------------------------------------------------------------------------------
@@ -350,12 +337,8 @@ void volCheck(void){
    fakeTotVolFlag=false;
    fakeModVolFlag=false;
    fakeCurFlag=false;
-   
+   selfTestFlag =false;
    for(int j;j<BMENum;j++){                // goes through all BMEs
-     BME[j].volSelfCheck=false;
-     BME[j].AuxSelfCheck=false;
-     BME[j].StatSelfCheck=false;
-     BME[j].muxCheck=false;
      BME[j].ignoreiT=false;
      for (int i=0;i<4;i++){
        BME[j].ignoreT[i]=false;
