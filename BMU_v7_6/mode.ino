@@ -86,7 +86,7 @@ void checkMode(String input){
       else if ( areWeThereYet(balanceTimeStamp,balanceCheckTime) ){ 
         disableResistors();
         if ( realBalDataFlag ){  // if a loop has happened since the resistors were disabled
-          if(uartPrint) Serial.println("balanceCal()");
+//          if(uartPrint) Serial.println("balanceCal()");
           balanceCal(); // if balancing mode is on, then calculate which cells need to be discarged
         }
       }
@@ -255,6 +255,7 @@ void checkMode(String input){
  *----------------------------------------------------------------------------*/
  void stopBal(void){
    int j,i;
+   fanOn = false;
    disableResistors();
    for(j=0;j<BMENum;j++){    
      for(i=0;i<cellNum;i++){
@@ -287,6 +288,7 @@ void checkMode(String input){
    realBalDataFlag=true;
    balTempControl();
    maxVol=findMaxV();
+   if(uartPrint) Serial.println("discharging:");
    for(j=0;j<BMENum;j++){
      if(!BME[j].dataCheck){
        //BME[j].DCC=0;
@@ -294,6 +296,14 @@ void checkMode(String input){
          if(BME[j].fVol[i]- balance2Vol > volTolerance){
            BME[j].DCC= BME[j].DCC | (1<<(2-i));    // balance by enabling the bit flag corresponding to the i-th virtual layer
            balOn=true;
+           if(uartPrint){
+             Serial.print("B ");
+             Serial.print(j+1);
+             Serial.print(" C ");
+             Serial.print(i+1);
+             Serial.print(",diff: ");
+             Serial.println(BME[j].fVol[i]- balance2Vol,4);
+           }
          }
          else if (BME[j].fVol[i] <= balance2Vol) {
            BME[j].DCC= BME[j].DCC & byte(!(1<<(2-i)));   // stop balancing by disabling the bit flag corresponding to the i-th virtual layer
@@ -307,6 +317,7 @@ void checkMode(String input){
    if(balOn) balDoneCount=0;
    else{
      balDoneCount++;
+     if(uartPrint) Serial.println("Nothing!");
      if(balDoneCount>=16){
        balDoneFlag=true;
        if(uartPrint) Serial.println("Balancing Done");

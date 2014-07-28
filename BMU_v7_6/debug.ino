@@ -356,6 +356,8 @@ aString=debugStrings[0];
     if (temp==1){
       uartPrint=true;
       Serial.println("Serial printing enabled.");
+      Serial.println("\n \t\t BMU 7.6\n");    // print the code version
+      Serial.println("Enter Command (help for a list of commands)");
     }
     else{
       uartPrint=false;
@@ -392,16 +394,16 @@ aString=debugStrings[0];
       BME[module-1].balFlag[layer-1]= 1;
       if (1) { //(BME[module-1].fVol[layer-1] > 0) { //make sure voltage isnt too low volLowWarn
         if (layer >122) {
-          BME[module-1].DCC= BME[module-1].DCC=7;    // turn  on all layers
+          BME[module-1].DCC=7;    // turn  on all layers
         }
         else if (layer >22) {
-          BME[module-1].DCC= BME[module-1].DCC=3;    // turn  on all layers
+          BME[module-1].DCC=3;    // turn  on all layers
         }
         else if (layer >12) {
-          BME[module-1].DCC= BME[module-1].DCC=5;    // turn  on all laye
+          BME[module-1].DCC=5;    // turn  on all laye
         }
         else if (layer >11) {
-          BME[module-1].DCC= BME[module-1].DCC=6;    // turn  on all laye
+          BME[module-1].DCC=6;    // turn  on all laye
         }
         else if (layer >0) {
           BME[module-1].DCC= BME[module-1].DCC | (1<<(3-layer));    // turn on the moudle layer's resistor
