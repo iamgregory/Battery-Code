@@ -297,7 +297,7 @@ void RDCVST(BMEdata& _BME)
       if(testVol[i]!=selfCheckVal1) _BME.volSelfCheck=true;
     }
   }
-  else _BME.volSelfCheck=true;
+  // else _BME.volSelfCheck=true;
   _BME.dataCheck=_BME.dataCheck |readCheck;
 }
 
@@ -345,7 +345,7 @@ void RDAXSTB(BMEdata& _BME)
       if(testVol[0]!=selfCheckVal2) _BME.AuxSelfCheck=true;
     }
   }
-  else _BME.AuxSelfCheck=true;
+  //else _BME.AuxSelfCheck=true;
   _BME.dataCheck=_BME.dataCheck | readCheck;
 }
 
@@ -369,7 +369,7 @@ void RDSTATSTA(BMEdata& _BME)
       if(testVol[i]!=selfCheckVal1) _BME.StatSelfCheck=true;
     }
   }
-  else _BME.StatSelfCheck=true;
+  //else _BME.StatSelfCheck=true;
   _BME.dataCheck=_BME.dataCheck | readCheck;
 }
 
@@ -388,13 +388,17 @@ void RDSTATSTB(BMEdata& _BME)
   readCheck=readData(&dataIn[0], 6);  // reads the data in
   if(!readCheck){
     parseData((int*) testVol, (byte*) dataIn,1); // parses the data in to the cell voltages 
-    if(testVol[0]!=selfCheckVal1) _BME.StatSelfCheck=true;
+    if(testVol[0]!=selfCheckVal1){
+      _BME.StatSelfCheck=true;
+    }
     _BME.muxCheck=(dataIn[5]>>1) & 0x01;
   }
-  else {
-    _BME.StatSelfCheck=true;
-    _BME.muxCheck=true;
-  }
+ // else {
+   //  if(uartPrint)Serial.println("readCheck is True inside of LTCFunc:RDSTATSTB");
+   // _BME.StatSelfCheck=true;
+   // _BME.muxCheck=true;
+  //  
+//  }
   _BME.dataCheck=_BME.dataCheck | readCheck;
 }
 

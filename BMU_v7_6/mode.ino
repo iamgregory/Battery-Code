@@ -329,11 +329,11 @@ void balTempControl(void){
        if(!BME[j].ignoreT[i] && BME[j].fTemp[i] >= tempVCWarn-5){
          BME[j].balTempCon=true;
             if(uartPrint){
-              Serial.print("TempVCWarn- BME ");
-              Serial.print(j);
+              Serial.print("TempVC Control- BME ");
+              Serial.print(j+1);
               Serial.print(" layer ");
-              Serial.print(i);
-              Serial.print(": \t");
+              Serial.print(i+1);
+              Serial.print(": ");
               Serial.println(BME[j].fTemp[i]);
             }
        }
@@ -341,18 +341,18 @@ void balTempControl(void){
      if(!BME[j].ignoreT[3] && BME[j].fTemp[3] >= tempHSWarn-5){ 
        BME[j].balTempCon=true;
        if(uartPrint){
-              Serial.print("tempHSWarn- BME ");
-              Serial.print(j);
-              Serial.print(": \t");
+              Serial.print("tempHS Control- BME ");
+              Serial.print(j+1);
+              Serial.print(": ");
               Serial.println(BME[j].fTemp[3]);
             }
      }
      if(!BME[j].ignoreiT && BME[j].fiTemp >= tempTiWarn-5){
        BME[j].balTempCon=true;
        if(uartPrint){
-              Serial.print("tempTiWarn- BME ");
-              Serial.print(j);
-              Serial.print(": \t");
+              Serial.print("tempTi Control- BME ");
+              Serial.print(j+1);
+              Serial.print(": ");
               Serial.println(BME[j].fiTemp);
             }
      }

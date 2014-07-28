@@ -156,7 +156,7 @@
   
   for(i=0;i<BMENum;i++){                         // goes through all BMEs
      if(!BME[i].dataCheck){                           // check if BME is communicating       
-       if(BME[i].muxCheck || BME[i].volSelfCheck || BME[i].AuxSelfCheck || BME[i].StatSelfCheck){
+       if(BME[i].volSelfCheck || BME[i].AuxSelfCheck || BME[i].StatSelfCheck){ //BME[i].muxCheck ||
          selfTestFlag =true;
          if(uartPrint)Serial.print("BME ");
          if(uartPrint)Serial.print(i+1);
