@@ -110,7 +110,7 @@
  unsigned long timeStamp=0;          // used to keep track of the loop time
  unsigned long balanceTimeStamp=0;  // keeps track of balancing timing
  unsigned long bmcComTimeStamp=0;   // keeps track of time since last communication
- const long balanceRelaxTime=TWOMINUTES; // length of time balance mode must wait before discharging 
+ const long balanceRelaxTime= TWOMINUTES; // length of time balance mode must wait before discharging 
  const long balanceCheckTime=THIRTYSECONDS; // 
  long dLoopTime=0;         //actual loop time in usec
  int BMCcommdt=0;          // the time between bmc communications

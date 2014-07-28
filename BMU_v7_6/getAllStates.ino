@@ -81,7 +81,7 @@
     RDSTATA((BMEdata&) BME[i]);
     RDSTATB((BMEdata&) BME[i]);
   }
-  
+//  BME[8].DCC=6;
   for(i=0;i<BMENum;i++){               // Cycles through BME's
     BME[i].GPIO=0x0f|((!fanOn)<<4);          // Sets the GPIO to 0 or 1 for the multiplexer
     WRCFG((BMEdata&) BME[i]);          // Sends out the GPIO command

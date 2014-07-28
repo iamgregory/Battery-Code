@@ -7,6 +7,7 @@ void checkFlags(void){
   if(fwLeak || bwLeak) leakFlag=true;  //checks the leak sensors
   bmeCommCheck();   //checks the communication of all BME's
   if(modeInfo.currentMode!=BALANCEMODE){
+    fanOn = false;
     volCheck();      //checks the voltage for over and under voltage
     bmeFlagCheck();  //checks the BME's self-checks flags
   }
