@@ -67,7 +67,7 @@
   #define ONESECOND 1000000   // in microseconds
 
 // debugging variables
-  boolean uartPrint=true;    // print for debugging
+  boolean uartPrint=false;    // print for debugging
   String inputString="";
   boolean fakeVolFlag=false;
   boolean fakePressFlag=false;

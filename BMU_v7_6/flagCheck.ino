@@ -4,14 +4,18 @@
  *----------------------------------------------------------------------------*/
 void checkFlags(void){
   leakFlag=false;
-  if(fwLeak || bwLeak) leakFlag=true;  //hecks the leak sensors
+  if(fwLeak || bwLeak) leakFlag=true;  //checks the leak sensors
   bmeCommCheck();   //checks the communication of all BME's
   if(modeInfo.currentMode!=BALANCEMODE){
     volCheck();      //checks the voltage for over and under voltage
     bmeFlagCheck();  //checks the BME's self-checks flags
   }
-  else{
-    realBalDataFlag=areWeThereYet(balanceTimeStamp,balanceCheckTime+6*controlTime) & balRelaxFlag;
+  else if (!balRelaxFlag){ // check during relax period fo balance mode
+    volCheck();      //checks the voltage for over and under voltage
+    bmeFlagCheck();  //checks the BME's self-checks flags
+  }
+  else{ //check after relax period of balance
+    realBalDataFlag=areWeThereYet(balanceTimeStamp,balanceCheckTime+6*controlTime);
     if(realBalDataFlag){
       volCheck();      //checks the voltage for over and under voltage
       bmeFlagCheck(); //checks the BME's self-checks flags
@@ -44,14 +48,14 @@ void checkFlags(void){
    if(modeInfo.currentMode==CHARGEMODE || modeInfo.currentMode==BALANCEMODE){
      if (modeInfo.hours>=8) timeoutFlag= true;  // set Timeout flag
    }
-   if(uartPrint)Serial.print("Mode(");
-   if(uartPrint)Serial.print(modeInfo.currentMode);
-   if(uartPrint)Serial.print("), Hours: ");
-   if(uartPrint)Serial.print(modeInfo.hours);
-   if(uartPrint)Serial.print(",Minutes: ");
-   if(uartPrint)Serial.print(modeInfo.minutes);
-   if(uartPrint)Serial.print(",uSecs: ");
-   if(uartPrint)Serial.println(modeInfo.microseconds);
+//   if(uartPrint)Serial.print("Mode(");
+//   if(uartPrint)Serial.print(modeInfo.currentMode);
+//   if(uartPrint)Serial.print("), Hours: ");
+//   if(uartPrint)Serial.print(modeInfo.hours);
+//   if(uartPrint)Serial.print(",Minutes: ");
+//   if(uartPrint)Serial.print(modeInfo.minutes);
+//   if(uartPrint)Serial.print(",uSecs: ");
+//   if(uartPrint)Serial.println(modeInfo.microseconds);
 
  }
 

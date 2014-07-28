@@ -350,6 +350,18 @@ aString=debugStrings[0];
   else if(aString=="clear") {
     clearFlags();  
   }
+  else if(aString=="uart") {
+    aString=debugStrings[1];
+    temp= aString.toInt();
+    if (temp==1){
+      uartPrint=true;
+      Serial.println("Serial printing enabled.");
+    }
+    else{
+      uartPrint=false;
+      Serial.println("Serial printing disabled.");
+    }     
+  }
   else {
     BMCcommand=input; //regular mode commands like charge, balance, stop, clear,
   }

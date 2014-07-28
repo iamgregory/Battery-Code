@@ -206,7 +206,8 @@ void checkMode(String input){
  * puts system into Charge mode
  *----------------------------------------------------------------------------*/
  void chargeMode(void){
-   if(!stopUntil){
+ static int chargeDoneCounter=0;
+ if(!stopUntil){
     if(modeInfo.currentMode!=CHARGEMODE){
       if(uartPrint) Serial.print("Charge to: ");
       if(uartPrint) Serial.println(charge2Vol,4);
@@ -215,12 +216,15 @@ void checkMode(String input){
       modeInfo.currentMode=CHARGEMODE;
       modeReset();
       conOnTime=0;
+      chargeDoneCounter=0;
       chargeDoneFlag=false;
     }
     contactorsOn=true;
-    if( charge2Vol <= maxVol && current<=doneCur){
-      chargeDoneFlag=true;
-    }
+    
+    if( charge2Vol <= maxVol && current<=doneCur) chargeDoneCounter++;
+    else chargeDoneCounter=0;
+    
+    if (chargeDoneCounter>10) chargeDoneFlag=true; // ~corresponds to 2 seconds when operating at 5hz     
    }
  }
  
@@ -325,11 +329,11 @@ void balTempControl(void){
        if(!BME[j].ignoreT[i] && BME[j].fTemp[i] >= tempVCWarn-5){
          BME[j].balTempCon=true;
             if(uartPrint){
-              Serial.print("TempVCWarn- BME ");
-              Serial.print(j);
+              Serial.print("TempVC Control- BME ");
+              Serial.print(j+1);
               Serial.print(" layer ");
-              Serial.print(i);
-              Serial.print(": \t");
+              Serial.print(i+1);
+              Serial.print(": ");
               Serial.println(BME[j].fTemp[i]);
             }
        }
@@ -337,18 +341,18 @@ void balTempControl(void){
      if(!BME[j].ignoreT[3] && BME[j].fTemp[3] >= tempHSWarn-5){ 
        BME[j].balTempCon=true;
        if(uartPrint){
-              Serial.print("tempHSWarn- BME ");
-              Serial.print(j);
-              Serial.print(": \t");
+              Serial.print("tempHS Control- BME ");
+              Serial.print(j+1);
+              Serial.print(": ");
               Serial.println(BME[j].fTemp[3]);
             }
      }
      if(!BME[j].ignoreiT && BME[j].fiTemp >= tempTiWarn-5){
        BME[j].balTempCon=true;
        if(uartPrint){
-              Serial.print("tempTiWarn- BME ");
-              Serial.print(j);
-              Serial.print(": \t");
+              Serial.print("tempTi Control- BME ");
+              Serial.print(j+1);
+              Serial.print(": ");
               Serial.println(BME[j].fiTemp);
             }
      }
