@@ -86,6 +86,7 @@
     BME[i].GPIO=0x0f|((!fanOn)<<4);          // Sets the GPIO to 0 or 1 for the multiplexer
     WRCFG((BMEdata&) BME[i]);          // Sends out the GPIO command
   }
+  
 
   if (modeInfo.currentMode==BALANCEMODE) saturateBalanceVoltage();
   if (fakeTempFlag) fakeTemperatureData();
@@ -103,8 +104,10 @@
  
  void calStateBME(void){
   
-  minVol=findMinV();                    //updates min cell voltage and total battery-string voltage
-  if(modeInfo.currentMode!=BALANCEMODE) maxVol=findMaxV();
+  if(modeInfo.currentMode!=BALANCEMODE){
+    minVol=findMinV();            //updates min cell voltage and total battery-string voltage
+    maxVol=findMaxV();            //updates max cell voltage and total battery-string voltage
+  }
   maxTemp=findMaxT();                  // updates the max temperature reading
   volSumCal();                       // sums all the virtual cell voltages into modules and half-strin voltage
   if(fakeModVolFlag) BME[fakeStuff.BME].modSum=fakeStuff.modSum;
@@ -306,8 +309,8 @@
 //         if(uartPrint)Serial.print("and layer");
 //         if(uartPrint)Serial.println(i);
        }
-       else if(BME[j].vol[i]< (int)((balance2Vol-.005)*10000)){
-         BME[j].vol[i]=(int)((balance2Vol-.005)*10000);
+       else if(BME[j].vol[i]< (int)((minVol-.001)*10000)){
+         BME[j].vol[i]=(int)((minVol-.001)*10000);
 //         if(uartPrint)Serial.print("lower saturation is occurring for bme");
 //         if(uartPrint)Serial.print(j);
 //         if(uartPrint)Serial.print(" layer");
