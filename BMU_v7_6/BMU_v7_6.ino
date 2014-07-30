@@ -15,7 +15,7 @@ created 10/3/2013
   #include "BMU.h"           //all BMU variables
   
   
-  void setup() {   
+  void setup() { 
     pinInital();    // configure arduino due pins
   }
   

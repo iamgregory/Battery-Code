@@ -287,13 +287,13 @@ void checkMode(String input){
    balanceTimeStamp=micros();
    realBalDataFlag=true;
    balTempControl();
-   maxVol=findMaxV();
+   minVol=findMinV();            //updates min cell voltage and total battery-string voltage
+   maxVol=findMaxV();            //updates max cell voltage and total battery-string voltage
    if(uartPrint) Serial.println("discharging:");
    for(j=0;j<BMENum;j++){
      if(!BME[j].dataCheck){
-       //BME[j].DCC=0;
        for(i=0;i<cellNum;i++){
-         if(BME[j].fVol[i]- balance2Vol > volTolerance){
+         if(BME[j].fVol[i]- balance2Vol >= volTolerance){
            BME[j].DCC= BME[j].DCC | (1<<(2-i));    // balance by enabling the bit flag corresponding to the i-th virtual layer
            balOn=true;
            if(uartPrint){
@@ -305,10 +305,11 @@ void checkMode(String input){
              Serial.println(BME[j].fVol[i]- balance2Vol,4);
            }
          }
-         else if (BME[j].fVol[i] <= balance2Vol) {
-           BME[j].DCC= BME[j].DCC & byte(!(1<<(2-i)));   // stop balancing by disabling the bit flag corresponding to the i-th virtual layer
-         }
+//         else if (BME[j].fVol[i] <= balance2Vol) {
+//           BME[j].DCC= BME[j].DCC & byte(~(1<<(2-i)));   // stop balancing by disabling the bit flag corresponding to the i-th virtual layer
+//         }
        }
+       if(uartPrint && BME[j].DCC>0) Serial.println(BME[j].DCC,BIN);
      }
      else{
        BME[j].DCC=0;
@@ -332,6 +333,7 @@ void checkMode(String input){
  * temperature warnings and temperature errors
  *----------------------------------------------------------------------------*/
 void balTempControl(void){
+  
  fanOn = false;
  for(int j=0;j<BMENum;j++){                         // goes through all BMEs
    if(!BME[j].dataCheck){       // check if BME is communicating
@@ -368,6 +370,7 @@ void balTempControl(void){
             }
      }
    }
+
    if (BME[j].balTempCon) {
      BME[j].DCC=0;
      fanOn = true;

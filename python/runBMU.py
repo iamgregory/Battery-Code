@@ -14,6 +14,7 @@ from subFunc import *
 if __name__ == '__main__':
     while True:
         timeStamp = datetime.datetime.now()  # get time
+        print loopTime
         if communicationFlags[6] == 0:  # are we not connected database?
             connect_to_mysql()  # connect to db
         else:
@@ -33,22 +34,10 @@ if __name__ == '__main__':
                         pidControl[ii].setPoint(volGoal[ii])  # PID Goal for ii'th full string if not connected
                         pidControl[ii].setDerivator(volGoal[ii]-max(chargeVol[2*ii], chargeVol[2*ii+1]))
                         connect_to_charger(ii)  # connect ii'th full string to charger, sets communicationFlags
-                        # if communicationFlags[ii+4] == 0:  # is the charger still not connected?
-                        #     if ii == 0:  # try to connect a different way if connection failed
-                        #         try:
-                        #             os.system("sh ChargerCon1.sh|telnet")
-                        #         except:
-                        #             communicationFlags[ii+4] = 0
-                        #     if ii == 1:  # try to connect a different way if connection failed
-                        #         try:
-                        #             os.system("sh ChargerCon2.sh|telnet")
-                        #         except:
-                        #             pass
-                        #     connect_to_charger(ii)  # try to connect the regular way one more time.
                         if communicationFlags[ii+4] == 1:
                             setup_charger(ii)  # set up the charger, also verifies communication
                     else:
-                        commandTemp = BMUCommand[2*ii].split('_')  # value after charge_<xxx>, checks ii=0, 2
+                        commandTemp = BMUCommand[2*ii].split('_')  # value after charge_<xxx>
                         if volGoal[ii] != float(commandTemp[1])/10000:  # if goal is not the command
                             volGoal[ii] = float(commandTemp[1])/10000  # set goal to the command
                             pidControl[ii].setPoint(volGoal[ii])  # update the PID with the new goal

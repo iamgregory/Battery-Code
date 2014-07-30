@@ -62,52 +62,42 @@ def connect_to_charger(ii):
     
 
 def setup_charger(ii):
-    send_command(chargerSocket[ii], "*IDN? \n")
+    send_command(chargerSocket[ii], "*IDN?")
     time.sleep(waitTime)
     reply = get_data(chargerSocket[ii], ii+4)
-    communicationFlags[ii+4] = send_command(chargerSocket[ii], "outp:stat 1\n")
+    send_command(chargerSocket[ii], "outp:stat 1")
     time.sleep(waitTime)
-    communicationFlags[ii+4] = send_command(chargerSocket[ii], "sour:volt:prot 365\n")
+    send_command(chargerSocket[ii], "sour:volt:prot 365")
     time.sleep(waitTime)
-    communicationFlags[ii+4] = send_command(chargerSocket[ii], "sour:curr 0\n")
+    send_command(chargerSocket[ii], "sour:curr 0")
     time.sleep(waitTime)
-    communicationFlags[ii+4] = send_command(chargerSocket[ii], "sour:volt " + str(maxVol)+'\n')
+    send_command(chargerSocket[ii], "sour:volt " + str(maxVol))
     if len(reply) < 3:
         communicationFlags[ii+4] = 0
     
     
 def set_charge_current(ii):
-    communicationFlags[ii+4] = send_command(chargerSocket[ii], "meas:curr? \n")
-    time.sleep(waitTime)
-    reply = get_data(chargerSocket[ii], ii+4)
-    if len(reply) < 2:
-        communicationFlags[ii+4] = 0
+    #~ send_command(chargerSocket[ii], "meas:curr? \n")
+    #~ time.sleep(waitTime)
+    #~ reply = get_data(chargerSocket[ii], ii+4)
     #~ print reply
-    top_cell = max(chargeVol[2*ii], chargeVol[2*ii+1])  # maximum cell voltage of a full string
-    #~ print top_cell
-    #~ if top_cell>cvStart : cur=cMax+slop*(top_cell-cvStart)
-    #~ else : cur=cMax
+    top_cell = max(chargeVol[2*ii], chargeVol[2*ii+1])
     cur = 2+pidControl[ii].update(top_cell)
-    #~ print [cur, round(volGoal-top_cell,4), float(reply.strip())]
-    cur = round(max(min(cur, cMax), 0), 2)  # makes sure current between 0< cur <cMax and rounded
-    #~ if (abs(volGoal-top_cell)<0.01 and cur<2.25) or chargeDone[ii]:
-      #~ cur=0.0
-      #~ chargerSocket[ii].close()
-      #~ communicationFlags[ii+4]=0
-      #~ chargeDone[ii]=1
-    #~ print "sour:curr " +str(cur)+'\n'
-    send_command(chargerSocket[ii], "sour:curr " + str(cur)+'\n')
-    if communicationFlags[ii+4]:
-        print [cur*2, round(volGoal[ii]-top_cell, 4), round(float(reply.strip())*2, 2)]
+    cur = round(max(min(cur, cMax), 0), 2)
+    send_command(chargerSocket[ii], "sour:curr " + str(cur))
+    #~ if len(reply) < 2:
+        #~ communicationFlags[ii+4] = 0
+    #~ if communicationFlags[ii+4]:
+        #~ print [cur*2, round(volGoal[ii]-top_cell, 4)] #, top_cell, round(float(reply.strip())*2, 2)
     return cur
 
 
 def end_charge(ii):
-    communicationFlags[ii+4] = send_command(chargerSocket[ii], "outp:stat 0\n")
+    send_command(chargerSocket[ii], "outp:stat 0")
     time.sleep(waitTime)
-    communicationFlags[ii+4] = send_command(chargerSocket[ii], "sour:volt 0\n")
+    send_command(chargerSocket[ii], "sour:volt 0")
     time.sleep(waitTime)
-    communicationFlags[ii+4] = send_command(chargerSocket[ii], "sour:curr 0\n")
+    send_command(chargerSocket[ii], "sour:curr 0")
     chargerSocket[ii].close()
     communicationFlags[ii+4] = 0
 
