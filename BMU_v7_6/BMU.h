@@ -63,6 +63,7 @@
   #define TWOMINUTES 120000000  // in microseconds
   #define ONEMINUTE 60000000  // in microseconds
   #define THIRTYSECONDS 30000000 //in microseconds
+  #define TENSECONDS 10000000 //in microseconds
   #define FIVESECONDS 5000000 //in microseconds
   #define ONESECOND 1000000   // in microseconds
 
