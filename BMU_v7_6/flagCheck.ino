@@ -3,8 +3,7 @@
  * Checks and sets all BMU flags burritos
  *----------------------------------------------------------------------------*/
 void checkFlags(void){
-  leakFlag=false;
-  if(fwLeak || bwLeak) leakFlag=true;  //checks the leak sensors
+  leakCheck();      //checks the front and back leak sensors
   bmeCommCheck();   //checks the communication of all BME's
   if(modeInfo.currentMode!=BALANCEMODE){
     fanOn = false;
@@ -29,6 +28,20 @@ void checkFlags(void){
   setFlag();       // sets the flag to be sent out 
 }
 
+ /*------------------------------------------------------------------------------
+ * void leakCheck(void)
+ * checks to the if there is a leak in front or back of the half-string
+ *-----------------------------------------------------------------------------*/
+ void leakCheck(){
+  static int fwLeakCounter=0;
+  static int bwLeakCounter=0;
+  leakFlag=false;
+  if(fwLeak) fwLeakCounter++;
+  else fwLeakCounter=0;
+  if(bwLeak) bwLeakCounter++;
+  else bwLeakCounter=0;
+  if((bwLeakCounter > 1) || (fwLeakCounter>1)) leakFlag=true;  //checks the leak sensors
+ }
 /*------------------------------------------------------------------------------
  * void timeoutCheck()
  * time out after 10 hours of chargeing or balancing
