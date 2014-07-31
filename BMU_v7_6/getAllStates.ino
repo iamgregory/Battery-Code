@@ -17,8 +17,8 @@
  * Measures and calculates data on a half string level 
  *-----------------------------------------------------------------------------*/
  void getBMUData(void){
-  
-  leakCheck();
+  fwLeak=!digitalRead(frontWPin);
+  bwLeak=!digitalRead(backWPin);
   totalVoltage=avgADC(tVolInPin,4)*volConst;
   if(fakeTotVolFlag) totalVoltage=fakeStuff.totalVoltage;
   pressure=avgADC(presIn1Pin,5)*presConst-presOffset;
@@ -188,23 +188,6 @@
  }
  
 //////////////////////////// sub Functions //////////////////////// 
-
- /*------------------------------------------------------------------------------
- * void leakCheck(void)
- * checks to the if there is a leak in front or back of the half-string
- *-----------------------------------------------------------------------------*/
- void leakCheck(void)
- {
-  if(!digitalRead(frontWPin)) fwLeakCount++;
-  else fwLeakCount=0;
-  if(fwLeakCount > 1) fwLeak=true;
-  else fwLeak=false;
-  
-  if(!digitalRead(backWPin)) bwLeakCount++;
-  else bwLeakCount=0;
-  if(bwLeakCount > 1) bwLeak=true;
-  else fwLeak=false;
- }
  
  /*------------------------------------------------------------------------------
  *  float rateCal(float value, float valueLast)
