@@ -78,13 +78,13 @@ void checkFlags(void){
  * checks the current sensor reading
  *----------------------------------------------------------------------------*/
  void currentCheck(){
-   driveCurflag=false;          //Current >20 durring Drive
+   driveCurflag=false;          //Current >2A durring Drive
    chargeCurFlag=false;      //Current > 92A or current <2A during Charge
    stopCurFlag=false;     //abs(Current)>1A
 
    if(modeInfo.currentMode==DRIVEMODE && current >= inCurLimit) driveCurflag= true;
-   if(modeInfo.currentMode==CHARGEMODE && current >= highInCur && current >= highOutCur) chargeCurFlag= true;
-   if((modeInfo.currentMode==STOPMODE || modeInfo.currentMode==BALANCEMODE) && current >= inOutCur) stopCurFlag= true;
+   if(modeInfo.currentMode==CHARGEMODE && (current >= highInCur || current <= highOutCur)) chargeCurFlag= true;
+   if((modeInfo.currentMode==STOPMODE || modeInfo.currentMode==BALANCEMODE) && abs(current) >= inOutCur) stopCurFlag= true;
  }
 
 /*------------------------------------------------------------------------------
