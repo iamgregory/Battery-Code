@@ -221,10 +221,10 @@ void checkMode(String input){
     }
     contactorsOn=true;
     
-    if( charge2Vol <= maxVol && current<=doneCur) chargeDoneCounter++;
+    if( (charge2Vol-.0005) <= maxVol && current<=doneCur) chargeDoneCounter++;
     else chargeDoneCounter=0;
     
-    if (chargeDoneCounter>10) chargeDoneFlag=true; // ~corresponds to 2 seconds when operating at 5hz     
+    if (chargeDoneCounter>5) chargeDoneFlag=true; // ~corresponds to 1 seconds when operating at 5hz     
    }
  }
  
