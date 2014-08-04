@@ -1,3 +1,0 @@
-telnet> Trying 192.168.0.195...
-Connected to 192.168.0.195.
-Escape character is '^]'.

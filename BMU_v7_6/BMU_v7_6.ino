@@ -15,10 +15,8 @@ created 10/3/2013
   #include "BMU.h"           //all BMU variables
   
   
-  void setup() {   
+  void setup() { 
     pinInital();    // configure arduino due pins
-    Serial.println("\n \t\t BMU 7.6\n");    // print the code version
-    Serial.println("Enter Command (help for a list of commands)");
   }
   
   void loop() 

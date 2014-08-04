@@ -17,8 +17,8 @@
  * Measures and calculates data on a half string level 
  *-----------------------------------------------------------------------------*/
  void getBMUData(void){
-  
-  leakCheck();
+  fwLeak=!digitalRead(frontWPin);
+  bwLeak=!digitalRead(backWPin);
   totalVoltage=avgADC(tVolInPin,4)*volConst;
   if(fakeTotVolFlag) totalVoltage=fakeStuff.totalVoltage;
   pressure=avgADC(presIn1Pin,5)*presConst-presOffset;
@@ -81,11 +81,12 @@
     RDSTATA((BMEdata&) BME[i]);
     RDSTATB((BMEdata&) BME[i]);
   }
-  
+//  BME[8].DCC=6;
   for(i=0;i<BMENum;i++){               // Cycles through BME's
     BME[i].GPIO=0x0f|((!fanOn)<<4);          // Sets the GPIO to 0 or 1 for the multiplexer
     WRCFG((BMEdata&) BME[i]);          // Sends out the GPIO command
   }
+  
 
   if (modeInfo.currentMode==BALANCEMODE) saturateBalanceVoltage();
   if (fakeTempFlag) fakeTemperatureData();
@@ -103,8 +104,10 @@
  
  void calStateBME(void){
   
-  minVol=findMinV();                    //updates min cell voltage and total battery-string voltage
-  if(modeInfo.currentMode!=BALANCEMODE) maxVol=findMaxV();
+  if(modeInfo.currentMode!=BALANCEMODE){
+    minVol=findMinV();            //updates min cell voltage and total battery-string voltage
+    maxVol=findMaxV();            //updates max cell voltage and total battery-string voltage
+  }
   maxTemp=findMaxT();                  // updates the max temperature reading
   volSumCal();                       // sums all the virtual cell voltages into modules and half-strin voltage
   if(fakeModVolFlag) BME[fakeStuff.BME].modSum=fakeStuff.modSum;
@@ -118,7 +121,7 @@
  void BMESelfTest(void){
   int i;
   modeInfo.selfCheck=true;
-  
+  selfTestFlag =false;
   for(i=0;i<BMENum;i++){           //sets flags to false
     BME[i].dataCheck=false;
     BME[i].muxCheck=false;
@@ -149,10 +152,28 @@
   delayMicroseconds(BMEConDelay2);
   DIAGN(0);
   delayMicroseconds(BMEConDelay2);
-  for(int i=0;i<BMENum;i++){ 
+  for(i=0;i<BMENum;i++){ 
     RDSTATSTA((BMEdata&) BME[i]);  //check results of self test
     RDSTATSTB((BMEdata&) BME[i]);  //check results of self test
   }
+  
+  for(i=0;i<BMENum;i++){                         // goes through all BMEs
+     if(!BME[i].dataCheck){                           // check if BME is communicating       
+       if(BME[i].volSelfCheck || BME[i].AuxSelfCheck || BME[i].StatSelfCheck){ //BME[i].muxCheck ||
+         selfTestFlag =true;
+         if(uartPrint)Serial.print("BME ");
+         if(uartPrint)Serial.print(i+1);
+         if(uartPrint)Serial.print(": mux ");
+         if(uartPrint)Serial.print(BME[i].muxCheck);
+         if(uartPrint)Serial.print(", volself ");
+         if(uartPrint)Serial.print(BME[i].volSelfCheck);
+         if(uartPrint)Serial.print(",auxself ");
+         if(uartPrint)Serial.print(BME[i].AuxSelfCheck);
+         if(uartPrint)Serial.print(",statself ");
+         if(uartPrint)Serial.println(BME[i].StatSelfCheck);
+       }
+     }  
+   }
   // reset cell data
   getBMEData();
   
@@ -167,23 +188,6 @@
  }
  
 //////////////////////////// sub Functions //////////////////////// 
-
- /*------------------------------------------------------------------------------
- * void leakCheck(void)
- * checks to the if there is a leak in front or back of the half-string
- *-----------------------------------------------------------------------------*/
- void leakCheck(void)
- {
-  if(!digitalRead(frontWPin)) fwLeakCount++;
-  else fwLeakCount=0;
-  if(fwLeakCount > 1) fwLeak=true;
-  else fwLeak=false;
-  
-  if(!digitalRead(backWPin)) bwLeakCount++;
-  else bwLeakCount=0;
-  if(bwLeakCount > 1) bwLeak=true;
-  else fwLeak=false;
- }
  
  /*------------------------------------------------------------------------------
  *  float rateCal(float value, float valueLast)
@@ -288,8 +292,8 @@
 //         if(uartPrint)Serial.print("and layer");
 //         if(uartPrint)Serial.println(i);
        }
-       else if(BME[j].vol[i]< (int)((balance2Vol-.005)*10000)){
-         BME[j].vol[i]=(int)((balance2Vol-.005)*10000);
+       else if(BME[j].vol[i]< (int)((minVol-.001)*10000)){
+         BME[j].vol[i]=(int)((minVol-.001)*10000);
 //         if(uartPrint)Serial.print("lower saturation is occurring for bme");
 //         if(uartPrint)Serial.print(j);
 //         if(uartPrint)Serial.print(" layer");

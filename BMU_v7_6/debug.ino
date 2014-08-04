@@ -350,6 +350,20 @@ aString=debugStrings[0];
   else if(aString=="clear") {
     clearFlags();  
   }
+  else if(aString=="uart") {
+    aString=debugStrings[1];
+    temp= aString.toInt();
+    if (temp==1){
+      uartPrint=true;
+      Serial.println("Serial printing enabled.");
+      Serial.println("\n \t\t BMU 7.6\n");    // print the code version
+      Serial.println("Enter Command (help for a list of commands)");
+    }
+    else{
+      uartPrint=false;
+      Serial.println("Serial printing disabled.");
+    }     
+  }
   else {
     BMCcommand=input; //regular mode commands like charge, balance, stop, clear,
   }
@@ -380,16 +394,16 @@ aString=debugStrings[0];
       BME[module-1].balFlag[layer-1]= 1;
       if (1) { //(BME[module-1].fVol[layer-1] > 0) { //make sure voltage isnt too low volLowWarn
         if (layer >122) {
-          BME[module-1].DCC= BME[module-1].DCC=7;    // turn  on all layers
+          BME[module-1].DCC=7;    // turn  on all layers
         }
         else if (layer >22) {
-          BME[module-1].DCC= BME[module-1].DCC=3;    // turn  on all layers
+          BME[module-1].DCC=3;    // turn  on all layers
         }
         else if (layer >12) {
-          BME[module-1].DCC= BME[module-1].DCC=5;    // turn  on all laye
+          BME[module-1].DCC=5;    // turn  on all laye
         }
         else if (layer >11) {
-          BME[module-1].DCC= BME[module-1].DCC=6;    // turn  on all laye
+          BME[module-1].DCC=6;    // turn  on all laye
         }
         else if (layer >0) {
           BME[module-1].DCC= BME[module-1].DCC | (1<<(3-layer));    // turn on the moudle layer's resistor
@@ -420,73 +434,73 @@ aString=debugStrings[0];
      if(uartPrint)Serial.print("Flag ");
      switch (flag) {
     case 1:
-      if(uartPrint)Serial.println("1: Water Leak set.");
+      Serial.println("1: Water Leak set.");
       break;
     case 2:
-      if(uartPrint)Serial.println("2: High Temperature Warning set.");
+      Serial.println("2: High Temperature Warning set.");
       break;
     case 3:
-      if(uartPrint)Serial.println("3: High Temperature Alarm set.");
+      Serial.println("3: High Temperature Alarm set.");
       break;
     case 4:
-      if(uartPrint)Serial.println("4: Temperature Sensor Failure set.");
+      Serial.println("4: Temperature Sensor Failure set.");
       break;
     case 5:
-      if(uartPrint)Serial.println("5: High Pressure Rate set.");
+      Serial.println("5: High Pressure Rate set.");
       break;
     case 6:
-      if(uartPrint)Serial.println("6: Pressure Out of Range set.");
+      Serial.println("6: Pressure Out of Range set.");
       break;
     case 7:
-      if(uartPrint)Serial.println("7: High Voltage Alarm set.");
+      Serial.println("7: High Voltage Alarm set.");
       break;
     case 8:
-      if(uartPrint)Serial.println("8: Low Balancing Voltage Alarm set.");
+      Serial.println("8: Low Balancing Voltage Alarm set.");
       break;
     case 9:
-      if(uartPrint)Serial.println("9: Low Voltage Warning set.");
+      Serial.println("9: Low Voltage Warning set.");
       break;
     case 10:
-      if(uartPrint)Serial.println("10: Low Voltage Alarm set.");
+      Serial.println("10: Low Voltage Alarm set.");
       break;
     case 11:
-      if(uartPrint)Serial.println("11: Dead Battery Alarm set.");
+      Serial.println("11: Dead Battery Alarm set.");
       break;
     case 12:
-      if(uartPrint)Serial.println("12: Voltage Sensor Failure set.");
+      Serial.println("12: Voltage Sensor Failure set.");
       break;
     case 13:
-      if(uartPrint)Serial.println("13: Voltage Mismatch set.");
+      Serial.println("13: Voltage Mismatch set.");
       break;
     case 14:
-      if(uartPrint)Serial.println("14: BME Flag Alarm set.");
+      Serial.println("14: BME Flag Alarm set.");
       break;
     case 15:
-      if(uartPrint)Serial.println("15: BMU to BME Com Error set.");
+      Serial.println("15: BMU to BME Com Error set.");
       break;
     case 16:
-      if(uartPrint)Serial.println("16: BMU to BMC Com Error set.");
+      Serial.println("16: BMU to BMC Com Error set.");
       break;
     case 17:
-      if(uartPrint)Serial.println("17: Drive Current Out of Range set.");
+      Serial.println("17: Drive Current Out of Range set.");
       break;
     case 18:
-      if(uartPrint)Serial.println("18: Charge Current Out of Range set.");
+      Serial.println("18: Charge Current Out of Range set.");
       break;
     case 19:
-      if(uartPrint)Serial.println("19:  Stop Current Out of Range  set.");
+      Serial.println("19:  Stop Current Out of Range  set.");
       break;
     case 20:
-      if(uartPrint)Serial.println("20: Charging/Balancing Timeout set.");
+      Serial.println("20: Charging/Balancing Timeout set.");
       break;
     case 21:
-      if(uartPrint)Serial.println("21: Charging Done   set.");
+      Serial.println("21: Charging Done   set.");
       break;
     case 22:
-      if(uartPrint)Serial.println("22: Balancing Done set.");
+      Serial.println("22: Balancing Done set.");
       break;
     case 23:
-      if(uartPrint)Serial.println("23: Balance Recommended  set.");
+      Serial.println("23: Balance Recommended  set.");
       break;
   }
 
