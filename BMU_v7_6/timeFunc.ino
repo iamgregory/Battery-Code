@@ -48,19 +48,6 @@
    return timeSince;
  }
  
-/*------------------------------------------------------------------------------
- * void modeTimeReset(void)
- *
- *----------------------------------------------------------------------------*/
- 
- void modeReset(void){
-   modeInfo.selfCheck=false;
-   modeInfo.hours=0;
-   modeInfo.minutes=0;
-   modeInfo.microseconds=0;
-   modeInfo.timeKeepingStamp=micros();
- }
- 
  
  
 
