@@ -379,5 +379,18 @@ void balTempControl(void){
  
 }
 
+/*------------------------------------------------------------------------------
+ * void modeReset(void)
+ * reset the mode time, selfCheck, and flag override
+ *----------------------------------------------------------------------------*/
+ 
+ void modeReset(void){
+   flagOverride=0;
+   modeInfo.selfCheck=false;
+   modeInfo.hours=0;
+   modeInfo.minutes=0;
+   modeInfo.microseconds=0;
+   modeInfo.timeKeepingStamp=micros();
+ }
 
 

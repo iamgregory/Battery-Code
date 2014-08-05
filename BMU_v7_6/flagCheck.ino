@@ -157,7 +157,7 @@ void tempCheck(void){
    if(!BME[j].dataCheck){                           // check if BME is communicating
      for (int i=0;i<cellNum;i++){                   // goes through all virtual cells in a BME
        if(!BME[j].ignoreT[i]){
-         if(BME[j].fTemp[i] <=-42 || BME[j].fTemp[i]== 'nan'){  //check and set temperature sensor failure flag
+         if(BME[j].fTemp[i] <-2 || BME[j].fTemp[i]== 'nan'){  //check and set temperature sensor failure flag
            if(flagIgnoreTemp) BME[j].ignoreT[i]=true;
            else tempFailFlag= true;
          }
@@ -174,7 +174,7 @@ void tempCheck(void){
        }
      }
      if(!BME[j].ignoreT[3]){
-       if( BME[j].fiTemp <=-42 || BME[j].fTemp[3]== 'nan' ){ //check and set temperature sensor failure flag
+       if( BME[j].fTemp[3] <-2 || BME[j].fTemp[3]== 'nan' ){ //check and set temperature sensor failure flag
          if(flagIgnoreTemp) BME[j].ignoreT[3]=true;
          else tempFailFlag= true; 
        } 

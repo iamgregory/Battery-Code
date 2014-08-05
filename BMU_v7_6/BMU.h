@@ -24,7 +24,7 @@
  
   #define presHighLimit 5.0    //High pressure limit
   #define presLowLimit 0.5     //Low Pressure limit
-  #define presRateHigh 0.25    //High pressure rate limit
+  #define presRateHigh 0.3    //High pressure rate limit
   
   #define inCurLimit 2.0      //current in limit durring Drive
   #define highInCur 92.0      //high current in limit during Charging 
