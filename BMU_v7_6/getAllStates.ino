@@ -4,11 +4,14 @@
  * Measures and calculates all states of half string
  *-----------------------------------------------------------------------------*/
  void measCalAllstates(void){
-  //PseudoData()
-  getBMEData();               // gets data from all BMEs 
+  if(pseudoDataFlag) 
+    PseudoData();
+  else 
+    getBMEData();               // gets data from all BMEs 
   calStateBME();              // calculates state of BME's
  
-  getBMUData();               //gets data for the half-string
+  if(!pseudoDataFlag) 
+    getBMUData();               //gets data for the half-string
   calStateBMU();              // calculates the state of the half-string
  }
 
@@ -327,41 +330,28 @@
   int i,j;
   fwLeak=false;
   bwLeak=false;
-  totalVoltage=350;
-  if(fakeTotVolFlag) totalVoltage=fakeStuff.totalVoltage;
-  pressure=avgADC(presIn1Pin,5)*presConst-presOffset;
-  if (fakePressFlag) fakePressureData();
-  current0=0;//analogRead(cur0InPin);
+  totalVoltage=168;
+  pressure=1;
+  current0=0;
   curMeas=0;
   current=0;
-  if(fakeCurFlag) current=fakeStuff.current;
-   
-  for(i=0;i<BMENum;i++){ 
-    BME[i].dataCheck=false;
-  }
-  
+    
   for(int j=0;j<BMENum;j++){ 
-    //RDCVA((BMEdata&) BME[i]);
-    // RDAUXA((BMEdata&) BME[i]);
-    // RDAUXB((BMEdata&) BME[i]); 
-    // RDSTATA((BMEdata&) BME[i]);
-    // RDSTATB((BMEdata&) BME[i]);
     for(int i=0;i<3;i++) {
-      BME[j].vol[2-i]=40000;
-      BME[j].temp[2-i]=5000; //?
+      
+      BME[j].vol[2-i]=40000+random(-20, 20);; // 4V*10000
+      BME[j].temp[2-i]=20000; //?
       BME[j].uFlag[i]= false;
       BME[j].oFlag[i]= false;
     }
-    BME[j].temp[3]=5000; //?
-    BME[j].vref2=120000;//?
-    BME[j].vSum= 120000;//?
-    BME[j].iTemp= 5000;//?  
-    BME[j].GPIO=0x0f|((false)<<4); //? fans?
+    BME[j].dataCheck=false;
+    BME[j].temp[3] =20000; //? 
+    BME[j].vref2 = 30000;//? 3v*10000
+    BME[j].vSum = 6000;//? 12V *500
+    BME[j].iTemp = 22500;//?  
+    BME[j].GPIO = 0x0f|((false)<<4); //? fans?
   }
     
-  //if (modeInfo.currentMode==BALANCEMODE) saturateBalanceVoltage();
-  if (fakeTempFlag) fakeTemperatureData();
-  if (fakeVolFlag) fakeVoltageData();
   for(int i=0;i<BMENum;i++){
     int2float((BMEdata&) BME[i]); // passes pointer to BME[i]
   }

@@ -124,16 +124,19 @@ void printOutBME(BMEdata& _BME){
   Serial.print("Current Mode:\t");
   switch (modeInfo.currentMode+1) {
     case 1:
-      if(uartPrint)Serial.println("STOP");
+      Serial.println("STOP");
       break;
     case 2:
-      if(uartPrint)Serial.println("DRIVE");
+      Serial.println("DRIVE");
       break;
     case 3:
-      if(uartPrint)Serial.println("CHARGE");
+      Serial.println("CHARGE");
       break;
     case 4:
-      if(uartPrint)Serial.println("BALANCE");
+      Serial.println("BALANCE");
+      break;
+    default:
+      Serial.println("Somethings Wrong");
       break;
   }
 //  Serial.print(presRate,2);

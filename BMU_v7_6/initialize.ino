@@ -33,7 +33,12 @@ void pinInital(void){
   }
   BMESelfTest();      // self-check all BMEs
   while(minVol==7){
-    getBMEData();     // gets the data from all BMEs 
+    if(pseudoDataFlag){ 
+      PseudoData();
+    }
+    else{
+      getBMEData();     // gets the data from all BMEs
+    } 
     minVol=findMinV();
   }
   initalizeSoc();
@@ -52,7 +57,12 @@ void pinInital(void){
   
   analogReadResolution(12);
   
-  getBMUData();    // gets/calculates data for the half string
+  if(pseudoDataFlag){ 
+    PseudoData();
+  }
+  else{
+    getBMUData();    // gets/calculates data for the half string
+  }
   presOld=pressure;
   //************************ Ethernet setup *************************// 
   // start the Ethernet connection and the server:
