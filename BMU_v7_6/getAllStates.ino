@@ -111,6 +111,13 @@
     minVol=findMinV();            //updates min cell voltage and total battery-string voltage
     maxVol=findMaxV();            //updates max cell voltage and total battery-string voltage
   }
+  else { // update during every relax period of balance mode
+    realBalDataFlag=areWeThereYet(balanceTimeStamp,balanceCheckTime+6*controlTime);
+    if(realBalDataFlag || !balRelaxFlag){
+      minVol=findMinV();            //updates min cell voltage and total battery-string voltage
+      maxVol=findMaxV();            //updates max cell voltage and total battery-string voltage
+    }
+  }
   maxTemp=findMaxT();                  // updates the max temperature reading
   volSumCal();                       // sums all the virtual cell voltages into modules and half-strin voltage
   if(fakeModVolFlag) BME[fakeStuff.BME].modSum=fakeStuff.modSum;
@@ -331,10 +338,13 @@
   fwLeak=false;
   bwLeak=false;
   totalVoltage=168;
-  pressure=1;
+  if(fakeTotVolFlag) totalVoltage=fakeStuff.totalVoltage;
+  pressure=avgADC(presIn1Pin,5)*presConst-presOffset;
+  if (fakePressFlag) fakePressureData();
   current0=0;
   curMeas=0;
   current=0;
+  if(fakeCurFlag) current=fakeStuff.current;
     
   for(int j=0;j<BMENum;j++){ 
     for(int i=0;i<3;i++) {
@@ -351,7 +361,9 @@
     BME[j].iTemp = 22500;//?  
     BME[j].GPIO = 0x0f|((false)<<4); //? fans?
   }
-    
+  
+  if (fakeTempFlag) fakeTemperatureData();
+  if (fakeVolFlag) fakeVoltageData();  
   for(int i=0;i<BMENum;i++){
     int2float((BMEdata&) BME[i]); // passes pointer to BME[i]
   }

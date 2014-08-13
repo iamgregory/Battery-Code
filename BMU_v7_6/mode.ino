@@ -43,6 +43,7 @@ void checkMode(String input){
   
   else if(input.indexOf("ign") >=0)//checks for ignore
   { 
+    if(uartPrint)Serial.println("Ignore temperature");
     flagBMU=~(~flagBMU | (0xE));
     flagOverride=~(~flagOverride | (0xE));
     flagIgnoreTemp=true;
@@ -85,8 +86,7 @@ void checkMode(String input){
       }
       else if ( areWeThereYet(balanceTimeStamp,balanceCheckTime) ){ 
         disableResistors();
-        if ( realBalDataFlag ){  // if a loop has happened since the resistors were disabled
-//          if(uartPrint) Serial.println("balanceCal()");
+        if ( realBalDataFlag ){  // if a 6 loops has happened since the resistors were disabled
           balanceCal(); // if balancing mode is on, then calculate which cells need to be discarged
         }
       }
@@ -158,14 +158,6 @@ void checkMode(String input){
        overrideTimeStamp=micros();
        break;
    } 
-   
-   // delete for final version ===> 
-   if(minVol<2.760){
-     stopMode();
-     stopUntil=true;
-     if(uartPrint) Serial.println("voltage too low for testing ==> Stop!");
-   } 
-   //<===
  }
  
  /*------------------------------------------------------------------------------
