@@ -279,8 +279,6 @@ void checkMode(String input){
    balanceTimeStamp=micros();
    realBalDataFlag=true;
    balTempControl();
-   minVol=findMinV();            //updates min cell voltage and total battery-string voltage
-   maxVol=findMaxV();            //updates max cell voltage and total battery-string voltage
    if(uartPrint) Serial.println("discharging:");
    for(j=0;j<BMENum;j++){
      if(!BME[j].dataCheck){
