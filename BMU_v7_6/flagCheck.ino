@@ -10,16 +10,9 @@ void checkFlags(void){
     volCheck();      //checks the voltage for over and under voltage
     bmeFlagCheck();  //checks the BME's self-checks flags
   }
-  else if (!balRelaxFlag){ // check during relax period fo balance mode
+  else if (!balRelaxFlag || realBalDataFlag){ // check during every relax period of balance mode
     volCheck();      //checks the voltage for over and under voltage
     bmeFlagCheck();  //checks the BME's self-checks flags
-  }
-  else{ //check after relax period of balance
-    realBalDataFlag=areWeThereYet(balanceTimeStamp,balanceCheckTime+6*controlTime);
-    if(realBalDataFlag){
-      volCheck();      //checks the voltage for over and under voltage
-      bmeFlagCheck(); //checks the BME's self-checks flags
-    }
   }
   tempCheck();     //checks the temperature for over temperature
   currentCheck();  //checks the current 
@@ -202,6 +195,7 @@ void tempCheck(void){
      }
    }
  } 
+ flagIgnoreTemp=false;
 }
 
 /*------------------------------------------------------------------------------
@@ -230,12 +224,12 @@ void volCheck(void){
      if(abs(BME[j].modSum-BME[j].fVSum)>=volModMismatch){
        misTempo =true;
        Serial.print("BME ");
-       Serial.print(j);
+       Serial.print(j+1);
        Serial.print(": modSum ");
        Serial.print(BME[j].modSum);
        Serial.print(" and fVsum ");
        Serial.print(BME[j].fVSum);
-       Serial.println("are mismatched");
+       Serial.println(" are mismatched");
      }
 
    }
@@ -253,16 +247,31 @@ void volCheck(void){
   } 
   else if((maxVol >= volHighAlarm) || (modeInfo.currentMode==CHARGEMODE && maxVol>=(charge2Vol+0.01))){  // check virtual cell voltage for high voltage flag
     volHighAlarmFlag  = true;          // set high voltage error flag
-    if(uartPrint)Serial.print("high voltage alarm: ");
+    if(uartPrint) Serial.print("high voltage alarm: ");
     if(uartPrint) Serial.println(maxVol,4);
   }  
   
   if(minVol <= 0.0) volFailFlag = true;             // set voltage failure flag
-  else if(minVol <= deadBatAlarm && modeInfo.currentMode!=DRIVEMODE) deadBatAlarmFlag=true;  // set dead battery alarm
-  else if(minVol <= volLowAlarm && modeInfo.currentMode!=CHARGEMODE) volLowAlarmFlag=true;    // low voltage alarm
-  else if(minVol <= volLowWarn  && modeInfo.currentMode!=CHARGEMODE) volLowWarnFlag = true;    //  low voltage warning      
-  else if(balance2Vol <= volLowBalAlarm  && BMCcommand.indexOf("bal") >=0) volLowBalAlarmFlag = true;    //  low voltage warning
-   
+  else if(minVol <= deadBatAlarm && modeInfo.currentMode!=DRIVEMODE){
+    deadBatAlarmFlag=true;  // set dead battery alarm
+    if(uartPrint) Serial.print("dead battery alarm: ");
+    if(uartPrint) Serial.println(minVol,4);
+  }
+  else if(minVol <= volLowAlarm && modeInfo.currentMode!=CHARGEMODE){
+    volLowAlarmFlag=true;    // low voltage alarm
+    if(uartPrint) Serial.print("low voltage alarm: ");
+    if(uartPrint) Serial.println(minVol,4);
+  }
+  else if(minVol <= volLowWarn  && modeInfo.currentMode!=CHARGEMODE){
+    volLowWarnFlag = true;    //  low voltage warning  
+    if(uartPrint) Serial.print("low battery warning: ");
+    if(uartPrint) Serial.println(minVol,4);
+  }    
+  else if((balance2Vol <= volLowBalAlarm || minVol <= volLowBalAlarm) && (BMCcommand.indexOf("bal") >=0||modeInfo.currentMode==BALANCEMODE)){ 
+    volLowBalAlarmFlag = true;    //  low voltage warning
+    if(uartPrint) Serial.print("low balancing alarm: ");
+    if(uartPrint) Serial.println(minVol,4);
+  }
   if((maxVol-minVol)>=balRecVol && modeInfo.currentMode!=BALANCEMODE && minVol>=balRecLimit ){
     balRecFlag=true;    // set balance recomanded flag
   }   

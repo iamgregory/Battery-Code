@@ -367,6 +367,18 @@ aString=debugStrings[0];
       Serial.println("Serial printing disabled.");
     }     
   }
+  else if(aString=="pseudo") {
+    aString=debugStrings[1];
+    temp= aString.toInt();
+    if (temp==1){
+      pseudoDataFlag=true;
+      Serial.println("Pseudo data enabled.");
+    }
+    else{
+      pseudoDataFlag=false;
+      Serial.println("Pseudo data disabled.");
+    }     
+  }
   else {
     BMCcommand=input; //regular mode commands like charge, balance, stop, clear,
   }
