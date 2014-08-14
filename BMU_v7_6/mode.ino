@@ -24,20 +24,22 @@ void checkMode(String input){
     while(temp>0){  // while there are more underscores  
       overrideString=input.substring(sVal+1,temp);
       flagNum=overrideString.toInt();
-      if(flagNum>0 && flagNum<23){  // if the flagNum is valid
+      if(flagNum>0 && flagNum<=23){  // if the flagNum is valid
         flagOverride=flagOverride | (1<<(flagNum-1)); //set override flag
         if(uartPrint)Serial.print("Override: ");
-        if(uartPrint)Serial.println(flagOverride,HEX);
+        if(uartPrint)Serial.println(flagNum);
+//        if(uartPrint)Serial.println(flagOverride,HEX);
       }
       sVal=temp;  // update indices for underscores
       temp=input.indexOf("_",sVal+1);
     }
     overrideString=input.substring(sVal+1,eVal); // grab string from last underscore to end location
       flagNum=overrideString.toInt();
-      if(flagNum>0 && flagNum<23){
+      if(flagNum>0 && flagNum<=23){
         flagOverride=flagOverride | (1<<(flagNum-1));
         if(uartPrint)Serial.print("Override: ");
-        if(uartPrint)Serial.println(flagOverride,HEX);
+        if(uartPrint)Serial.println(flagNum);
+//        if(uartPrint)Serial.println(flagOverride,HEX);
       }
   }
   
