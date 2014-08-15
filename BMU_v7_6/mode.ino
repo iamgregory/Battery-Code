@@ -43,15 +43,6 @@ void checkMode(String input){
       }
   }
   
-  else if(input.indexOf("ign") >=0)//checks for ignore
-  { 
-    if(uartPrint)Serial.println("Ignore temperature");
-    flagBMU=~(~flagBMU | (0xE));
-    flagOverride=~(~flagOverride | (0xE));
-    flagIgnoreTemp=true;
-  }
-  
-  
   else if(input.indexOf("cha") >=0)//checks for Charge
   {
     int sVal=input.indexOf("_");

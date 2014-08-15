@@ -76,7 +76,7 @@
   boolean fakeTotVolFlag=false;
   boolean fakeModVolFlag=false;
   boolean fakeCurFlag=false;
-  boolean pseudoDataFlag=true;
+  boolean pseudoDataFlag=false;
   
   enum mode { STOPMODE, DRIVEMODE, CHARGEMODE,BALANCEMODE};
   
