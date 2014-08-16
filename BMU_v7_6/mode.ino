@@ -145,6 +145,7 @@ void checkMode(String input){
      case 3:
      case 4:
      case 5:
+     case 6:
        overrideTimeStamp=micros();
        break;
      default:

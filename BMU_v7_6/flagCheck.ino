@@ -323,21 +323,23 @@ void volCheck(void){
    
    if(modeInfo.currentMode==DRIVEMODE){
      if((flagBMU & 0x400000) !=0) flagPriority=5;   //  B10000000000000000000000
-     if((flagBMU & 0x00910A) !=0) flagPriority=4;  //  
+     if((flagBMU & 0x00110A) !=0) flagPriority=4;  //  
+     if((flagBMU & 0x008000) !=0) flagPriority=3;
      if((flagBMU & 0x016A75) !=0) flagPriority=2;    
    }
    else if(modeInfo.currentMode==STOPMODE){
      if((flagBMU & 0x400000) !=0) flagPriority=5;   //  B10000000000000000000000
-     if((flagBMU & 0x00D92A) !=0) flagPriority=4;  //  
-     if((flagBMU & 0x042655) !=0) flagPriority=3;  //  
+     if((flagBMU & 0x00192A) !=0) flagPriority=4;  //  
+     if((flagBMU & 0x04E655) !=0) flagPriority=3;  // 
    }  
    else if(modeInfo.currentMode==BALANCEMODE){
-     if((flagBMU & 0x200000) !=0) flagPriority=5;   //  B10100000000000000000000
+     if((flagBMU & 0x200000) !=0) flagPriority=6;   //  B10100000000000000000000
      if((flagBMU & 0x00102A) !=0) flagPriority=2;  //  B00000000000000000101010
-     if((flagBMU & 0x0CEFD5) !=0) flagPriority=1;  //  B00010101111100011010101
+     if((flagBMU & 0x0CE8D5) !=0) flagPriority=1;  //  
    }
    else if(modeInfo.currentMode==CHARGEMODE){
-     if((flagBMU & 0x500000) !=0) flagPriority=5;   //  B01000000000000000000000
+     if((flagBMU & 0x100000) !=0) flagPriority=6;
+     if((flagBMU & 0x400000) !=0) flagPriority=5;   //  B01000000000000000000000
      if((flagBMU & 0x00002A) !=0) flagPriority=2;   // 
      if((flagBMU & 0x0AFC55) !=0) flagPriority=1;  //  
    }  
