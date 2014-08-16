@@ -19,6 +19,7 @@ port = 40
 chargerHost = "192.168.0.19"
 chargerPort = [9221, 9222]
 chargeVol = [0, 0, 0, 0]
+minVol = [7,7,7,7]
 loopTime = datetime.datetime.now()
 loopTime2 = datetime.datetime.now()
 waitTime = 0.2
@@ -228,7 +229,7 @@ def process_data(v, index):
     #convert module voltage
     for i in range(startInx+BMEnum*3,startInx+BMEnum*4):
       value[i]= value[i]*0.002
-    #convert referenc 2 voltage
+    #convert reference 2 voltage
     for i in range(startInx+BMEnum*4,startInx+BMEnum*5):
       value[i] = value[i]*0.0001
     #convert auxiliary temperature
@@ -249,9 +250,21 @@ def process_data(v, index):
         value = [round(i, 4) for i in value]
         value[0] = int(value[0])
         value[2] = int(value[2])
-
+    minVol[index] = value[6]    # sets min voltage
     chargeVol[index] = value[7]  # sets max voltage
     bmu_flags = int2binary(value[0])  # sets flags
+    if index < 2:
+	mmIndex = 0
+    else:
+	mmIndex = 2
+    stringMin = min(minVol[mmIndex],minVol[mmIndex+1])
+    stringMax = max(chargeVol[mmIndex],chargeVol[mmIndex+1])
+    if stringMin > 3.9 and (stringMax-stringMin) > .050:
+        if not bmu_flags[22]:  # set balance recommend if not already set
+	    value[0] += pow(2,22)
+            #print value[0]+9
+    #if value[0] == 0 and mmIndex == 0:
+        #print value[0]
     chargeDone[index] = bmu_flags[20]  # sets charge done flag
     balanceDone[index] = bmu_flags[21]  # sets balanced done flag
     return value
@@ -260,7 +273,7 @@ def process_data(v, index):
 def int2binary(num):
     n = num
     digit_lst = [0]*23
-    for idx in range(0, 22):
+    for idx in range(0, 23):
         if n % 2 == 1:
             digit_lst[idx] = 1
         n /= 2
