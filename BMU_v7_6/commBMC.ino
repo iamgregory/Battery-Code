@@ -8,7 +8,7 @@
 void BMCcomm()
 {  
   //if(loopCount%bmcComTime==0){      //execute once a secloop areWeThereYet(BMCcommdt,960000)
-  if(areWeThereYet(bmcComTimeStamp,THREESECOND)) bmcComFlag=true;
+  if(areWeThereYet(bmcComTimeStamp,FIVESECONDS)) bmcComFlag=true;
 
    // listen for incoming clients
     EthernetClient client = server.available();
