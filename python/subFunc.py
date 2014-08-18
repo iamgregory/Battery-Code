@@ -18,6 +18,7 @@ host = "192.168.0.17"
 port = 40
 chargerHost = "192.168.0.19"
 chargerPort = [9221, 9222]
+balRec = [0,0]
 chargeVol = [0, 0, 0, 0]
 minVol = [7,7,7,7]
 loopTime = datetime.datetime.now()
@@ -254,17 +255,19 @@ def process_data(v, index):
     chargeVol[index] = value[7]  # sets max voltage
     bmu_flags = int2binary(value[0])  # sets flags
     if index < 2:
-	mmIndex = 0
+        stringnum = 0
     else:
-	mmIndex = 2
-    stringMin = min(minVol[mmIndex],minVol[mmIndex+1])
-    stringMax = max(chargeVol[mmIndex],chargeVol[mmIndex+1])
-    if stringMin > 3.9 and (stringMax-stringMin) > .050:
-        if not bmu_flags[22]:  # set balance recommend if not already set
-	    value[0] += pow(2,22)
-            #print value[0]+9
-    #if value[0] == 0 and mmIndex == 0:
-        #print value[0]
+        stringnum = 1
+    stringMin = min(minVol[2*stringnum],minVol[2*stringnum+1])
+    stringMax = max(chargeVol[2*stringnum],chargeVol[2*stringnum+1])
+    if (stringMin > 3.9 and (stringMax-stringMin) > .050) or balRec[stringnum]:
+        if not bmu_flags[22]: # set balance recommend if not already set
+          value[0] += pow(2,22)
+          balRec[stringnum] == 1
+    else:
+        if bmu_flags[22]:
+          value[0] -= pow(2,22)
+          balRec[stringnum] == 0
     chargeDone[index] = bmu_flags[20]  # sets charge done flag
     balanceDone[index] = bmu_flags[21]  # sets balanced done flag
     return value
