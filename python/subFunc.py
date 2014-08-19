@@ -7,7 +7,7 @@ import time
 import MySQLdb as mdb
 import os
   
-debug = True
+debug = False
 BMUSocket = ['BMU1', 'BMU2', 'BMU3', 'BMU4']
 BMUCommand = ['stop', 'stop', 'stop', 'stop']
 chargerSocket = ['charger1', 'charger2']

@@ -14,7 +14,8 @@ from subFunc import *
 if __name__ == '__main__':
     while True:
         timeStamp = datetime.datetime.now()  # get time
-        print loopTime
+        if(debug):
+			print loopTime
         if communicationFlags[6] == 0:  # are we not connected database?
             connect_to_mysql()  # connect to db
         else:
@@ -26,6 +27,7 @@ if __name__ == '__main__':
                 reply = get_data(BMUSocket[ii], ii)  # gets data from BMUs
                 if len(reply) >= 3 and communicationFlags[ii] == 1:  # if connected and non-empty message
                     reply = process_data(reply, ii)  # parses and processes data, assigns some variables too
+                    #~ print reply
                     set_data(reply, ii+1)  # puts reply info in database
             for ii in range(0, 2):
                 if 'cha' in BMUCommand[2*ii] and 'cha' in BMUCommand[2*ii+1] and not\
