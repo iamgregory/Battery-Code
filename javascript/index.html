@@ -1821,25 +1821,33 @@ $(document).ready(function () {
 	//   purpose: update the bmuOverrideFlagList
 	function checkFlagOverride(bmuIndex) 
 	{	
-		var bmuStr=bmuIndex.toString();
+		//writeLog([1,23,4,5,8,0,14].indexOf(0));
 		var n = 0;
 		var flagToCheck = [];
 		var flagIndexToRemove=[];
 		
-		while(n<bmuOverrideFlagList[bmuStr].length){
-			flagTocheck = bmuOverrideFlagList[bmuStr][n];  // flag in n'th spot in override list
-			flagIndexToRemove = bmuActiveFlagList[bmuStr].indexOf(flagToCheck);	// index location in the active flag list
+		while(n < bmuOverrideFlagList[bmuIndex].length){
+			
+			flagToCheck = bmuOverrideFlagList[bmuIndex][n];  // flag in n'th spot in override list
+			flagIndexToRemove = bmuActiveFlagList[bmuIndex].indexOf(flagToCheck);	// index location in the active flag list
+			//if (bmuIndex == 0){
+				//writeLog("bmuIndex::"+bmuIndex);
+				//writeLog("Activelist::"+bmuActiveFlagList[bmuIndex]);
+				//writeLog("overridelist::"+bmuOverrideFlagList[bmuIndex]);
+				//writeLog("flagtocheck::"+flagToCheck);
+				//writeLog("flagindextoremove::"+flagIndexToRemove);
+			//}
 			if(flagIndexToRemove < 0){  // if that flag is no longer active
 				//writeLog("Active Flags "+bmuActiveFlagList[bmuStr]);
 				//writeLog("Removflagpop1ing "+ bmuOverrideFlagList[bmuStr][n]+"in position" +n + "From the list "+bmuOverrideFlagList[bmuStr]);
-				bmuOverrideFlagList[bmuStr].splice(n,1);
+				bmuOverrideFlagList[bmuIndex].splice(n,1);
 				n--;
 			}
 			n++;	
 		}
 		//	if override list is empty and you are in override mode
 		// then you're finished overriding
-		if(bmuOverrideFlagList[bmuStr].length <= 0 && bmuOverride[bmuIndex] == 2) {
+		if(bmuOverrideFlagList[bmuIndex].length <= 0 && bmuOverride[bmuIndex] == 2) {
 			writeLog("Override! "+hsNames[bmuIndex]+" is no longer entering OFF");
 			bmuOverride[bmuIndex] = 1;
 			setCommand(getLastActionCmd(bmuIndex+1),bmuIndex);
@@ -2013,7 +2021,7 @@ $(document).ready(function () {
 						writeLog(hsNames[bmuIndex]+" Override "+txt+".");
 						//setCommand("override_"+flagID,numBmu);
 						for(var n=0;n < p2List.length; n++){
-							var flagIndex=p2List[n];
+							var flagIndex = p2List[n];
 							if(bmuOverrideFlagList[bmuIndexStr].indexOf(flagIndex) < 0){
 								bmuOverrideFlagList[bmuIndexStr].push(flagIndex);
 							}
@@ -2284,8 +2292,8 @@ $(document).ready(function () {
 		bmuActiveFlagList[bmuStr]=[];
 		bmuActivePriorityList[bmuStr]=[];
 		var tempFlag= parseInt(bmu[bmuIndex].Flag);
-		//~ if (bmuIndex == 0)
-			//~ writeLog("before"+bmuActiveFlagList[bmuStr]);
+		//if (bmuIndex == 1)
+			//writeLog("before"+bmuActiveFlagList[bmuStr]);
 		for(var i=0;i<23;i++) {
 			if((tempFlag & Math.pow(2,i)) > 0){
 				bmuActiveFlagList[bmuStr].push(i);	
@@ -2334,6 +2342,8 @@ $(document).ready(function () {
 			}
 		}
 		
+		//if (bmuIndex == 1)
+			//writeLog("CreateActiveflagList::"+bmuActiveFlagList[bmuStr]);
 		if (debug && bmuActiveFlagList[bmuStr].length > 0){
 			console.log("????" + bmuActiveFlagList[bmuStr]+ "????");
 		}	
