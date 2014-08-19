@@ -342,7 +342,7 @@ $(document).ready(function () {
 							},
 						"9":
 							{
-								"desc":"(Flag ID 10):A virtual cell voltage is too low!",
+								"desc":"(Flag ID 10):A virtual cell voltage is too low.",
 								"drive":2,
 								"stop":3,
 								"balance":0,
@@ -350,7 +350,7 @@ $(document).ready(function () {
 							},
 						"10":
 							{
-								"desc":"(Flag ID 11): A virtual cell is dead! ",
+								"desc":"(Flag ID 11): A virtual cell is dead. ",
 								"drive":0,
 								"stop":3,
 								"balance":0,
@@ -358,7 +358,7 @@ $(document).ready(function () {
 							},
 						"11":
 							{
-								"desc":"(Flag ID 12): A voltage sensor has failed!",
+								"desc":"(Flag ID 12): A voltage sensor has failed.",
 								"drive":2,
 								"stop":4,
 								"balance":1,
@@ -1133,7 +1133,7 @@ $(document).ready(function () {
 		}
 		execStop(bmus[0]);
 		execStop(bmus[1]);
-		writeLog(side + " String has turned OFF!!");
+		writeLog(side + " String has turned OFF.");
 		count60(0, bmus[0],-1);
 		count60(0, bmus[1],-1);
 		setBtnState();	
@@ -1413,7 +1413,7 @@ $(document).ready(function () {
 				jsonstr=data;
 			},
 			error: function() {
-				writeLog("Database communication error.  Could not retrieve data!");
+				writeLog("Database communication error.  Could not retrieve data.");
 			}
 		 });
 		 
@@ -1848,7 +1848,7 @@ $(document).ready(function () {
 		//	if override list is empty and you are in override mode
 		// then you're finished overriding
 		if(bmuOverrideFlagList[bmuIndex].length <= 0 && bmuOverride[bmuIndex] == 2) {
-			writeLog("Override! "+hsNames[bmuIndex]+" is no longer entering OFF");
+			writeLog("Override: "+hsNames[bmuIndex]+" is no longer entering OFF");
 			bmuOverride[bmuIndex] = 1;
 			setCommand(getLastActionCmd(bmuIndex+1),bmuIndex);
 		}
@@ -2010,7 +2010,7 @@ $(document).ready(function () {
 						$("#flagpop"+popUpIdStr).hide();
 						execStop(0);
 						execStop(1);
-						writeLog("PORT String has turned OFF!!!");
+						writeLog("PORT String has turned OFF.");
 						count60(0, bmuIndex,-1);
 						portBtnState={"drivePort":0,"stopPort":1,"chargePort":0,"balancePort":0};
 						setBtnState();
@@ -2053,7 +2053,7 @@ $(document).ready(function () {
 						$("#flagpop"+popUpIdStr).hide();
 						execStop(2);
 						execStop(3);
-						writeLog("STBD String has turned OFF!!!");
+						writeLog("STBD String has turned OFF.");
 						count60(0, bmuIndex, -1);
 						starBtnState={"driveStar":0,"stopStar":1,"chargeStar":0,"balanceStar":0};
 						setBtnState();
