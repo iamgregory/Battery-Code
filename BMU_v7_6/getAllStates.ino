@@ -91,7 +91,7 @@
   }
   
 
-  if (modeInfo.currentMode==BALANCEMODE) saturateBalanceVoltage();
+  if (modeInfo.currentMode==BALANCEMODE && balRelaxFlag) saturateBalanceVoltage();
   if (fakeTempFlag) fakeTemperatureData();
   if (fakeVolFlag) fakeVoltageData();
   for(int i=0;i<BMENum;i++){

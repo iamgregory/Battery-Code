@@ -24,31 +24,24 @@ void checkMode(String input){
     while(temp>0){  // while there are more underscores  
       overrideString=input.substring(sVal+1,temp);
       flagNum=overrideString.toInt();
-      if(flagNum>0 && flagNum<23){  // if the flagNum is valid
+      if(flagNum>0 && flagNum<=23){  // if the flagNum is valid
         flagOverride=flagOverride | (1<<(flagNum-1)); //set override flag
         if(uartPrint)Serial.print("Override: ");
-        if(uartPrint)Serial.println(flagOverride,HEX);
+        if(uartPrint)Serial.println(flagNum);
+//        if(uartPrint)Serial.println(flagOverride,HEX);
       }
       sVal=temp;  // update indices for underscores
       temp=input.indexOf("_",sVal+1);
     }
     overrideString=input.substring(sVal+1,eVal); // grab string from last underscore to end location
       flagNum=overrideString.toInt();
-      if(flagNum>0 && flagNum<23){
+      if(flagNum>0 && flagNum<=23){
         flagOverride=flagOverride | (1<<(flagNum-1));
         if(uartPrint)Serial.print("Override: ");
-        if(uartPrint)Serial.println(flagOverride,HEX);
+        if(uartPrint)Serial.println(flagNum);
+//        if(uartPrint)Serial.println(flagOverride,HEX);
       }
   }
-  
-  else if(input.indexOf("ign") >=0)//checks for ignore
-  { 
-    if(uartPrint)Serial.println("Ignore temperature");
-    flagBMU=~(~flagBMU | (0xE));
-    flagOverride=~(~flagOverride | (0xE));
-    flagIgnoreTemp=true;
-  }
-  
   
   else if(input.indexOf("cha") >=0)//checks for Charge
   {
@@ -152,6 +145,7 @@ void checkMode(String input){
      case 3:
      case 4:
      case 5:
+     case 6:
        overrideTimeStamp=micros();
        break;
      default:
@@ -279,8 +273,6 @@ void checkMode(String input){
    balanceTimeStamp=micros();
    realBalDataFlag=true;
    balTempControl();
-   minVol=findMinV();            //updates min cell voltage and total battery-string voltage
-   maxVol=findMaxV();            //updates max cell voltage and total battery-string voltage
    if(uartPrint) Serial.println("discharging:");
    for(j=0;j<BMENum;j++){
      if(!BME[j].dataCheck){

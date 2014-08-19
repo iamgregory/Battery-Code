@@ -7,7 +7,7 @@ import time
 import MySQLdb as mdb
 import os
   
-debug = True
+debug = False
 BMUSocket = ['BMU1', 'BMU2', 'BMU3', 'BMU4']
 BMUCommand = ['stop', 'stop', 'stop', 'stop']
 chargerSocket = ['charger1', 'charger2']
@@ -18,7 +18,9 @@ host = "192.168.0.17"
 port = 40
 chargerHost = "192.168.0.19"
 chargerPort = [9221, 9222]
+balRec = [0,0]
 chargeVol = [0, 0, 0, 0]
+minVol = [7,7,7,7]
 loopTime = datetime.datetime.now()
 loopTime2 = datetime.datetime.now()
 waitTime = 0.2
@@ -228,7 +230,7 @@ def process_data(v, index):
     #convert module voltage
     for i in range(startInx+BMEnum*3,startInx+BMEnum*4):
       value[i]= value[i]*0.002
-    #convert referenc 2 voltage
+    #convert reference 2 voltage
     for i in range(startInx+BMEnum*4,startInx+BMEnum*5):
       value[i] = value[i]*0.0001
     #convert auxiliary temperature
@@ -249,9 +251,27 @@ def process_data(v, index):
         value = [round(i, 4) for i in value]
         value[0] = int(value[0])
         value[2] = int(value[2])
-
+    minVol[index] = value[6]    # sets min voltage
     chargeVol[index] = value[7]  # sets max voltage
     bmu_flags = int2binary(value[0])  # sets flags
+    if index < 2:
+        stringnum = 0
+    else:
+        stringnum = 1
+    stringMin = min(minVol[2*stringnum],minVol[2*stringnum+1])
+    stringMax = max(chargeVol[2*stringnum],chargeVol[2*stringnum+1])
+    #dead band for bal rec flag
+    if (stringMin > 3.9 and (stringMax-stringMin) > .050):
+        balRec[stringnum] = 1
+    elif (stringMin < 3.89 or (stringMax-stringMin) < .045):
+        balRec[stringnum] = 0
+    # decide whether bal rec flags are set or not
+    if balRec[stringnum]: 
+	if not bmu_flags[22]: # set balance recommend if not already set
+          value[0] += pow(2,22)
+    else:
+	if bmu_flags[22]:
+          value[0] -= pow(2,22)
     chargeDone[index] = bmu_flags[20]  # sets charge done flag
     balanceDone[index] = bmu_flags[21]  # sets balanced done flag
     return value
@@ -260,7 +280,7 @@ def process_data(v, index):
 def int2binary(num):
     n = num
     digit_lst = [0]*23
-    for idx in range(0, 22):
+    for idx in range(0, 23):
         if n % 2 == 1:
             digit_lst[idx] = 1
         n /= 2

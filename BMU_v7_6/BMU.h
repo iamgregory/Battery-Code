@@ -65,6 +65,7 @@
   #define THIRTYSECONDS 30000000 //in microseconds
   #define TENSECONDS 10000000 //in microseconds
   #define FIVESECONDS 5000000 //in microseconds
+  #define THREESECOND 3000000   // in microseconds
   #define ONESECOND 1000000   // in microseconds
 
 // debugging variables
@@ -76,7 +77,7 @@
   boolean fakeTotVolFlag=false;
   boolean fakeModVolFlag=false;
   boolean fakeCurFlag=false;
-  boolean pseudoDataFlag=true;
+  boolean pseudoDataFlag=false;
   
   enum mode { STOPMODE, DRIVEMODE, CHARGEMODE,BALANCEMODE};
   

@@ -1,6 +1,6 @@
 /*
 created 10/3/2013
- modified 7/22/2014
+ modified 8/13/2014
  by Nima Ghods and Greg Mills
  
  BMU code made to communicate with the BME's 

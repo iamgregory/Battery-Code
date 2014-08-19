@@ -29,9 +29,15 @@ void BMCcomm()
       if(BMCcommand.indexOf("cle") >=0) {
         clearFlags();            //clear flags
       }
+      else if(BMCcommand.indexOf("ign") >=0)//checks for ignore
+      { 
+        if(uartPrint)Serial.println("Ignore temperature");
+        flagBMU=~(~flagBMU | (0xE));
+        flagOverride=~(~flagOverride | (0xE));
+        flagIgnoreTemp=true;
+      }
       sendData((EthernetClient&) client);
     }
-
 }
 
 
