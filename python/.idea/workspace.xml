@@ -46,8 +46,8 @@
       <file leaf-file-name="subFunc.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/subFunc.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.47512865" vertical-offset="4330" max-vertical-offset="4913">
-              <caret line="271" column="22" selection-start-line="271" selection-start-column="22" selection-end-line="271" selection-end-column="22" />
+            <state vertical-scroll-proportion="0.35849056" vertical-offset="4398" max-vertical-offset="4981">
+              <caret line="271" column="9" selection-start-line="271" selection-start-column="9" selection-end-line="271" selection-end-column="9" />
               <folding>
                 <element signature="e#1#16#0" expanded="true" />
               </folding>
@@ -280,7 +280,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
+    <frame x="-8" y="-8" width="1382" height="744" extended-state="7" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -478,8 +478,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/subFunc.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.47512865" vertical-offset="4330" max-vertical-offset="4913">
-          <caret line="271" column="22" selection-start-line="271" selection-start-column="22" selection-end-line="271" selection-end-column="22" />
+        <state vertical-scroll-proportion="0.35849056" vertical-offset="4398" max-vertical-offset="4981">
+          <caret line="271" column="9" selection-start-line="271" selection-start-column="9" selection-end-line="271" selection-end-column="9" />
           <folding>
             <element signature="e#1#16#0" expanded="true" />
           </folding>

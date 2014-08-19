@@ -260,14 +260,18 @@ def process_data(v, index):
         stringnum = 1
     stringMin = min(minVol[2*stringnum],minVol[2*stringnum+1])
     stringMax = max(chargeVol[2*stringnum],chargeVol[2*stringnum+1])
-    if (stringMin > 3.9 and (stringMax-stringMin) > .050) or balRec[stringnum]:
-        if not bmu_flags[22]: # set balance recommend if not already set
+    #dead band for bal rec flag
+    if (stringMin > 3.9 and (stringMax-stringMin) > .050):
+        balRec[stringnum] = 1
+    elif (stringMin < 3.89 or (stringMax-stringMin) < .045):
+        balRec[stringnum] = 0
+    # decide whether bal rec flags are set or not
+    if balRec[stringnum]: 
+	if not bmu_flags[22]: # set balance recommend if not already set
           value[0] += pow(2,22)
-          balRec[stringnum] == 1
     else:
-        if bmu_flags[22]:
+	if bmu_flags[22]:
           value[0] -= pow(2,22)
-          balRec[stringnum] == 0
     chargeDone[index] = bmu_flags[20]  # sets charge done flag
     balanceDone[index] = bmu_flags[21]  # sets balanced done flag
     return value
