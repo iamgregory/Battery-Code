@@ -160,7 +160,7 @@
   
   STATST(0);              // start testing Status sensor's digital filter
   delayMicroseconds(BMEConDelay2);
-  DIAGN(0);
+  DIAGN(0);               // starts testing of multiplexer
   delayMicroseconds(BMEConDelay2);
   for(i=0;i<BMENum;i++){ 
     RDSTATSTA((BMEdata&) BME[i]);  //check results of self test
